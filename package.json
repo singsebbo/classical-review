@@ -5,9 +5,14 @@
   "main": "index.js",
   "scripts": {
     "client": "cd client && npm run dev",
+    "server": "cd server && npm run start",
+    "dev": "concurrently \"npm run client\" \"npm run server\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
 }
