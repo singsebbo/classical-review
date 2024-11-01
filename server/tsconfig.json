@@ -6,7 +6,8 @@
     "forceConsistentCasingInFileNames": true,
     "rootDir": "./src",
     "noImplicitAny": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "Node"
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
