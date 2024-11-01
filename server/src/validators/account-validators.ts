@@ -25,7 +25,12 @@ function validateUsername(): ValidationChain {
     .custom((username: string): boolean => {
       return containsNoProfanity(username);
     })
-    .withMessage("Username must not contain profanity.");
+    .withMessage("Username must not contain profanity.")
+    .bail()
+    .custom((username: string): boolean => {
+      // Insert code to check if username exists already
+      return true;
+    });
 }
 
 function validateEmail(): ValidationChain {
