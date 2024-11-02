@@ -3,7 +3,7 @@ import UserModel from "../../src/models/user-model";
 import ModelError from "../../src/errors/model-error";
 import { User } from "../../src/interfaces/entities";
 
-jest.mock("../../src/database", () => ({
+jest.mock("../../src/database", (): { query: jest.Mock } => ({
   query: jest.fn(),
 }));
 
