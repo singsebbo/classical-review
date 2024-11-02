@@ -10,7 +10,7 @@ class ModelError extends Error {
    * @param {number} statusCode - HTTP response status code.
    * @param context - Extra information pertaining to the error.
    */
-  constructor(message: string, statusCode: number, context?: any) {
+  constructor(message: string, statusCode?: number, context?: any) {
     super(message);
     this.name = "ModelError";
     this.statusCode = statusCode;
