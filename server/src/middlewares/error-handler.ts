@@ -48,6 +48,7 @@ function errorHandler(
   // Handle database model errors
   if (error instanceof ModelError) {
     console.error("A database model error has occurred:\n", error.stack);
+    console.error("Error details:\n", error);
     const errorResponse: ErrorResponse = {
       success: false,
       message: error.message,
@@ -61,6 +62,7 @@ function errorHandler(
   // Handle generic errors
   if (error instanceof Error) {
     console.error("An unexpected error has occurred:\n", error.stack);
+    console.error("Error details:\n:", error);
     res.status(500).json({
       success: false,
       message: "An unexpected error occured",
