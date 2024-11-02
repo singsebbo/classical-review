@@ -7,6 +7,7 @@
     "rootDir": "./src",
     "noImplicitAny": true,
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "moduleResolution": "Node"
   },
   "include": ["src/**/*.ts"],

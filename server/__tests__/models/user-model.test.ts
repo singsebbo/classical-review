@@ -1,0 +1,81 @@
+import database from "../../src/database";
+import UserModel from "../../src/models/user-model";
+import ModelError from "../../src/errors/model-error";
+import { User } from "../../src/interfaces/entities";
+
+jest.mock("../../src/database", () => ({
+  query: jest.fn(),
+}));
+
+describe("createUser tests", (): void => {
+  const query = `
+    INSERT INTO users (username, email, password_hash)
+    VALUES ($1, $2, $3)
+    RETURNING *;
+  `;
+  const userDetails: [string, string, string] = [
+    "testuser",
+    "test@domain.com",
+    "hashpass",
+  ];
+  test("should unsuccessfully query the database", async (): Promise<void> => {
+    const mockError: Error = new Error("Database connection failed");
+    (database.query as jest.Mock).mockRejectedValue(mockError);
+    await expect(UserModel.createUser(...userDetails)).rejects.toThrow(
+      new ModelError("Database error while creating user.", 500)
+    );
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        INSERT INTO users (username, email, password_hash)
+        VALUES ($1, $2, $3)
+        RETURNING *;
+      `),
+      userDetails
+    );
+  });
+  test("should fail to create user, affecting zero rows", async (): Promise<void> => {
+    const mockResult: { rowCount: number } = { rowCount: 0 };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.createUser(...userDetails)).rejects.toThrow(
+      new ModelError("User creation failed, no rows affected.", 500)
+    );
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        INSERT INTO users (username, email, password_hash)
+        VALUES ($1, $2, $3)
+        RETURNING *;
+      `),
+      userDetails
+    );
+  });
+  test("should successfully create and return a new user", async (): Promise<void> => {
+    const mockUser: User = {
+      user_id: "newuserid",
+      username: userDetails[0],
+      email: userDetails[1],
+      password_hash: userDetails[2],
+      bio: null,
+      created_at: new Date(),
+      last_modified_at: new Date(),
+      profile_picture_url: null,
+      verified: false,
+      last_verification_sent: new Date(),
+    };
+    const mockResult: { rowCount: number; rows: User[] } = {
+      rowCount: 1,
+      rows: [mockUser],
+    };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.createUser(...userDetails)).resolves.toEqual(
+      mockUser
+    );
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        INSERT INTO users (username, email, password_hash)
+        VALUES ($1, $2, $3)
+        RETURNING *;
+      `),
+      userDetails
+    );
+  });
+});
