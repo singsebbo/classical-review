@@ -1,9 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import { ValidationError } from "express-validator";
+import ModelError from "../errors/model-error";
 
-interface ErrorMessage {
+interface ValidationErrorMessage {
   type: ValidationError["type"];
   message: string;
+}
+
+interface ErrorResponse {
+  success: boolean;
+  message: string;
+  context?: any;
 }
 
 /**
@@ -19,24 +26,15 @@ function errorHandler(
   res: Response,
   next: NextFunction
 ): void {
-  // Handle generic errors
-  if (error instanceof Error) {
-    console.error("An unexpected error has occurred:\n", error.stack);
-    res.status(500).json({
-      success: false,
-      message: "An unexpected error occured",
-    });
-  }
-
-  // Handle validation error(s)
+  // Handle validation errors
   if (Array.isArray(error)) {
     // Prints each validation error out to the console
     error.forEach((validationError: ValidationError): void =>
-      console.error(validationError)
+      console.error("A validation error has occurred:\n", validationError)
     );
     // Creates an easier to read array of validation errors
-    const errorMessages: ErrorMessage[] = error.map(
-      (validationError: ValidationError): ErrorMessage => ({
+    const errorMessages: ValidationErrorMessage[] = error.map(
+      (validationError: ValidationError): ValidationErrorMessage => ({
         type: validationError.type,
         message: validationError.msg,
       })
@@ -44,6 +42,28 @@ function errorHandler(
     res.status(400).json({
       success: false,
       message: errorMessages,
+    });
+  }
+
+  // Handle database model errors
+  if (error instanceof ModelError) {
+    console.error("A database model error has occurred:\n", error.stack);
+    const errorResponse: ErrorResponse = {
+      success: false,
+      message: error.message,
+    };
+    if (error.context) {
+      errorResponse.context = error.context;
+    }
+    res.status(error.statusCode || 500).json(errorResponse);
+  }
+
+  // Handle generic errors
+  if (error instanceof Error) {
+    console.error("An unexpected error has occurred:\n", error.stack);
+    res.status(500).json({
+      success: false,
+      message: "An unexpected error occured",
     });
   }
 }
