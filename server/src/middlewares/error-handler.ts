@@ -53,9 +53,6 @@ function errorHandler(
       success: false,
       message: error.message,
     };
-    if (error.context) {
-      errorResponse.context = error.context;
-    }
     res.status(error.statusCode || 500).json(errorResponse);
   }
 
