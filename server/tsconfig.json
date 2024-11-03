@@ -4,12 +4,13 @@
     "module": "ES6",
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "rootDir": "./src",
+    "rootDir": "./",
     "noImplicitAny": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "types": ["jest", "node"]
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "__tests__/**/*.ts"],
   "exclude": ["node_modules"]
 }

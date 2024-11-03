@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import errorHandler from "../../src/middlewares/error-handler";
 import ModelError from "../../src/errors/model-error";
-import { ValidationError } from "express-validator";
+import ValidatorError, {
+  ValidationErrorDetail,
+} from "../../src/errors/validator-error";
 
 let req: Partial<Request>;
 let res: Partial<Response>;
@@ -25,33 +27,36 @@ afterEach(() => {
 });
 
 test("should handle validation errors", (): void => {
-  const validationErrors: Partial<ValidationError>[] = [
-    { type: "field", msg: "Invalid username" },
-    { type: "field", msg: "Password is required" },
+  const errorMessage = "Error while validating input";
+  const validationErrorDetail: ValidationErrorDetail[] = [
+    { type: "field", message: "Invalid username" },
+    { type: "field", message: "Password is required" },
   ];
-  errorHandler(
-    validationErrors as ValidationError[],
-    req as Request,
-    res as Response,
-    next
+  const validatorError: ValidatorError = new ValidatorError(
+    errorMessage,
+    validationErrorDetail
   );
+  validatorError.stack = "Error stack";
+  errorHandler(validatorError, req as Request, res as Response, next);
   expect(consoleErrorSpy).toHaveBeenNthCalledWith(
     1,
-    "A validation error has occurred:\n",
-    validationErrors[0]
+    `${errorMessage}:\n`,
+    validatorError.stack
   );
   expect(consoleErrorSpy).toHaveBeenNthCalledWith(
     2,
-    "A validation error has occurred:\n",
-    validationErrors[1]
+    "Validation error:\n",
+    validationErrorDetail[0]
+  );
+  expect(consoleErrorSpy).toHaveBeenNthCalledWith(
+    3,
+    "Validation error:\n",
+    validationErrorDetail[1]
   );
   expect(res.status).toHaveBeenCalledWith(400);
   expect(res.json).toHaveBeenCalledWith({
     success: false,
-    message: validationErrors.map((validationError) => ({
-      type: validationError.type,
-      message: validationError.msg,
-    })),
+    message: validationErrorDetail,
   });
 });
 

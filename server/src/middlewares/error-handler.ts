@@ -1,11 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { ValidationError } from "express-validator";
 import ModelError from "../errors/model-error";
-
-interface ValidationErrorMessage {
-  type: ValidationError["type"];
-  message: string;
-}
+import ValidatorError, {
+  ValidationErrorDetail,
+} from "../errors/validator-error";
 
 interface ErrorResponse {
   success: boolean;
@@ -15,33 +12,26 @@ interface ErrorResponse {
 
 /**
  * Custom error handling middleware for various errors that might be encountered.
- * @param {Error | ValidationError[]} error - The error(s) encountered.
+ * @param {Error} error - The error(s) encountered.
  * @param {Request} req - The request object sent.
  * @param {Response} res - The response object to send back.
  * @param {NextFunction} next - The next middleware function.
  */
 function errorHandler(
-  error: Error | ValidationError[],
+  error: Error,
   req: Request,
   res: Response,
   next: NextFunction
 ): void {
   // Handle validation errors
-  if (Array.isArray(error)) {
-    // Prints each validation error out to the console
-    error.forEach((validationError: ValidationError): void =>
-      console.error("A validation error has occurred:\n", validationError)
+  if (error instanceof ValidatorError) {
+    console.error(`${error.message}:\n`, error.stack);
+    error.details.forEach((validationError: ValidationErrorDetail): void =>
+      console.error("Validation error:\n", validationError)
     );
-    // Creates an easier to read array of validation errors
-    const errorMessages: ValidationErrorMessage[] = error.map(
-      (validationError: ValidationError): ValidationErrorMessage => ({
-        type: validationError.type,
-        message: validationError.msg,
-      })
-    );
-    res.status(400).json({
+    res.status(error.statusCode).json({
       success: false,
-      message: errorMessages,
+      message: error.details,
     });
   }
 

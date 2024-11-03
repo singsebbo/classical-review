@@ -79,3 +79,10 @@ function validatePassword(): ValidationChain {
       "Password must contain at least one lowercase, one uppercase, and one number."
     );
 }
+
+/** Validates express request for POST /api/account/register */
+export const registerUserValidator: ValidationChain[] = [
+  validateUsername(),
+  validateEmail(),
+  validatePassword(),
+];
