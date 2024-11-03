@@ -48,7 +48,7 @@ class UserModel {
    * @returns A promise that resolves to true if the username is taken and false otherwise.
    * @throws A ModelError if running the query fails.
    */
-  static async isUsernameTaken(username: string): Promise<boolean> {
+  static async isUsernameUnique(username: string): Promise<boolean> {
     try {
       const query = `
         SELECT 1
@@ -58,7 +58,7 @@ class UserModel {
       `;
       const values: [string] = [username];
       const result: QueryResult<User> = await database.query(query, values);
-      return result.rows.length > 0;
+      return result.rows.length === 0;
     } catch (error: unknown) {
       throw new ModelError(
         "Database error while checking username uniqueness.",

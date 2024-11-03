@@ -75,12 +75,12 @@ describe("createUser tests", (): void => {
   });
 });
 
-describe("isUsernameTaken tests", (): void => {
+describe("isUsernameUnique tests", (): void => {
   const userDetails: [string] = ["testuser"];
   test("should unsuccessfully query the database", async (): Promise<void> => {
     const mockError: Error = new Error("Database connection failed");
     (database.query as jest.Mock).mockRejectedValue(mockError);
-    await expect(UserModel.isUsernameTaken(...userDetails)).rejects.toThrow(
+    await expect(UserModel.isUsernameUnique(...userDetails)).rejects.toThrow(
       new ModelError("Database error while checking username uniqueness.", 500)
     );
     expect(database.query).toHaveBeenCalledWith(
@@ -93,11 +93,11 @@ describe("isUsernameTaken tests", (): void => {
       userDetails
     );
   });
-  test("should return true if username exists", async (): Promise<void> => {
+  test("should return false if username exists", async (): Promise<void> => {
     const mockResult: { rows: any[] } = { rows: [1] };
     (database.query as jest.Mock).mockResolvedValue(mockResult);
-    await expect(UserModel.isUsernameTaken(...userDetails)).resolves.toEqual(
-      true
+    await expect(UserModel.isUsernameUnique(...userDetails)).resolves.toEqual(
+      false
     );
     expect(database.query).toHaveBeenCalledWith(
       expect.stringContaining(`
@@ -109,11 +109,11 @@ describe("isUsernameTaken tests", (): void => {
       userDetails
     );
   });
-  test("should return false is username does not exist", async (): Promise<void> => {
+  test("should return true is username does not exist", async (): Promise<void> => {
     const mockResult: { rows: any[] } = { rows: [] };
     (database.query as jest.Mock).mockResolvedValue(mockResult);
-    await expect(UserModel.isUsernameTaken(...userDetails)).resolves.toBe(
-      false
+    await expect(UserModel.isUsernameUnique(...userDetails)).resolves.toBe(
+      true
     );
     expect(database.query).toHaveBeenCalledWith(
       expect.stringContaining(`
