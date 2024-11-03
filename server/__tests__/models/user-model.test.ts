@@ -8,11 +8,6 @@ jest.mock("../../src/database", (): { query: jest.Mock } => ({
 }));
 
 describe("createUser tests", (): void => {
-  const query = `
-    INSERT INTO users (username, email, password_hash)
-    VALUES ($1, $2, $3)
-    RETURNING *;
-  `;
   const userDetails: [string, string, string] = [
     "testuser",
     "test@domain.com",
