@@ -1,4 +1,4 @@
-import { createEmailVerificationToken } from "../../src/utils/token-utils";
+import { createEmailVerificationToken } from "../../../src/utils/token-utils";
 
 test("should successfully create an email verification token", (): void => {
   const userId = "1234abcd";

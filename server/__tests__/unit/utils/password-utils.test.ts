@@ -1,4 +1,4 @@
-import { hashPassword } from "../../src/utils/password-utils";
+import { hashPassword } from "../../../src/utils/password-utils";
 
 test("should successfully hash a password", async (): Promise<void> => {
   const password = "Password123!";

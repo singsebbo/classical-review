@@ -1,9 +1,9 @@
-import database from "../../src/database";
-import UserModel from "../../src/models/user-model";
-import ModelError from "../../src/errors/model-error";
-import { User } from "../../src/interfaces/entities";
+import database from "../../../src/database";
+import UserModel from "../../../src/models/user-model";
+import ModelError from "../../../src/errors/model-error";
+import { User } from "../../../src/interfaces/entities";
 
-jest.mock("../../src/database", (): { query: jest.Mock } => ({
+jest.mock("../../../src/database", (): { query: jest.Mock } => ({
   query: jest.fn(),
 }));
 

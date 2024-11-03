@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import errorHandler from "../../src/middlewares/error-handler";
-import ModelError from "../../src/errors/model-error";
+import errorHandler from "../../../src/middlewares/error-handler";
+import ModelError from "../../../src/errors/model-error";
 import ValidatorError, {
   ValidationErrorDetail,
-} from "../../src/errors/validator-error";
-import EmailError from "../../src/errors/email-error";
+} from "../../../src/errors/validator-error";
+import EmailError from "../../../src/errors/email-error";
 
 let req: Partial<Request>;
 let res: Partial<Response>;

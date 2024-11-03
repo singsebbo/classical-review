@@ -1,7 +1,7 @@
 import sgMail from "@sendgrid/mail";
-import { sendVerificationEmail } from "../../src/utils/email-utils";
-import EmailError from "../../src/errors/email-error";
-import { WEBSITE_URL, SENDGRID_EMAIL_SENDER } from "../../src/config";
+import { sendVerificationEmail } from "../../../src/utils/email-utils";
+import EmailError from "../../../src/errors/email-error";
+import { WEBSITE_URL, SENDGRID_EMAIL_SENDER } from "../../../src/config";
 
 jest.mock("@sendgrid/mail");
 
