@@ -1,3 +1,4 @@
+/** Represents a row in the user database. */
 export interface User {
   user_id: string;
   username: string;

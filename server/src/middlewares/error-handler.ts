@@ -5,9 +5,10 @@ import ValidatorError, {
 } from "../errors/validator-error";
 import EmailError from "../errors/email-error";
 
+/** Response format to send back after an error. */
 interface ErrorResponse {
   success: boolean;
-  message: string;
+  message: string | ValidationErrorDetail[];
   context?: any;
 }
 
@@ -30,10 +31,11 @@ function errorHandler(
     error.details.forEach((validationError: ValidationErrorDetail): void =>
       console.error("Validation error:\n", validationError)
     );
-    res.status(error.statusCode).json({
+    const errorResponse: ErrorResponse = {
       success: false,
       message: error.details,
-    });
+    };
+    res.status(error.statusCode).json(errorResponse);
   }
 
   // Handle database model errors
@@ -51,20 +53,22 @@ function errorHandler(
   if (error instanceof EmailError) {
     console.error(`${error.message}:\n`, error.stack);
     console.error("Error details:\n", error);
-    res.status(error.statusCode).json({
+    const errorResponse: ErrorResponse = {
       success: false,
       message: error.message,
-    });
+    };
+    res.status(error.statusCode).json(errorResponse);
   }
 
   // Handle generic errors
   if (error instanceof Error) {
     console.error("An unexpected error has occurred:\n", error.stack);
     console.error("Error details:\n", error);
-    res.status(500).json({
+    const errorResponse: ErrorResponse = {
       success: false,
       message: "An unexpected error occured",
-    });
+    };
+    res.status(500).json(errorResponse);
   }
 }
 
