@@ -3,6 +3,8 @@ import UserModel from "../models/user-model";
 import { User } from "../interfaces/entities";
 import { RegistrationData } from "../interfaces/request-interfaces";
 import { hashPassword } from "../utils/password-utils";
+import { createEmailVerificationToken } from "../utils/token-utils";
+import { sendVerificationEmail } from "../utils/email-utils";
 
 /**
  * Registers a new user.
@@ -24,7 +26,10 @@ export async function registerUser(
       email,
       passwordHash
     );
-    // Send JWT email
+    const verificationToken: string = createEmailVerificationToken(
+      user.user_id
+    );
+    await sendVerificationEmail(username, email, verificationToken);
     res.status(201).json({
       success: true,
       message: "User has been successfully registered",
