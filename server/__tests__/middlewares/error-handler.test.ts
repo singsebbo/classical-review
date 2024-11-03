@@ -4,6 +4,7 @@ import ModelError from "../../src/errors/model-error";
 import ValidatorError, {
   ValidationErrorDetail,
 } from "../../src/errors/validator-error";
+import EmailError from "../../src/errors/email-error";
 
 let req: Partial<Request>;
 let res: Partial<Response>;
@@ -83,6 +84,31 @@ test("should handle database model errors", (): void => {
   });
 });
 
+test("should handle email errors", (): void => {
+  const emailError: EmailError = new EmailError(
+    "Email error",
+    "Verification",
+    "testuser@domain.com"
+  );
+  emailError.stack = "Error stack trace";
+  errorHandler(emailError, req as Request, res as Response, next);
+  expect(consoleErrorSpy).toHaveBeenNthCalledWith(
+    1,
+    `${emailError.message}:\n`,
+    emailError.stack
+  );
+  expect(consoleErrorSpy).toHaveBeenNthCalledWith(
+    2,
+    "Error details:\n",
+    emailError
+  );
+  expect(res.status).toHaveBeenCalledWith(500);
+  expect(res.json).toHaveBeenCalledWith({
+    success: false,
+    message: emailError.message,
+  });
+});
+
 test("should handle generic error", (): void => {
   const error: Error = new Error("Generic error");
   error.stack = "Error stack trace";
@@ -92,11 +118,7 @@ test("should handle generic error", (): void => {
     "An unexpected error has occurred:\n",
     error.stack
   );
-  expect(consoleErrorSpy).toHaveBeenNthCalledWith(
-    2,
-    "Error details:\n:",
-    error
-  );
+  expect(consoleErrorSpy).toHaveBeenNthCalledWith(2, "Error details:\n", error);
   expect(res.status).toHaveBeenCalledWith(500);
   expect(res.json).toHaveBeenCalledWith({
     success: false,

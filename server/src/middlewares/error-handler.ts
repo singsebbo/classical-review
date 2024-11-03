@@ -3,6 +3,7 @@ import ModelError from "../errors/model-error";
 import ValidatorError, {
   ValidationErrorDetail,
 } from "../errors/validator-error";
+import EmailError from "../errors/email-error";
 
 interface ErrorResponse {
   success: boolean;
@@ -46,10 +47,20 @@ function errorHandler(
     res.status(error.statusCode || 500).json(errorResponse);
   }
 
+  // Handle email errors
+  if (error instanceof EmailError) {
+    console.error(`${error.message}:\n`, error.stack);
+    console.error("Error details:\n", error);
+    res.status(error.statusCode).json({
+      success: false,
+      message: error.message,
+    });
+  }
+
   // Handle generic errors
   if (error instanceof Error) {
     console.error("An unexpected error has occurred:\n", error.stack);
-    console.error("Error details:\n:", error);
+    console.error("Error details:\n", error);
     res.status(500).json({
       success: false,
       message: "An unexpected error occured",
