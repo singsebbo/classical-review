@@ -66,6 +66,25 @@ class UserModel {
       );
     }
   }
+
+  static async isEmailUnique(email: string): Promise<boolean> {
+    try {
+      const query = `
+        SELECT 1
+        FROM users
+        WHERE email = $1
+        LIMIT 1;
+      `;
+      const values: [string] = [email];
+      const result: QueryResult<User> = await database.query(query, values);
+      return result.rows.length === 0;
+    } catch (error: unknown) {
+      throw new ModelError(
+        "Database error while checking email uniqueness.",
+        500
+      );
+    }
+  }
 }
 
 export default UserModel;

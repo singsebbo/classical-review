@@ -126,3 +126,53 @@ describe("isUsernameUnique tests", (): void => {
     );
   });
 });
+
+describe("isEmailUnique tests", (): void => {
+  const userDetails: [string] = ["testemail@testdomain.com"];
+  test("should unsuccessfully query the database", async (): Promise<void> => {
+    const mockError: Error = new Error("Database connection failed");
+    (database.query as jest.Mock).mockRejectedValue(mockError);
+    await expect(UserModel.isEmailUnique(...userDetails)).rejects.toThrow(
+      new ModelError("Database error while checking email uniqueness.", 500)
+    );
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        SELECT 1
+        FROM users
+        WHERE email = $1
+        LIMIT 1;
+      `),
+      userDetails
+    );
+  });
+  test("should return false if email exists", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = { rows: [1] };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.isEmailUnique(...userDetails)).resolves.toEqual(
+      false
+    );
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        SELECT 1
+        FROM users
+        WHERE email = $1
+        LIMIT 1;
+      `),
+      userDetails
+    );
+  });
+  test("should return true is email does not exist", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = { rows: [] };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.isEmailUnique(...userDetails)).resolves.toBe(true);
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        SELECT 1
+        FROM users
+        WHERE email = $1
+        LIMIT 1;
+      `),
+      userDetails
+    );
+  });
+});
