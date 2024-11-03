@@ -31,6 +31,7 @@ function createValidationError(
   next();
 }
 
+/** Handles validation errors for POST /api/account/register */
 export function registerUserValidationErrors(
   req: Request,
   res: Response,
