@@ -41,6 +41,31 @@ class UserModel {
       throw new ModelError("Database error while creating user.", 500);
     }
   }
+
+  /**
+   * Checks if a username is unique.
+   * @param {string} username - The username to check.
+   * @returns A promise that resolves to true if the username is taken and false otherwise.
+   * @throws A ModelError if running the query fails.
+   */
+  static async isUsernameTaken(username: string): Promise<boolean> {
+    try {
+      const query = `
+        SELECT 1
+        FROM users
+        WHERE username = $1
+        LIMIT 1;
+      `;
+      const values: [string] = [username];
+      const result: QueryResult<User> = await database.query(query, values);
+      return result.rows.length > 0;
+    } catch (error: unknown) {
+      throw new ModelError(
+        "Database error while checking username uniqueness.",
+        500
+      );
+    }
+  }
 }
 
 export default UserModel;

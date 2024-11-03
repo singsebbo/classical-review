@@ -79,3 +79,55 @@ describe("createUser tests", (): void => {
     );
   });
 });
+
+describe("isUsernameTaken tests", (): void => {
+  const userDetails: [string] = ["testuser"];
+  test("should unsuccessfully query the database", async (): Promise<void> => {
+    const mockError: Error = new Error("Database connection failed");
+    (database.query as jest.Mock).mockRejectedValue(mockError);
+    await expect(UserModel.isUsernameTaken(...userDetails)).rejects.toThrow(
+      new ModelError("Database error while checking username uniqueness.", 500)
+    );
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        SELECT 1
+        FROM users
+        WHERE username = $1
+        LIMIT 1;
+      `),
+      userDetails
+    );
+  });
+  test("should return true if username exists", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = { rows: [1] };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.isUsernameTaken(...userDetails)).resolves.toEqual(
+      true
+    );
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        SELECT 1
+        FROM users
+        WHERE username = $1
+        LIMIT 1;
+      `),
+      userDetails
+    );
+  });
+  test("should return false is username does not exist", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = { rows: [] };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.isUsernameTaken(...userDetails)).resolves.toBe(
+      false
+    );
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        SELECT 1
+        FROM users
+        WHERE username = $1
+        LIMIT 1;
+      `),
+      userDetails
+    );
+  });
+});
