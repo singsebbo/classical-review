@@ -44,9 +44,11 @@ function validateEmail(): ValidationChain {
     .isEmail()
     .withMessage("Email address must be in standard format.")
     .bail()
-    .custom((email: string): boolean => {
-      // Insert code to check if email exists already
-      return true;
+    .isLength({ max: 100 })
+    .withMessage("Email address must be at most 100 characters.")
+    .bail()
+    .custom(async (email: string): Promise<boolean> => {
+      return await UserModel.isEmailUnique(email);
     });
 }
 
@@ -58,18 +60,19 @@ function validatePassword(): ValidationChain {
     .isString()
     .withMessage("Password must be a string.")
     .bail()
-    .isLength({ min: 8, max: 32 })
-    .withMessage("Password must be between 8-32 characters.")
+    .isLength({ min: 8, max: 64 })
+    .withMessage("Password must be between 8-64 characters.")
     .bail()
-    .isAlphanumeric("en-US", { ignore: "!@#$%^&*()" })
+    .isAlphanumeric("en-US", { ignore: "!@#$%^&*" })
     .withMessage(
-      'Password must be alphanumeric following "en-US" language code exluding the characters "!@#$%^&*()".'
+      'Password must be alphanumeric following "en-US" language code exluding the characters "!@#$%^&*".'
     )
     .bail()
     .isStrongPassword({
       minLowercase: 1,
       minUppercase: 1,
       minNumbers: 1,
+      minSymbols: 1,
       returnScore: false,
     })
     .withMessage(
