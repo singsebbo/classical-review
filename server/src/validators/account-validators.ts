@@ -1,5 +1,6 @@
 import { body, ValidationChain } from "express-validator";
 import { Filter } from "bad-words";
+import UserModel from "../models/user-model";
 
 function containsNoProfanity(text: string): boolean {
   const filter: Filter = new Filter();
@@ -27,9 +28,8 @@ function validateUsername(): ValidationChain {
     })
     .withMessage("Username must not contain profanity.")
     .bail()
-    .custom((username: string): boolean => {
-      // Insert code to check if username exists already
-      return true;
+    .custom(async (username: string): Promise<boolean> => {
+      return await UserModel.isUsernameUnique(username);
     });
 }
 
