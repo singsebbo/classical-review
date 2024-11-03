@@ -67,6 +67,12 @@ class UserModel {
     }
   }
 
+  /**
+   * Checks if an email is unique.
+   * @param {string} email - The email to check.
+   * @returns A promise that resolves to true if the email is taken and false otherwise.
+   * @throws A ModelError if running the query fails.
+   */
   static async isEmailUnique(email: string): Promise<boolean> {
     try {
       const query = `
