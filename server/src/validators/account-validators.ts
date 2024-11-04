@@ -53,9 +53,6 @@ function validateEmail(): ValidationChain {
     .isEmail()
     .withMessage("Email address must be in standard format.")
     .bail()
-    .isLength({ max: 254 })
-    .withMessage("Email address must be at most 254 characters.")
-    .bail()
     .custom(async (email: string): Promise<void> => {
       const isEmailUnique: boolean = await UserModel.isEmailUnique(email);
       if (!isEmailUnique) {
