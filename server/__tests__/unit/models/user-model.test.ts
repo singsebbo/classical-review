@@ -7,6 +7,10 @@ jest.mock("../../../src/database", (): { query: jest.Mock } => ({
   query: jest.fn(),
 }));
 
+beforeEach((): void => {
+  jest.clearAllMocks();
+});
+
 describe("createUser tests", (): void => {
   const userDetails: [string, string, string] = [
     "testuser",
