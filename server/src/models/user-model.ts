@@ -45,7 +45,7 @@ class UserModel {
   /**
    * Checks if a username is unique.
    * @param {string} username - The username to check.
-   * @returns A promise that resolves to true if the username is taken and false otherwise.
+   * @returns A promise that resolves to false if the username is taken and true otherwise.
    * @throws A ModelError if running the query fails.
    */
   static async isUsernameUnique(username: string): Promise<boolean> {
@@ -70,7 +70,7 @@ class UserModel {
   /**
    * Checks if an email is unique.
    * @param {string} email - The email to check.
-   * @returns A promise that resolves to true if the email is taken and false otherwise.
+   * @returns A promise that resolves to false if the email is taken and true otherwise.
    * @throws A ModelError if running the query fails.
    */
   static async isEmailUnique(email: string): Promise<boolean> {
