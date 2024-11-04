@@ -32,7 +32,8 @@ function validateUsername(): ValidationChain {
     .bail()
     .custom(async (username: string): Promise<boolean> => {
       return await UserModel.isUsernameUnique(username);
-    });
+    })
+    .withMessage("Username is already in use.");
 }
 
 function validateEmail(): ValidationChain {
@@ -51,7 +52,8 @@ function validateEmail(): ValidationChain {
     .bail()
     .custom(async (email: string): Promise<boolean> => {
       return await UserModel.isEmailUnique(email);
-    });
+    })
+    .withMessage("Email is already in use");
 }
 
 function validatePassword(): ValidationChain {
