@@ -70,6 +70,128 @@ describe("POST /api/account/register tests", (): void => {
           },
         ]);
       });
+      test("should fail with a non-string username", async (): Promise<void> => {
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: 123,
+            email: validDetails.email,
+            password: validDetails.password,
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message: "Username must be a string.",
+          },
+        ]);
+      });
+      test("should fail with a username that is too short", async (): Promise<void> => {
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: "a",
+            email: validDetails.email,
+            password: validDetails.password,
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message: "Username must be between 2 and 32 characters long.",
+          },
+        ]);
+      });
+      test("should fail with a username that is too long", async (): Promise<void> => {
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: "qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnm",
+            email: validDetails.email,
+            password: validDetails.password,
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message: "Username must be between 2 and 32 characters long.",
+          },
+        ]);
+      });
+      test("should fail with a username that is not alphanumeric", async (): Promise<void> => {
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: "a2%",
+            email: validDetails.email,
+            password: validDetails.password,
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message:
+              'Username must follow "en-US" language code and can not contain symbols.',
+          },
+        ]);
+      });
+      test("should fail with a username that does not follow en-US language code", async (): Promise<void> => {
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: "ñef",
+            email: validDetails.email,
+            password: validDetails.password,
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message:
+              'Username must follow "en-US" language code and can not contain symbols.',
+          },
+        ]);
+      });
+      test("should fail with a username that contains profanity", async (): Promise<void> => {
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: "fuck",
+            email: validDetails.email,
+            password: validDetails.password,
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message: "Username must not contain profanity.",
+          },
+        ]);
+      });
+      test("should fail with a username that is not unique", async (): Promise<void> => {
+        (UserModel.isUsernameUnique as jest.Mock).mockResolvedValue(false);
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: "usernameExists",
+            email: validDetails.email,
+            password: validDetails.password,
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message: "Username is already in use.",
+          },
+        ]);
+      });
     });
   });
 });
