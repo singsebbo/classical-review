@@ -287,5 +287,198 @@ describe("POST /api/account/register tests", (): void => {
         emailUnique.mockClear();
       });
     });
+    describe("Invalid password tests", (): void => {
+      // Mock username and email uniqueness
+      let usernameUnique: jest.Mock;
+      let emailUnique: jest.Mock;
+      beforeAll((): void => {
+        usernameUnique = (
+          UserModel.isUsernameUnique as jest.Mock
+        ).mockResolvedValue(true);
+        emailUnique = (UserModel.isEmailUnique as jest.Mock).mockResolvedValue(
+          true
+        );
+      });
+      afterAll((): void => {
+        usernameUnique.mockClear();
+        emailUnique.mockClear;
+      });
+      test("should fail with a non-existent password", async (): Promise<void> => {
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: validDetails.username,
+            email: validDetails.email,
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message: "Password field must exist.",
+          },
+        ]);
+      });
+      test("should fail with a non-string password", async (): Promise<void> => {
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: validDetails.username,
+            email: validDetails.email,
+            password: 123,
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message: "Password must be a string.",
+          },
+        ]);
+      });
+      test("should fail with a password that is too short", async (): Promise<void> => {
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: validDetails.username,
+            email: validDetails.email,
+            password: "aD1#",
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message: "Password must be between 8-64 characters.",
+          },
+        ]);
+      });
+      test("should fail with a password that is too long", async (): Promise<void> => {
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: validDetails.username,
+            email: validDetails.email,
+            password:
+              "abcdefghijklmnopqrstuvwxyz1234abcdefghijklmnopqrstuvwxyz!@#$ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message: "Password must be between 8-64 characters.",
+          },
+        ]);
+      });
+      test("should fail with a password that is not alphanumeric", async (): Promise<void> => {
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: validDetails.username,
+            email: validDetails.email,
+            password: "BadCharacters1!:()_+",
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message:
+              'Password must be alphanumeric following "en-US" language code exluding the characters "!@#$%^&*".',
+          },
+        ]);
+      });
+      test("should fail with a password that is not in en-US language code", async (): Promise<void> => {
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: validDetails.username,
+            email: validDetails.email,
+            password: "ańyoC0rp!",
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message:
+              'Password must be alphanumeric following "en-US" language code exluding the characters "!@#$%^&*".',
+          },
+        ]);
+      });
+      test("should fail with a password does not contain lowercase", async (): Promise<void> => {
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: validDetails.username,
+            email: validDetails.email,
+            password: "NOLOWERCASE12!",
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message:
+              "Password must contain at least one lowercase, one uppercase, and one number.",
+          },
+        ]);
+      });
+      test("should fail with a password does not contain uppercase", async (): Promise<void> => {
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: validDetails.username,
+            email: validDetails.email,
+            password: "nouppercasecase12!",
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message:
+              "Password must contain at least one lowercase, one uppercase, and one number.",
+          },
+        ]);
+      });
+      test("should fail with a password with no numbers", async (): Promise<void> => {
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: validDetails.username,
+            email: validDetails.email,
+            password: "NoNumbers!",
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message:
+              "Password must contain at least one lowercase, one uppercase, and one number.",
+          },
+        ]);
+      });
+      test("should fail with a password with no symbols", async (): Promise<void> => {
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: validDetails.username,
+            email: validDetails.email,
+            password: "NoSymb0ls",
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message:
+              "Password must contain at least one lowercase, one uppercase, and one number.",
+          },
+        ]);
+      });
+    });
   });
 });
