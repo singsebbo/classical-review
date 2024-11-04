@@ -21,7 +21,9 @@ function validateUsername(): ValidationChain {
     .withMessage("Username must be between 2 and 32 characters long.")
     .bail()
     .isAlphanumeric("en-US")
-    .withMessage('Username must follow "en-US" language code.')
+    .withMessage(
+      'Username must follow "en-US" language code and can not contain symbols.'
+    )
     .bail()
     .custom((username: string): boolean => {
       return containsNoProfanity(username);
