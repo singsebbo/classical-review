@@ -204,5 +204,88 @@ describe("POST /api/account/register tests", (): void => {
         usernameUnique.mockClear();
       });
     });
+    describe("Invalid email tests", (): void => {
+      // Mock username uniqueness
+      let usernameUnique: jest.Mock;
+      beforeAll((): void => {
+        usernameUnique = (
+          UserModel.isUsernameUnique as jest.Mock
+        ).mockResolvedValue(true);
+      });
+      afterAll((): void => {
+        usernameUnique.mockClear();
+      });
+      test("should fail with a non-existent email", async (): Promise<void> => {
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: validDetails.username,
+            password: validDetails.password,
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message: "Email field must exist.",
+          },
+        ]);
+      });
+      test("should fail with a non-string email", async (): Promise<void> => {
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: validDetails.username,
+            email: 123,
+            password: validDetails.password,
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message: "Email must be a string.",
+          },
+        ]);
+      });
+      test("should fail with a string not in email format", async (): Promise<void> => {
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: validDetails.username,
+            email: "bademail@bademail",
+            password: validDetails.password,
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message: "Email address must be in standard format.",
+          },
+        ]);
+      });
+      test("should fail with an email that is not unique", async (): Promise<void> => {
+        const emailUnique: jest.Mock = (
+          UserModel.isEmailUnique as jest.Mock
+        ).mockResolvedValue(false);
+        const response: SupertestResponse = await request(app)
+          .post("/api/account/register")
+          .send({
+            username: validDetails.username,
+            email: "notuniqueemail@somedomain.com",
+            password: validDetails.password,
+          });
+        expect(response.statusCode).toBe(400);
+        expect(response.body).toHaveProperty("success", false);
+        expect(response.body).toHaveProperty("message", [
+          {
+            type: "field",
+            message: "Email is already in use",
+          },
+        ]);
+        emailUnique.mockClear();
+      });
+    });
   });
 });
