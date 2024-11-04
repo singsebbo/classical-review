@@ -12,7 +12,7 @@ let next: NextFunction;
 let consoleErrorSpy: jest.SpyInstance;
 
 // Resets the response and console error spy
-beforeEach(() => {
+beforeEach((): void => {
   res = {
     status: jest.fn().mockReturnThis(),
     json: jest.fn(),
@@ -23,7 +23,7 @@ beforeEach(() => {
 });
 
 // Resets accumulated information and restores original implementation
-afterEach(() => {
+afterEach((): void => {
   consoleErrorSpy.mockRestore();
 });
 
@@ -54,6 +54,7 @@ test("should handle validation errors", (): void => {
     "Validation error:\n",
     validationErrorDetail[1]
   );
+  expect(consoleErrorSpy).toHaveBeenCalledTimes(3);
   expect(res.status).toHaveBeenCalledWith(400);
   expect(res.json).toHaveBeenCalledWith({
     success: false,
@@ -77,6 +78,7 @@ test("should handle database model errors", (): void => {
     "Error details:\n",
     modelError
   );
+  expect(consoleErrorSpy).toHaveBeenCalledTimes(2);
   expect(res.status).toHaveBeenCalledWith(500);
   expect(res.json).toHaveBeenCalledWith({
     success: false,
@@ -102,6 +104,7 @@ test("should handle email errors", (): void => {
     "Error details:\n",
     emailError
   );
+  expect(consoleErrorSpy).toHaveBeenCalledTimes(2);
   expect(res.status).toHaveBeenCalledWith(500);
   expect(res.json).toHaveBeenCalledWith({
     success: false,
@@ -119,6 +122,7 @@ test("should handle generic error", (): void => {
     error.stack
   );
   expect(consoleErrorSpy).toHaveBeenNthCalledWith(2, "Error details:\n", error);
+  expect(consoleErrorSpy).toHaveBeenCalledTimes(2);
   expect(res.status).toHaveBeenCalledWith(500);
   expect(res.json).toHaveBeenCalledWith({
     success: false,

@@ -36,6 +36,7 @@ function errorHandler(
       message: error.details,
     };
     res.status(error.statusCode).json(errorResponse);
+    return;
   }
 
   // Handle database model errors
@@ -47,6 +48,7 @@ function errorHandler(
       message: error.message,
     };
     res.status(error.statusCode || 500).json(errorResponse);
+    return;
   }
 
   // Handle email errors
@@ -58,6 +60,7 @@ function errorHandler(
       message: error.message,
     };
     res.status(error.statusCode).json(errorResponse);
+    return;
   }
 
   // Handle generic errors
@@ -69,6 +72,7 @@ function errorHandler(
       message: "An unexpected error occured",
     };
     res.status(500).json(errorResponse);
+    return;
   }
 }
 

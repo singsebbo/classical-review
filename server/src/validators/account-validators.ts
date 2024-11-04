@@ -1,22 +1,22 @@
 import { body, ValidationChain } from "express-validator";
-import { Filter } from "bad-words";
 import UserModel from "../models/user-model";
+import profanities from "../utils/profanities";
 
 function containsNoProfanity(text: string): boolean {
-  const filter: Filter = new Filter();
-  return !filter.isProfane(text);
+  text = text.toLowerCase();
+  return !profanities.some((word: string): boolean => text.includes(word));
 }
 
 function validateUsername(): ValidationChain {
   return body("username")
-    .trim()
-    .escape()
     .exists()
-    .withMessage("Username field must be exist.")
+    .withMessage("Username field must exist.")
     .bail()
     .isString()
     .withMessage("Username must be a string.")
     .bail()
+    .trim()
+    .escape()
     .isLength({ min: 2, max: 32 })
     .withMessage("Username must be between 2 and 32 characters long.")
     .bail()
