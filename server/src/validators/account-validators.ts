@@ -30,8 +30,13 @@ function validateUsername(): ValidationChain {
     })
     .withMessage("Username must not contain profanity.")
     .bail()
-    .custom(async (username: string): Promise<boolean> => {
-      return await UserModel.isUsernameUnique(username);
+    .custom(async (username: string): Promise<void> => {
+      const isUsernameUnique: boolean = await UserModel.isUsernameUnique(
+        username
+      );
+      if (!isUsernameUnique) {
+        throw new Error();
+      }
     })
     .withMessage("Username is already in use.");
 }
@@ -50,8 +55,11 @@ function validateEmail(): ValidationChain {
     .isLength({ max: 100 })
     .withMessage("Email address must be at most 100 characters.")
     .bail()
-    .custom(async (email: string): Promise<boolean> => {
-      return await UserModel.isEmailUnique(email);
+    .custom(async (email: string): Promise<void> => {
+      const isEmailUnique: boolean = await UserModel.isEmailUnique(email);
+      if (!isEmailUnique) {
+        throw new Error();
+      }
     })
     .withMessage("Email is already in use");
 }
