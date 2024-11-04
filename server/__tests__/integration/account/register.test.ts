@@ -18,32 +18,6 @@ afterAll((): void => {
   jest.clearAllMocks();
 });
 
-test("should output validation errors to console and not call registerUser", async (): Promise<void> => {
-  jest.spyOn(accountController, "registerUser").mockImplementation(jest.fn());
-  const response: SupertestResponse = await request(app).post(
-    "/api/account/register"
-  );
-  expect(consoleErrorSpy).toHaveBeenNthCalledWith(
-    1,
-    "Validation error(s) encountered while registering user:\n",
-    expect.any(String)
-  );
-  expect(consoleErrorSpy).toHaveBeenNthCalledWith(2, "Validation error:\n", {
-    type: "field",
-    message: "Username field must exist.",
-  });
-  expect(consoleErrorSpy).toHaveBeenNthCalledWith(3, "Validation error:\n", {
-    type: "field",
-    message: "Email field must exist.",
-  });
-  expect(consoleErrorSpy).toHaveBeenNthCalledWith(4, "Validation error:\n", {
-    type: "field",
-    message: "Password field must exist.",
-  });
-  expect(consoleErrorSpy).toHaveBeenCalledTimes(4);
-  expect(accountController.registerUser).not.toHaveBeenCalled();
-});
-
 describe("POST /api/account/register tests", (): void => {
   const validDetails: RegistrationData = {
     username: "gooduser",
@@ -51,6 +25,45 @@ describe("POST /api/account/register tests", (): void => {
     password: "str0ngPassword!",
   };
   describe("Validation error tests", (): void => {
+    test("should output validation errors to console and not call registerUser", async (): Promise<void> => {
+      jest
+        .spyOn(accountController, "registerUser")
+        .mockImplementation(jest.fn());
+      const response: SupertestResponse = await request(app).post(
+        "/api/account/register"
+      );
+      expect(consoleErrorSpy).toHaveBeenNthCalledWith(
+        1,
+        "Validation error(s) encountered while registering user:\n",
+        expect.any(String)
+      );
+      expect(consoleErrorSpy).toHaveBeenNthCalledWith(
+        2,
+        "Validation error:\n",
+        {
+          type: "field",
+          message: "Username field must exist.",
+        }
+      );
+      expect(consoleErrorSpy).toHaveBeenNthCalledWith(
+        3,
+        "Validation error:\n",
+        {
+          type: "field",
+          message: "Email field must exist.",
+        }
+      );
+      expect(consoleErrorSpy).toHaveBeenNthCalledWith(
+        4,
+        "Validation error:\n",
+        {
+          type: "field",
+          message: "Password field must exist.",
+        }
+      );
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(4);
+      expect(accountController.registerUser).not.toHaveBeenCalled();
+    });
     describe("Invalid username tests", (): void => {
       // Mocks email uniqueness
       let emailUnique: jest.Mock;
