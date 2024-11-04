@@ -20,7 +20,7 @@ function validateUsername(): ValidationChain {
     .isLength({ min: 2, max: 32 })
     .withMessage("Username must be between 2 and 32 characters long.")
     .bail()
-    .isAlpha("en-US")
+    .isAlphanumeric("en-US")
     .withMessage('Username must follow "en-US" language code.')
     .bail()
     .custom((username: string): boolean => {
