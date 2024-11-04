@@ -48,6 +48,7 @@ function validateEmail(): ValidationChain {
     .bail()
     .isString()
     .withMessage("Email must be a string.")
+    .bail()
     .normalizeEmail()
     .isEmail()
     .withMessage("Email address must be in standard format.")
