@@ -8,14 +8,14 @@ let consoleErrorSpy: jest.SpyInstance;
 
 jest.mock("../../../src/models/user-model");
 
-beforeEach((): void => {
+beforeAll((): void => {
   consoleErrorSpy = jest
     .spyOn(console, "error")
     .mockImplementation((): void => {});
 });
 
-afterEach((): void => {
-  consoleErrorSpy.mockRestore();
+afterAll((): void => {
+  jest.clearAllMocks();
 });
 
 test("should output validation errors to console and not call registerUser", async (): Promise<void> => {
@@ -53,7 +53,15 @@ describe("POST /api/account/register tests", (): void => {
   describe("Validation error tests", (): void => {
     describe("Invalid username tests", (): void => {
       // Mocks email uniqueness
-      (UserModel.isEmailUnique as jest.Mock).mockResolvedValue(true);
+      let emailUnique: jest.Mock;
+      beforeAll((): void => {
+        emailUnique = (UserModel.isEmailUnique as jest.Mock).mockResolvedValue(
+          true
+        );
+      });
+      afterAll((): void => {
+        emailUnique.mockClear();
+      });
       test("should fail with a non-existent username", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
           .post("/api/account/register")
@@ -175,7 +183,9 @@ describe("POST /api/account/register tests", (): void => {
         ]);
       });
       test("should fail with a username that is not unique", async (): Promise<void> => {
-        (UserModel.isUsernameUnique as jest.Mock).mockResolvedValue(false);
+        const usernameUnique: jest.Mock = (
+          UserModel.isUsernameUnique as jest.Mock
+        ).mockResolvedValue(false);
         const response: SupertestResponse = await request(app)
           .post("/api/account/register")
           .send({
@@ -191,6 +201,7 @@ describe("POST /api/account/register tests", (): void => {
             message: "Username is already in use.",
           },
         ]);
+        usernameUnique.mockClear();
       });
     });
   });
