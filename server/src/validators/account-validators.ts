@@ -59,7 +59,7 @@ function validateEmail(): ValidationChain {
         throw new Error();
       }
     })
-    .withMessage("Email is already in use");
+    .withMessage("Email is already in use.");
 }
 
 function validatePassword(): ValidationChain {

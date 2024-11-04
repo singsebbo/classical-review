@@ -281,7 +281,7 @@ describe("POST /api/account/register tests", (): void => {
         expect(response.body).toHaveProperty("message", [
           {
             type: "field",
-            message: "Email is already in use",
+            message: "Email is already in use.",
           },
         ]);
         emailUnique.mockClear();
