@@ -12,6 +12,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+      SENDGRID_EMAIL_SENDER: ${{ secrets.SENDGRID_EMAIL_SENDER }}
+      WEBSITE_URL: ${{ secrets.WEBSITE_URL }}
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
