@@ -7,6 +7,10 @@ import { JWT_SECRET } from "../config";
  * @returns JSON web token that expires in 24 hours.
  */
 export function createEmailVerificationToken(userId: string): string {
-  const token: string = jwt.sign({ userId }, JWT_SECRET, { expiresIn: "24h" });
+  const token: string = jwt.sign(
+    { userId, purpose: "email_verification" },
+    JWT_SECRET,
+    { expiresIn: "24h" }
+  );
   return token;
 }
