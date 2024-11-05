@@ -574,4 +574,28 @@ describe("POST /api/account/register tests", (): void => {
       mockEmail.mockClear();
     });
   });
+  test("should successfully create a new user", async (): Promise<void> => {
+    const mockUser: jest.Mock = (
+      UserModel.createUser as jest.Mock
+    ).mockResolvedValue({ user_id: "123asdaer343" });
+    const mockEmail: jest.Mock = (
+      sendVerificationEmail as jest.Mock
+    ).mockResolvedValue(undefined);
+    const response: SupertestResponse = await request(app)
+      .post("/api/account/register")
+      .send({
+        username: validDetails.username,
+        email: validDetails.email,
+        password: validDetails.password,
+      });
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+    expect(response.statusCode).toBe(201);
+    expect(response.body).toHaveProperty("success", true);
+    expect(response.body).toHaveProperty(
+      "message",
+      "User has been successfully registered"
+    );
+    mockUser.mockClear();
+    mockEmail.mockClear();
+  });
 });
