@@ -29,7 +29,7 @@ export async function sendVerificationEmail(
       text: `Email verification: ${WEBSITE_URL}/verify-email?token=${verificationToken}`,
       html: `
         <p>Hello ${username},</p>
-        <p>Please follow the link below to verify your email address for music log.</p>
+        <p>Please follow the link below to verify your email address for classical review.</p>
         <a href="${WEBSITE_URL}/verify-email?token=${verificationToken}">Verification</a>
       `,
     };
