@@ -91,6 +91,40 @@ class UserModel {
       );
     }
   }
+
+  /**
+   * Sets a user's verified status to true.
+   * @param {string} userId - The userId of the user to verify.
+   * @returns The newly verified user.
+   * @throws A ModelError if the database operation fails.
+   */
+  static async setUserVerified(userId: string): Promise<User> {
+    try {
+      const query = `
+        UPDATE users
+        SET
+          verified = true
+          last_modified_at = NOW()
+        WHERE user_id = $1
+        RETURNING *;
+      `;
+      const values: [string] = [userId];
+      const result: QueryResult<User> = await database.query(query, values);
+      if (result.rowCount === 0) {
+        throw new ModelError(
+          "User verification failed, no rows affected.",
+          500
+        );
+      }
+      const verifiedUser: User = result.rows[0];
+      return verifiedUser;
+    } catch (error: unknown) {
+      if (error instanceof ModelError) {
+        throw error;
+      }
+      throw new ModelError("Database error while verifying user.", 500);
+    }
+  }
 }
 
 export default UserModel;

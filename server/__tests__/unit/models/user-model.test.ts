@@ -180,3 +180,75 @@ describe("isEmailUnique tests", (): void => {
     );
   });
 });
+
+describe("setUserVerified tests", (): void => {
+  const args: [string] = ["1234asdfasfe34"];
+  test("should unsuccessfully query the database", async (): Promise<void> => {
+    const mockError: Error = new Error("Database query failed");
+    (database.query as jest.Mock).mockRejectedValue(mockError);
+    await expect(UserModel.setUserVerified(...args)).rejects.toThrow(
+      new ModelError("Database error while verifying user.", 500)
+    );
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        UPDATE users
+        SET
+          verified = true
+          last_modified_at = NOW()
+        WHERE user_id = $1
+        RETURNING *;
+      `),
+      args
+    );
+  });
+  test("should fail to verify user, affecting zero rows", async (): Promise<void> => {
+    const mockResult: { rowCount: number } = { rowCount: 0 };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.setUserVerified(...args)).rejects.toThrow(
+      new ModelError("User verification failed, no rows affected.", 500)
+    );
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        UPDATE users
+        SET
+          verified = true
+          last_modified_at = NOW()
+        WHERE user_id = $1
+        RETURNING *;
+      `),
+      args
+    );
+  });
+  test("should successfully verify and return the user", async (): Promise<void> => {
+    const mockUser: User = {
+      user_id: args[0],
+      username: "thisisausername",
+      email: "email@email.mail",
+      password_hash:
+        "asdfihq9jornh384ijrsf934fjnfqw9pfiojnwe09prguoijsnpusfoijasd",
+      bio: null,
+      created_at: new Date(),
+      last_modified_at: new Date(),
+      profile_picture_url: null,
+      verified: false,
+      last_verification_sent: new Date(),
+    };
+    const mockResult: { rowCount: number; rows: User[] } = {
+      rowCount: 1,
+      rows: [mockUser],
+    };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.setUserVerified(...args)).resolves.toEqual(mockUser);
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        UPDATE users
+        SET
+          verified = true
+          last_modified_at = NOW()
+        WHERE user_id = $1
+        RETURNING *;
+      `),
+      args
+    );
+  });
+});
