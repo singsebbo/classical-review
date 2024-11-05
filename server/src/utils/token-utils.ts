@@ -14,3 +14,16 @@ export function createEmailVerificationToken(userId: string): string {
   );
   return token;
 }
+
+/**
+ * Gets the userId from a JSON web token.
+ * @param {string} token - The JSON web token.
+ * @returns The userId from the decoded token.
+ * @remarks
+ * Should only be used when a token has already been verified. The token must also contain the
+ * userId, otherwise it will throw an error.
+ */
+export function getUserIdFromToken(token: string): string {
+  const decodedToken: jwt.JwtPayload = jwt.decode(token) as jwt.JwtPayload;
+  return decodedToken.userId;
+}
