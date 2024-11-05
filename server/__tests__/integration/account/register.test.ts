@@ -90,6 +90,7 @@ describe("POST /api/account/register tests", (): void => {
             email: validDetails.email,
             password: validDetails.password,
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -107,6 +108,7 @@ describe("POST /api/account/register tests", (): void => {
             email: validDetails.email,
             password: validDetails.password,
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -124,6 +126,7 @@ describe("POST /api/account/register tests", (): void => {
             email: validDetails.email,
             password: validDetails.password,
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -141,6 +144,7 @@ describe("POST /api/account/register tests", (): void => {
             email: validDetails.email,
             password: validDetails.password,
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -158,6 +162,7 @@ describe("POST /api/account/register tests", (): void => {
             email: validDetails.email,
             password: validDetails.password,
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -176,6 +181,7 @@ describe("POST /api/account/register tests", (): void => {
             email: validDetails.email,
             password: validDetails.password,
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -194,6 +200,7 @@ describe("POST /api/account/register tests", (): void => {
             email: validDetails.email,
             password: validDetails.password,
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -214,6 +221,7 @@ describe("POST /api/account/register tests", (): void => {
             email: validDetails.email,
             password: validDetails.password,
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -243,6 +251,7 @@ describe("POST /api/account/register tests", (): void => {
             username: validDetails.username,
             password: validDetails.password,
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -260,6 +269,7 @@ describe("POST /api/account/register tests", (): void => {
             email: 123,
             password: validDetails.password,
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -277,6 +287,7 @@ describe("POST /api/account/register tests", (): void => {
             email: "bademail@bademail",
             password: validDetails.password,
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -297,6 +308,7 @@ describe("POST /api/account/register tests", (): void => {
             email: "notuniqueemail@somedomain.com",
             password: validDetails.password,
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -331,6 +343,7 @@ describe("POST /api/account/register tests", (): void => {
             username: validDetails.username,
             email: validDetails.email,
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -348,6 +361,7 @@ describe("POST /api/account/register tests", (): void => {
             email: validDetails.email,
             password: 123,
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -365,6 +379,7 @@ describe("POST /api/account/register tests", (): void => {
             email: validDetails.email,
             password: "aD1#",
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -383,6 +398,7 @@ describe("POST /api/account/register tests", (): void => {
             password:
               "abcdefghijklmnopqrstuvwxyz1234abcdefghijklmnopqrstuvwxyz!@#$ABCDEFGHIJKLMNOPQRSTUVWXYZ",
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -400,6 +416,7 @@ describe("POST /api/account/register tests", (): void => {
             email: validDetails.email,
             password: "BadCharacters1!:()_+",
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -418,6 +435,7 @@ describe("POST /api/account/register tests", (): void => {
             email: validDetails.email,
             password: "ańyoC0rp!",
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -436,6 +454,7 @@ describe("POST /api/account/register tests", (): void => {
             email: validDetails.email,
             password: "NOLOWERCASE12!",
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -454,6 +473,7 @@ describe("POST /api/account/register tests", (): void => {
             email: validDetails.email,
             password: "nouppercasecase12!",
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -472,6 +492,7 @@ describe("POST /api/account/register tests", (): void => {
             email: validDetails.email,
             password: "NoNumbers!",
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
@@ -490,6 +511,7 @@ describe("POST /api/account/register tests", (): void => {
             email: validDetails.email,
             password: "NoSymb0ls",
           });
+        expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
