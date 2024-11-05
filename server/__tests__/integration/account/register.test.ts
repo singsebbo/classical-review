@@ -3,15 +3,23 @@ import app from "../../../src/app";
 import { RegistrationData } from "../../../src/interfaces/request-interfaces";
 import UserModel from "../../../src/models/user-model";
 import * as accountController from "../../../src/controllers/account-controller";
+import ModelError from "../../../src/errors/model-error";
+import EmailError from "../../../src/errors/email-error";
+import { sendVerificationEmail } from "../../../src/utils/email-utils";
 
 let consoleErrorSpy: jest.SpyInstance;
 
 jest.mock("../../../src/models/user-model");
+jest.mock("../../../src/utils/email-utils");
 
-beforeAll((): void => {
+beforeEach((): void => {
   consoleErrorSpy = jest
     .spyOn(console, "error")
     .mockImplementation((): void => {});
+});
+
+afterEach((): void => {
+  consoleErrorSpy.mockRestore();
 });
 
 afterAll((): void => {
@@ -492,6 +500,78 @@ describe("POST /api/account/register tests", (): void => {
           },
         ]);
       });
+    });
+  });
+  describe("Controller error tests", (): void => {
+    test("should handle an error if UserModel fails", async (): Promise<void> => {
+      const mockError: ModelError = new ModelError(
+        "Failed creating a user",
+        500,
+        "context"
+      );
+      mockError.stack = "Error stack trace";
+      const mockCreateUser: jest.Mock = (
+        UserModel.createUser as jest.Mock
+      ).mockRejectedValue(mockError);
+      const response: SupertestResponse = await request(app)
+        .post("/api/account/register")
+        .send({
+          username: validDetails.username,
+          email: validDetails.email,
+          password: validDetails.password,
+        });
+      expect(consoleErrorSpy).toHaveBeenNthCalledWith(
+        1,
+        "A database model error has occurred:\n",
+        mockError.stack
+      );
+      expect(consoleErrorSpy).toHaveBeenNthCalledWith(
+        2,
+        "Error details:\n",
+        mockError
+      );
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(2);
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty("message", mockError.message);
+      mockCreateUser.mockClear();
+    });
+    test("should handle an error if email service fails", async (): Promise<void> => {
+      const emailError: EmailError = new EmailError(
+        "Email error",
+        "Verification",
+        validDetails.email
+      );
+      emailError.stack = "Error stack trace";
+      const mockUser: jest.Mock = (
+        UserModel.createUser as jest.Mock
+      ).mockResolvedValue({ user_id: "123asdaer343" });
+      const mockEmail: jest.Mock = (
+        sendVerificationEmail as jest.Mock
+      ).mockRejectedValue(emailError);
+      const response: SupertestResponse = await request(app)
+        .post("/api/account/register")
+        .send({
+          username: validDetails.username,
+          email: validDetails.email,
+          password: validDetails.password,
+        });
+      expect(consoleErrorSpy).toHaveBeenNthCalledWith(
+        1,
+        `${emailError.message}:\n`,
+        emailError.stack
+      );
+      expect(consoleErrorSpy).toHaveBeenNthCalledWith(
+        2,
+        "Error details:\n",
+        emailError
+      );
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(2);
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty("message", emailError.message);
+      mockUser.mockClear();
+      mockEmail.mockClear();
     });
   });
 });
