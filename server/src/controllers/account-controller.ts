@@ -15,6 +15,8 @@ import { sendVerificationEmail } from "../utils/email-utils";
  * @param {Response} res - The response object to send back.
  * @param {NextFunction} next - The next middleware function.
  * @returns {Promise<void>} A promise that resolves to void.
+ * @remarks
+ * Expects request to already be validated.
  */
 export async function registerUser(
   req: Request,
@@ -42,6 +44,15 @@ export async function registerUser(
   }
 }
 
+/**
+ * Verifies a user.
+ * @param {Request} req - The request object containing the token.
+ * @param {Response} res - The response object to send back.
+ * @param {NextFunction} next - The next middleware function.
+ * @returns A promise that resolves to void.
+ * @remarks
+ * Expects request to already be validated.
+ */
 export async function verifyUser(
   req: Request,
   res: Response,
