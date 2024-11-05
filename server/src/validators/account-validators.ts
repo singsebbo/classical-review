@@ -130,6 +130,9 @@ function validEmailVerificationToken(): ValidationChain {
     .isString()
     .withMessage("Verification token must be a string.")
     .bail()
+    .isJWT()
+    .withMessage("Token is not a JWT.")
+    .bail()
     .custom((token: string): boolean => {
       return isValidEmailVerificationToken(token);
     });
