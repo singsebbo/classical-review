@@ -26,6 +26,7 @@ function containsNoProfanity(text: string): boolean {
  * bundle all the possible errors into "false".
  */
 function isValidEmailVerificationToken(token: string): boolean {
+  // Token will contain userId if purpose is email_verification
   const decoded: jwt.JwtPayload = jwt.verify(
     token,
     JWT_SECRET
