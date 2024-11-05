@@ -3,7 +3,10 @@ import UserModel from "../models/user-model";
 import { User } from "../interfaces/entities";
 import { RegistrationData } from "../interfaces/request-interfaces";
 import { hashPassword } from "../utils/password-utils";
-import { createEmailVerificationToken } from "../utils/token-utils";
+import {
+  createEmailVerificationToken,
+  getUserIdFromToken,
+} from "../utils/token-utils";
 import { sendVerificationEmail } from "../utils/email-utils";
 
 /**
@@ -33,6 +36,24 @@ export async function registerUser(
     res.status(201).json({
       success: true,
       message: "User has been successfully registered",
+    });
+  } catch (error: unknown) {
+    next(error);
+  }
+}
+
+export async function verifyUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { token } = req.body;
+    const userId: string = getUserIdFromToken(token);
+    await UserModel.setUserVerified(userId);
+    res.status(200).json({
+      success: true,
+      message: "User has been successfully verified",
     });
   } catch (error: unknown) {
     next(error);
