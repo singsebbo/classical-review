@@ -34,7 +34,7 @@ describe("POST /api/account/register tests", (): void => {
   };
   describe("Validation error tests", (): void => {
     test("should output validation errors to console and not call registerUser", async (): Promise<void> => {
-      jest
+      const registerUserSpy: jest.SpyInstance = jest
         .spyOn(accountController, "registerUser")
         .mockImplementation(jest.fn());
       const response: SupertestResponse = await request(app).post(
@@ -71,6 +71,7 @@ describe("POST /api/account/register tests", (): void => {
       );
       expect(consoleErrorSpy).toHaveBeenCalledTimes(4);
       expect(accountController.registerUser).not.toHaveBeenCalled();
+      registerUserSpy.mockClear();
     });
     describe("Invalid username tests", (): void => {
       // Mocks email uniqueness
