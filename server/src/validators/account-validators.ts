@@ -1,10 +1,41 @@
 import { body, ValidationChain } from "express-validator";
+import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import UserModel from "../models/user-model";
 import profanities from "../utils/profanities";
+import { JWT_SECRET } from "../config";
 
+/**
+ * Checks if text contains any profanity.
+ * @param {string} text - Text to check.
+ * @returns True if there is no profanity, false otherwise.
+ */
 function containsNoProfanity(text: string): boolean {
   text = text.toLowerCase();
   return !profanities.some((word: string): boolean => text.includes(word));
+}
+
+/**
+ * Checks if a token is a valid email verification token.
+ * @param {string} token - The token to check.
+ * @returns True if the token is valid, throws an error otherwise.
+ * @throws A JsonWebTokenError if the token is invalid.
+ * @explanation
+ * This function only returns true and throws an error otherwise because each error provides
+ * specific information for our express-validator ValidationChain. If it were to return false,
+ * then the error handler middleware would process a fairly vague error as this function would
+ * bundle all the possible errors into "false".
+ */
+function isValidEmailVerificationToken(token: string): boolean {
+  const decoded: jwt.JwtPayload = jwt.verify(
+    token,
+    JWT_SECRET
+  ) as jwt.JwtPayload;
+  if (decoded.purpose !== "email_verification") {
+    throw new JsonWebTokenError(
+      "Token is not for the purpose of email verification."
+    );
+  }
+  return true;
 }
 
 function validateUsername(): ValidationChain {
@@ -90,9 +121,27 @@ function validatePassword(): ValidationChain {
     );
 }
 
+function validEmailVerificationToken(): ValidationChain {
+  return body("token")
+    .exists()
+    .withMessage("Verification token must exist.")
+    .bail()
+    .isString()
+    .withMessage("Verification token must be a string.")
+    .bail()
+    .custom((token: string): boolean => {
+      return isValidEmailVerificationToken(token);
+    });
+}
+
 /** Validates express request for POST /api/account/register */
 export const registerUserValidator: ValidationChain[] = [
   validateUsername(),
   validateEmail(),
   validatePassword(),
+];
+
+/** Validates express request for POST /api/account/verify-email */
+export const verifyEmailValidator: ValidationChain[] = [
+  validEmailVerificationToken(),
 ];
