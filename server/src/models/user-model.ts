@@ -3,6 +3,26 @@ import database from "../database";
 import ModelError from "../errors/model-error";
 import { User } from "../interfaces/entities";
 
+export interface ByUserId {
+  userId: string;
+  username?: never;
+  email?: never;
+}
+
+export interface ByUsername {
+  userId?: never;
+  username: string;
+  email?: never;
+}
+
+export interface ByEmail {
+  userId?: never;
+  username?: never;
+  email: string;
+}
+
+type UserIdentifier = ByUserId | ByUsername | ByEmail;
+
 /** Contains the database actions on the users table. */
 class UserModel {
   /**
@@ -123,6 +143,61 @@ class UserModel {
         throw error;
       }
       throw new ModelError("Database error while verifying user.", 500);
+    }
+  }
+
+  /**
+   * Checks if a user exists and is verified.
+   * @param {UserIdentifier} uniqueIndentifier - Either a userId, username, or email.
+   * @returns A promise that resolves to true if the user exists and is verified.
+   * @throws A ModelError if no user is found, or if an error occurs while querying the database.
+   */
+  static async userExistsAndIsVerified(
+    uniqueIndentifier: UserIdentifier
+  ): Promise<boolean> {
+    try {
+      let whereCondition: string;
+      let values: [string];
+      if (uniqueIndentifier.userId) {
+        whereCondition = "user_id = $1";
+        values = [uniqueIndentifier.userId];
+      } else if (uniqueIndentifier.username) {
+        whereCondition = "username = $1";
+        values = [uniqueIndentifier.username];
+      } else {
+        whereCondition = "email = $1";
+        values = [uniqueIndentifier.email!];
+      }
+      const query = `
+        SELECT 1
+        FROM users
+        WHERE ${whereCondition}
+        LIMIT 1;
+      `;
+      const result: QueryResult<User> = await database.query(query, values);
+      if (result.rows.length === 0) {
+        throw new ModelError(
+          "No user found.",
+          400,
+          "Checking if user exists and is verified."
+        );
+      }
+      if (!result.rows[0].verified) {
+        throw new ModelError(
+          "User is unverified.",
+          400,
+          "Checking if user exists and is verified."
+        );
+      }
+      return true;
+    } catch (error: unknown) {
+      if (error instanceof ModelError) {
+        throw error;
+      }
+      throw new ModelError(
+        "Database error while checking if user exists and is verified.",
+        500
+      );
     }
   }
 }

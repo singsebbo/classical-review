@@ -1,5 +1,9 @@
 import database from "../../../src/database";
-import UserModel from "../../../src/models/user-model";
+import UserModel, {
+  ByEmail,
+  ByUserId,
+  ByUsername,
+} from "../../../src/models/user-model";
 import ModelError from "../../../src/errors/model-error";
 import { User } from "../../../src/interfaces/entities";
 
@@ -249,6 +253,95 @@ describe("setUserVerified tests", (): void => {
         RETURNING *;
       `),
       args
+    );
+  });
+});
+
+describe("userExistsAndIsVerified tests", (): void => {
+  test("should unsuccessfully query the database calling with user_id", async (): Promise<void> => {
+    const mockError: Error = new Error("Database connection failed");
+    const userIdentifier: ByUserId = { userId: "1" };
+    (database.query as jest.Mock).mockRejectedValue(mockError);
+    await expect(
+      UserModel.userExistsAndIsVerified(userIdentifier)
+    ).rejects.toThrow(
+      new ModelError(
+        "Database error while checking if user exists and is verified.",
+        500
+      )
+    );
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        SELECT 1
+        FROM users
+        WHERE user_id = $1
+        LIMIT 1;
+      `),
+      [userIdentifier.userId]
+    );
+  });
+  test("should fail if user does not exist calling with email", async (): Promise<void> => {
+    const userIdentifier: ByEmail = { email: "1" };
+    (database.query as jest.Mock).mockResolvedValue({ rows: [] });
+    await expect(
+      UserModel.userExistsAndIsVerified(userIdentifier)
+    ).rejects.toThrow(
+      new ModelError(
+        "No user found.",
+        400,
+        "Checking if user exists and is verified."
+      )
+    );
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        SELECT 1
+        FROM users
+        WHERE email = $1
+        LIMIT 1;
+      `),
+      [userIdentifier.email]
+    );
+  });
+  test("should fail if user is not verified calling with username", async (): Promise<void> => {
+    const userIdentifier: ByUsername = { username: "person" };
+    (database.query as jest.Mock).mockResolvedValue({
+      rows: [{ verified: false }],
+    });
+    await expect(
+      UserModel.userExistsAndIsVerified(userIdentifier)
+    ).rejects.toThrow(
+      new ModelError(
+        "User is unverified.",
+        400,
+        "Checking if user exists and is verified."
+      )
+    );
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        SELECT 1
+        FROM users
+        WHERE username = $1
+        LIMIT 1;
+      `),
+      [userIdentifier.username]
+    );
+  });
+  test("should successfully check if the user exists and is verified", async (): Promise<void> => {
+    const userIdentifier: ByUsername = { username: "person" };
+    (database.query as jest.Mock).mockResolvedValue({
+      rows: [{ verified: true }],
+    });
+    await expect(
+      UserModel.userExistsAndIsVerified(userIdentifier)
+    ).resolves.toBe(true);
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        SELECT 1
+        FROM users
+        WHERE username = $1
+        LIMIT 1;
+      `),
+      [userIdentifier.username]
     );
   });
 });
