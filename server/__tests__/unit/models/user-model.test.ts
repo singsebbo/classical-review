@@ -257,8 +257,88 @@ describe("setUserVerified tests", (): void => {
   });
 });
 
+describe("getUserResult tests", (): void => {
+  test("should unsuccessfully query the database", async (): Promise<void> => {
+    const mockError: Error = new Error("Database connection failed");
+    const userIdentifier: ByUserId = { userId: "1" };
+    (database.query as jest.Mock).mockRejectedValue(mockError);
+    await expect(UserModel.getUserResult(userIdentifier)).rejects.toThrow(
+      new ModelError("Database error while getting user.", 500)
+    );
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        SELECT 1
+        FROM users
+        WHERE user_id = $1
+        LIMIT 1;
+      `),
+      [userIdentifier.userId]
+    );
+  });
+  test("should successfully query the database using userId", async (): Promise<void> => {
+    const mockResult: { rows: any[]; rowCount: number } = {
+      rows: [],
+      rowCount: 0,
+    };
+    const userIdentifier: ByUserId = { userId: "1" };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.getUserResult(userIdentifier)).resolves.toBe(
+      mockResult
+    );
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        SELECT 1
+        FROM users
+        WHERE user_id = $1
+        LIMIT 1;
+      `),
+      [userIdentifier.userId]
+    );
+  });
+  test("should successfully query the database using username", async (): Promise<void> => {
+    const mockResult: { rows: any[]; rowCount: number } = {
+      rows: [],
+      rowCount: 0,
+    };
+    const userIdentifier: ByUsername = { username: "1" };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.getUserResult(userIdentifier)).resolves.toBe(
+      mockResult
+    );
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        SELECT 1
+        FROM users
+        WHERE username = $1
+        LIMIT 1;
+      `),
+      [userIdentifier.username]
+    );
+  });
+  test("should successfully query the database using email", async (): Promise<void> => {
+    const mockResult: { rows: any[]; rowCount: number } = {
+      rows: [],
+      rowCount: 0,
+    };
+    const userIdentifier: ByEmail = { email: "1" };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.getUserResult(userIdentifier)).resolves.toBe(
+      mockResult
+    );
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        SELECT 1
+        FROM users
+        WHERE email = $1
+        LIMIT 1;
+      `),
+      [userIdentifier.email]
+    );
+  });
+});
+
 describe("userExistsAndIsVerified tests", (): void => {
-  test("should unsuccessfully query the database calling with user_id", async (): Promise<void> => {
+  test("should unsuccessfully query the database", async (): Promise<void> => {
     const mockError: Error = new Error("Database connection failed");
     const userIdentifier: ByUserId = { userId: "1" };
     (database.query as jest.Mock).mockRejectedValue(mockError);
@@ -277,7 +357,7 @@ describe("userExistsAndIsVerified tests", (): void => {
       [userIdentifier.userId]
     );
   });
-  test("should fail if user does not exist calling with email", async (): Promise<void> => {
+  test("should fail if user does not exist", async (): Promise<void> => {
     const userIdentifier: ByEmail = { email: "1" };
     (database.query as jest.Mock).mockResolvedValue({ rows: [] });
     await expect(
@@ -299,7 +379,7 @@ describe("userExistsAndIsVerified tests", (): void => {
       [userIdentifier.email]
     );
   });
-  test("should fail if user is not verified calling with username", async (): Promise<void> => {
+  test("should fail if user is not verified", async (): Promise<void> => {
     const userIdentifier: ByUsername = { username: "person" };
     (database.query as jest.Mock).mockResolvedValue({
       rows: [{ verified: false }],
