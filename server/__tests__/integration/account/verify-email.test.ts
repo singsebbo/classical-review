@@ -165,4 +165,22 @@ describe("PUT /api/account/verify-email tests", (): void => {
       mockVerifyUser.mockClear();
     });
   });
+  test("should successfully verify a user", async (): Promise<void> => {
+    const mockUser: jest.Mock = (
+      UserModel.setUserVerified as jest.Mock
+    ).mockResolvedValue({ userId: "aUserId123" });
+    const response: SupertestResponse = await request(app)
+      .put("/api/account/verify-email")
+      .send({
+        token: validToken,
+      });
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty("success", true);
+    expect(response.body).toHaveProperty(
+      "message",
+      "User has been successfully verified"
+    );
+    mockUser.mockClear();
+  });
 });
