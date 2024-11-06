@@ -3,6 +3,9 @@ import app from "../../../src/app";
 import * as accountController from "../../../src/controllers/account-controller";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../../../src/config";
+import ModelError from "../../../src/errors/model-error";
+import UserModel from "../../../src/models/user-model";
+import { createEmailVerificationToken } from "../../../src/utils/token-utils";
 
 let consoleErrorSpy: jest.SpyInstance;
 
@@ -23,6 +26,7 @@ afterAll((): void => {
 });
 
 describe("PUT /api/account/verify-email tests", (): void => {
+  const validToken: string = createEmailVerificationToken("aUserId123");
   describe("Validation error tests", (): void => {
     test("should output validation errors to console and not call verifyUser", async (): Promise<void> => {
       jest.spyOn(accountController, "verifyUser").mockImplementation(jest.fn());
@@ -128,6 +132,37 @@ describe("PUT /api/account/verify-email tests", (): void => {
           },
         ]);
       });
+    });
+  });
+  describe("Controller error tests", (): void => {
+    test("should handle an error if UserModel fails", async (): Promise<void> => {
+      const mockError: ModelError = new ModelError(
+        "Failed verifying a user",
+        500,
+        "context"
+      );
+      mockError.stack = "Error stack trace";
+      const mockVerifyUser: jest.Mock = (
+        UserModel.setUserVerified as jest.Mock
+      ).mockRejectedValue(mockError);
+      const response: SupertestResponse = await request(app)
+        .put("/api/account/verify-email")
+        .send({ token: validToken });
+      expect(consoleErrorSpy).toHaveBeenNthCalledWith(
+        1,
+        "A database model error has occurred:\n",
+        mockError.stack
+      );
+      expect(consoleErrorSpy).toHaveBeenNthCalledWith(
+        2,
+        "Error details:\n",
+        mockError
+      );
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(2);
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty("message", mockError.message);
+      mockVerifyUser.mockClear();
     });
   });
 });
