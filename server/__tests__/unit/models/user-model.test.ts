@@ -265,10 +265,7 @@ describe("userExistsAndIsVerified tests", (): void => {
     await expect(
       UserModel.userExistsAndIsVerified(userIdentifier)
     ).rejects.toThrow(
-      new ModelError(
-        "Database error while checking if user exists and is verified.",
-        500
-      )
+      new ModelError("Database error while getting user.", 500)
     );
     expect(database.query).toHaveBeenCalledWith(
       expect.stringContaining(`

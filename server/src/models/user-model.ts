@@ -147,14 +147,14 @@ class UserModel {
   }
 
   /**
-   * Checks if a user exists and is verified.
-   * @param {UserIdentifier} uniqueIndentifier - Either a userId, username, or email.
-   * @returns A promise that resolves to true if the user exists and is verified.
-   * @throws A ModelError if no user is found, or if an error occurs while querying the database.
+   * Gets a user.
+   * @param {UserIndentifier} uniqueIndentifier - Either a userId, username, or email.
+   * @returns The QueryResult containing the user.
+   * @throws A ModelError if the query fails.
    */
-  static async userExistsAndIsVerified(
+  static async getUserResult(
     uniqueIndentifier: UserIdentifier
-  ): Promise<boolean> {
+  ): Promise<QueryResult<User>> {
     try {
       let whereCondition: string;
       let values: [string];
@@ -174,7 +174,25 @@ class UserModel {
         WHERE ${whereCondition}
         LIMIT 1;
       `;
-      const result: QueryResult<User> = await database.query(query, values);
+      return await database.query(query, values);
+    } catch (error: unknown) {
+      throw new ModelError("Database error while getting user.", 500);
+    }
+  }
+
+  /**
+   * Checks if a user exists and is verified.
+   * @param {UserIdentifier} uniqueIndentifier - Either a userId, username, or email.
+   * @returns A promise that resolves to true if the user exists and is verified.
+   * @throws A ModelError if no user is found, or if an error occurs while querying the database.
+   */
+  static async userExistsAndIsVerified(
+    uniqueIndentifier: UserIdentifier
+  ): Promise<boolean> {
+    try {
+      const result: QueryResult<User> = await UserModel.getUserResult(
+        uniqueIndentifier
+      );
       if (result.rows.length === 0) {
         throw new ModelError(
           "No user found.",
