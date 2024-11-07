@@ -41,6 +41,34 @@ class TokenModel {
       );
     }
   }
+
+  /**
+   * Removes any existing refresh tokens associated with user.
+   * @param {string} userId - The ID of the user.
+   * @returns A promise that resolves to a number equal to the amount of rows removed.
+   * @throws A ModelError if the database operation is unsuccessfull.
+   */
+  static async removeExistingTokens(userId: string): Promise<number> {
+    try {
+      const query = `
+        DELETE
+        FROM refresh_tokens
+        WHERE user_id = $1
+        RETURNING *;
+      `;
+      const values: [string] = [userId];
+      const result: QueryResult<RefreshToken> = await database.query(
+        query,
+        values
+      );
+      return result.rowCount || 0;
+    } catch (error: unknown) {
+      throw new ModelError(
+        "Database error while removing existing refresh tokens.",
+        500
+      );
+    }
+  }
 }
 
 export default TokenModel;

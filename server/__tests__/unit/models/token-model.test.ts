@@ -65,3 +65,42 @@ describe("insertToken tests", (): void => {
     );
   });
 });
+
+describe("removeExistingTokens tests", (): void => {
+  const userId: string = "thisUserID111";
+  test("should handle an unsuccessful query of the database", async (): Promise<void> => {
+    const mockError: Error = new Error("Database connection failed");
+    (database.query as jest.Mock).mockRejectedValue(mockError);
+    await expect(TokenModel.removeExistingTokens(userId)).rejects.toThrow(
+      new ModelError(
+        "Database error while removing existing refresh tokens.",
+        500
+      )
+    );
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        DELETE
+        FROM refresh_tokens
+        WHERE user_id = $1
+        RETURNING *;
+      `),
+      [userId]
+    );
+  });
+  test("should successfully execute the function", async (): Promise<void> => {
+    const mockResult: { rowCount: number } = { rowCount: 2 };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(TokenModel.removeExistingTokens(userId)).resolves.toBe(
+      mockResult.rowCount
+    );
+    expect(database.query).toHaveBeenCalledWith(
+      expect.stringContaining(`
+        DELETE
+        FROM refresh_tokens
+        WHERE user_id = $1
+        RETURNING *;
+      `),
+      [userId]
+    );
+  });
+});
