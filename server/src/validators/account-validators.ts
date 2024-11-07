@@ -1,5 +1,6 @@
 import {
   body,
+  cookie,
   Meta,
   Result,
   ValidationChain,
@@ -188,6 +189,16 @@ function validLoginPassword(): ValidationChain {
     });
 }
 
+function validLogoutToken(): ValidationChain {
+  return cookie("refreshToken");
+  /**
+   * @todo Validate cookie exists
+   * @todo Validate cookie is a jwt
+   * @todo Validate cookie is signed properly
+   * @todo Validate cookie is meant for refresh
+   */
+}
+
 /** Validates express request for POST /api/account/register */
 export const registerUserValidator: ValidationChain[] = [
   validateUsername(),
@@ -205,3 +216,6 @@ export const loginValidator: ValidationChain[] = [
   validLoginUsername(),
   validLoginPassword(),
 ];
+
+/** Validates Express request for POST /api/account/logout */
+export const logoutValidator: ValidationChain[] = [validLogoutToken()];

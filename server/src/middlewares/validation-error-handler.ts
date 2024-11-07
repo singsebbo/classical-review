@@ -69,3 +69,16 @@ export function loginUserValidationErrors(
     "Validation error(s) encountered while logging in user"
   );
 }
+
+/** Handles validation errors for POST /api/account/logout */
+export function logoutValidationErrors(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  createValidationError(
+    req,
+    next,
+    "Validation error(s) encountered while logging out user"
+  );
+}

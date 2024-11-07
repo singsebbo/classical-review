@@ -108,3 +108,25 @@ export async function loginUser(
     next(error);
   }
 }
+
+/**
+ * Logs out the user.
+ * @param {Request} req - The request object containing the bearer token.
+ * @param {Response} res - The response object to send back.
+ * @param {NextFunction} next - The next middleware function.
+ * @returns A promise that resolves to void.
+ */
+export async function logoutUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    /**
+     * @todo Remove refresh tokens in the database associated with userId
+     * @todo Send back response, clearing cookie
+     */
+  } catch (error: unknown) {
+    next(error);
+  }
+}
