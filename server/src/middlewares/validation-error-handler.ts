@@ -82,3 +82,16 @@ export function logoutValidationErrors(
     "Validation error(s) encountered while logging out user"
   );
 }
+
+/** Handles validation errors for POST /api/account/refresh */
+export function refreshValidationErrors(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  createValidationError(
+    req,
+    next,
+    "Validation error(s) encountered refreshing tokens"
+  );
+}

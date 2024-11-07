@@ -245,3 +245,6 @@ export const loginValidator: ValidationChain[] = [
 
 /** Validates Express request for POST /api/account/logout */
 export const logoutValidator: ValidationChain[] = [validRefreshToken()];
+
+/** Validates Express request for POST /api/account/refresh */
+export const refreshValidator: ValidationChain[] = [validRefreshToken()];
