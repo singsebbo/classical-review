@@ -422,3 +422,29 @@ describe("userExistsAndIsVerified tests", (): void => {
     );
   });
 });
+
+describe("getPasswordHash tests", (): void => {
+  const userIdentifier: ByUserId = { userId: "1" };
+  test("should unsuccessfully query the database", async (): Promise<void> => {
+    const mockError: Error = new Error("Database connection failed");
+    (database.query as jest.Mock).mockRejectedValue(mockError);
+    await expect(UserModel.getPasswordHash(userIdentifier)).rejects.toThrow();
+  });
+  test("should fail if no user is found", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = { rows: [] };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.getPasswordHash(userIdentifier)).rejects.toThrow(
+      new ModelError("No user found while getting password hash.", 400)
+    );
+  });
+  test("should successfully return the password hash", async (): Promise<void> => {
+    const hashedPassword = "asdf";
+    const mockResult: { rows: any[] } = {
+      rows: [{ password_hash: hashedPassword }],
+    };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.getPasswordHash(userIdentifier)).resolves.toBe(
+      hashedPassword
+    );
+  });
+});
