@@ -14,6 +14,7 @@ class TokenModel {
    */
   static async insertToken(userId: string, token: string): Promise<string> {
     try {
+      await TokenModel.removeExistingTokens(userId);
       const query = `
         INSERT INTO refresh_tokens (user_id, token)
         VALUES ($1, $2)

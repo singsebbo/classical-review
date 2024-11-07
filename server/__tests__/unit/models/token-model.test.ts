@@ -15,6 +15,24 @@ describe("insertToken tests", (): void => {
     userId: "fakeUserId12",
     token: "this.isafake.token",
   };
+  beforeEach((): void => {
+    jest
+      .spyOn(TokenModel, "removeExistingTokens")
+      .mockImplementation(jest.fn());
+  });
+  afterEach((): void => {
+    (TokenModel.removeExistingTokens as jest.Mock).mockRestore();
+  });
+  test("should handle if removeExistingTokens fails", async (): Promise<void> => {
+    const mockError: ModelError = new ModelError(
+      "Database error while removing existing refresh tokens.",
+      500
+    );
+    (TokenModel.removeExistingTokens as jest.Mock).mockRejectedValue(mockError);
+    await expect(
+      TokenModel.insertToken(args.userId, args.token)
+    ).rejects.toThrow(mockError);
+  });
   test("should handle if querying the database fails", async (): Promise<void> => {
     const mockError: Error = new Error("Database query failed");
     (database.query as jest.Mock).mockRejectedValue(mockError);
