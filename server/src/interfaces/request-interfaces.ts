@@ -4,3 +4,9 @@ export interface RegistrationData {
   email: string;
   password: string;
 }
+
+/** Data from the user when logging in. */
+export interface LoginData {
+  username: string;
+  password: string;
+}

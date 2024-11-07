@@ -56,3 +56,16 @@ export function verifyEmailValidationErrors(
     "Validation error(s) encountered while verifying user"
   );
 }
+
+/** Handles validation errors for POST /api/account/login */
+export function loginUserValidationErrors(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  createValidationError(
+    req,
+    next,
+    "Validation error(s) encountered while logging in user"
+  );
+}

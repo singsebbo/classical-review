@@ -1,10 +1,16 @@
 import { Router } from "express";
 import {
+  loginValidator,
   registerUserValidator,
   verifyEmailValidator,
 } from "../validators/account-validators";
-import { registerUser, verifyUser } from "../controllers/account-controller";
 import {
+  loginUser,
+  registerUser,
+  verifyUser,
+} from "../controllers/account-controller";
+import {
+  loginUserValidationErrors,
   registerUserValidationErrors,
   verifyEmailValidationErrors,
 } from "../middlewares/validation-error-handler";
@@ -24,5 +30,7 @@ router.put(
   verifyEmailValidationErrors,
   verifyUser
 );
+
+router.post("/login", loginValidator, loginUserValidationErrors, loginUser);
 
 export default router;

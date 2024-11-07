@@ -1,8 +1,16 @@
-import { body, ValidationChain } from "express-validator";
+import {
+  body,
+  Meta,
+  Result,
+  ValidationChain,
+  ValidationError,
+  validationResult,
+} from "express-validator";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import UserModel from "../models/user-model";
 import profanities from "../utils/profanities";
 import { JWT_SECRET } from "../config";
+import { isValidPassword } from "../utils/password-utils";
 
 /**
  * Checks if text contains any profanity.
@@ -138,6 +146,48 @@ function validEmailVerificationToken(): ValidationChain {
     });
 }
 
+function validLoginUsername(): ValidationChain {
+  return body("username")
+    .exists()
+    .withMessage("Username field must exist.")
+    .bail()
+    .isString()
+    .withMessage("Username must be a string.")
+    .bail()
+    .custom(async (username: string): Promise<void> => {
+      await UserModel.userExistsAndIsVerified({ username: username });
+    });
+}
+
+function validLoginPassword(): ValidationChain {
+  return body("password")
+    .exists()
+    .withMessage("Password field must exist.")
+    .bail()
+    .isString()
+    .withMessage("Password must be a string.")
+    .bail()
+    .custom(async (password: string, { req }: Meta): Promise<void> => {
+      // If an error exists from validLoginUsername, it won't show two errors
+      const errors: Result<ValidationError> = validationResult(req);
+      if (!errors.isEmpty()) {
+        return Promise.resolve();
+      }
+
+      const username: string = req.body.username;
+      const passwordHash: string = await UserModel.getPasswordHash({
+        username: username,
+      });
+      const isCorrectPassword: boolean = await isValidPassword(
+        password,
+        passwordHash
+      );
+      if (!isCorrectPassword) {
+        throw new Error("Incorrect password.");
+      }
+    });
+}
+
 /** Validates express request for POST /api/account/register */
 export const registerUserValidator: ValidationChain[] = [
   validateUsername(),
@@ -148,4 +198,10 @@ export const registerUserValidator: ValidationChain[] = [
 /** Validates express request for POST /api/account/verify-email */
 export const verifyEmailValidator: ValidationChain[] = [
   validEmailVerificationToken(),
+];
+
+/** Validates Express request for POST /api/account/login */
+export const loginValidator: ValidationChain[] = [
+  validLoginUsername(),
+  validLoginPassword(),
 ];
