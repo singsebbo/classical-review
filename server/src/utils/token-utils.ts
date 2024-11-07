@@ -34,7 +34,7 @@ export function createRefreshToken(userId: string): string {
  */
 export function createAccessToken(userId: string): string {
   const token: string = jwt.sign({ userId, purpose: "access" }, JWT_SECRET, {
-    expiresIn: "1h",
+    expiresIn: "15m",
   });
   return token;
 }
