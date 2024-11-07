@@ -48,6 +48,29 @@ function isValidEmailVerificationToken(token: string): boolean {
   return true;
 }
 
+/**
+ * Checks if a token is a valid refresh token.
+ * @param {string} token - The token to check.
+ * @returns True if the token is valid, throws an error otherwise.
+ * @throws A JsonWebTokenError if the token is invalid.
+ * @explanation
+ * This function only returns true and throws an error otherwise because each error provides
+ * specific information for our express-validator ValidationChain. If it were to return false,
+ * then the error handler middleware would process a fairly vague error as this function would
+ * bundle all the possible errors into "false".
+ */
+function isValidRefreshToken(token: string): boolean {
+  // Token will contain userId if purpose is refresh
+  const decoded: jwt.JwtPayload = jwt.verify(
+    token,
+    JWT_SECRET
+  ) as jwt.JwtPayload;
+  if (decoded.purpose !== "refresh") {
+    throw new JsonWebTokenError("Token is not a refresh token.");
+  }
+  return true;
+}
+
 function validateUsername(): ValidationChain {
   return body("username")
     .exists()
@@ -190,13 +213,16 @@ function validLoginPassword(): ValidationChain {
 }
 
 function validLogoutToken(): ValidationChain {
-  return cookie("refreshToken");
-  /**
-   * @todo Validate cookie exists
-   * @todo Validate cookie is a jwt
-   * @todo Validate cookie is signed properly
-   * @todo Validate cookie is meant for refresh
-   */
+  return cookie("refreshToken")
+    .exists()
+    .withMessage("Refresh token is missing.")
+    .bail()
+    .isJWT()
+    .withMessage("Refresh token is invalid.")
+    .bail()
+    .custom((refreshToken: string): boolean => {
+      return isValidRefreshToken(refreshToken);
+    });
 }
 
 /** Validates express request for POST /api/account/register */
