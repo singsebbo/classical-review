@@ -18,4 +18,7 @@ describe("tests for existence of required environment variables", (): void => {
   test("should have WEBSITE_URL defined", (): void => {
     expect(process.env.WEBSITE_URL).toBeDefined();
   });
+  test("should have NODE_ENV defined", (): void => {
+    expect(process.env.NODE_ENV).toBeDefined();
+  });
 });
