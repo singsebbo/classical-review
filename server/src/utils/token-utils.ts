@@ -16,6 +16,30 @@ export function createEmailVerificationToken(userId: string): string {
 }
 
 /**
+ * Create a jwt refresh token.
+ * @param {string} userId - User ID to incorporate in jwt.
+ * @returns JSON web token meant for refresh that expires in 180 days.
+ */
+export function createRefreshToken(userId: string): string {
+  const token: string = jwt.sign({ userId, purpose: "refresh" }, JWT_SECRET, {
+    expiresIn: "180d",
+  });
+  return token;
+}
+
+/**
+ * Create a jwt access token.
+ * @param {string} userId - User ID to incorporate in jwt.
+ * @returns JSON web token meant for access that expires in 1 hour.
+ */
+export function createAccessToken(userId: string): string {
+  const token: string = jwt.sign({ userId, purpose: "access" }, JWT_SECRET, {
+    expiresIn: "1h",
+  });
+  return token;
+}
+
+/**
  * Gets the userId from a JSON web token.
  * @param {string} token - The JSON web token.
  * @returns The userId from the decoded token.

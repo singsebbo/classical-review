@@ -1,5 +1,7 @@
 import {
+  createAccessToken,
   createEmailVerificationToken,
+  createRefreshToken,
   getUserIdFromToken,
 } from "../../../src/utils/token-utils";
 
@@ -13,4 +15,16 @@ test("should successfully get the userId from a token", (): void => {
   const userId = "aasdkflja32p89rausp9fihwa98rsijfo";
   const token: string = createEmailVerificationToken(userId);
   expect(getUserIdFromToken(token)).toBe(userId);
+});
+
+test("should successfully create a refresh token", (): void => {
+  const userId = "asdfafjhad234q";
+  const token: string = createRefreshToken(userId);
+  expect(token).not.toBe(userId);
+});
+
+test("should successfully create an access token", (): void => {
+  const userId = "asdfafjhad234q";
+  const token: string = createAccessToken(userId);
+  expect(token).not.toBe(userId);
 });
