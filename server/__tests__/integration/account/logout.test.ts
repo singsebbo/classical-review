@@ -129,4 +129,19 @@ describe("POST /api/account/logout", (): void => {
       });
     });
   });
+  test("should successfully logout the user", async (): Promise<void> => {
+    const validRefreshToken: string = createRefreshToken("1");
+    (TokenModel.removeExistingTokens as jest.Mock).mockResolvedValue(undefined);
+    const response: SupertestResponse = await request(app)
+      .post("/api/account/logout")
+      .set("Cookie", [`refreshToken=${validRefreshToken}`]);
+    expect(response.statusCode).toBe(200);
+    expect(response.headers["set-cookie"]).toEqual([
+      expect.stringContaining("refreshToken=;"),
+    ]);
+    expect(response.body).toEqual({
+      success: true,
+      message: "Logged out successfully",
+    });
+  });
 });
