@@ -448,3 +448,27 @@ describe("getPasswordHash tests", (): void => {
     );
   });
 });
+
+describe("getUserId tests", (): void => {
+  const userIdentifier: ByUserId = { userId: "1" };
+  test("should unsuccessfully query the database", async (): Promise<void> => {
+    const mockError: Error = new Error("Database connection failed");
+    (database.query as jest.Mock).mockRejectedValue(mockError);
+    await expect(UserModel.getUserId(userIdentifier)).rejects.toThrow();
+  });
+  test("should fail if no user is found", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = { rows: [] };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.getUserId(userIdentifier)).rejects.toThrow(
+      new ModelError("No user found while getting user ID.", 400)
+    );
+  });
+  test("should successfully return the password hash", async (): Promise<void> => {
+    const userId = "1";
+    const mockResult: { rows: any[] } = {
+      rows: [{ user_id: userId }],
+    };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.getUserId(userIdentifier)).resolves.toBe(userId);
+  });
+});

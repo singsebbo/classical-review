@@ -244,6 +244,30 @@ class UserModel {
       throw new ModelError("Database error while getting password hash.", 500);
     }
   }
+
+  /**
+   * Gets the user ID given a unique identifier.
+   * @param {UserIndentifier} uniqueIndentifier - Either a userId, username, or email.
+   * @returns A promise that resolves to a string representing the userId.
+   * @throws A ModelError if a database error occurs, or if no user is found.
+   */
+  static async getUserId(uniqueIndentifier: UserIdentifier): Promise<string> {
+    try {
+      const result: QueryResult<User> = await UserModel.getUserResult(
+        uniqueIndentifier
+      );
+      if (result.rows.length === 0) {
+        throw new ModelError("No user found while getting user ID.", 400);
+      }
+      const userId: string = result.rows[0].user_id;
+      return userId;
+    } catch (error: unknown) {
+      if (error instanceof ModelError) {
+        throw error;
+      }
+      throw new ModelError("Database error while getting user ID.", 500);
+    }
+  }
 }
 
 export default UserModel;
