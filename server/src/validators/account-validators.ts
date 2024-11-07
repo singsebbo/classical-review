@@ -212,7 +212,7 @@ function validLoginPassword(): ValidationChain {
     });
 }
 
-function validLogoutToken(): ValidationChain {
+function validRefreshToken(): ValidationChain {
   return cookie("refreshToken")
     .exists()
     .withMessage("Refresh token is missing.")
@@ -244,4 +244,4 @@ export const loginValidator: ValidationChain[] = [
 ];
 
 /** Validates Express request for POST /api/account/logout */
-export const logoutValidator: ValidationChain[] = [validLogoutToken()];
+export const logoutValidator: ValidationChain[] = [validRefreshToken()];
