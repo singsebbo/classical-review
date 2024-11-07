@@ -11,6 +11,7 @@ import {
 } from "../utils/token-utils";
 import { sendVerificationEmail } from "../utils/email-utils";
 import TokenModel from "../models/token-model";
+import { NODE_ENV } from "../config";
 
 /**
  * Registers a new user.
@@ -122,10 +123,21 @@ export async function logoutUser(
   next: NextFunction
 ): Promise<void> {
   try {
-    /**
-     * @todo Remove refresh tokens in the database associated with userId
-     * @todo Send back response, clearing cookie
-     */
+    const refreshToken: string = req.cookies.refreshToken;
+    const userId: string = getUserIdFromToken(refreshToken);
+    try {
+      await TokenModel.removeExistingTokens(userId);
+    } catch (error: unknown) {
+      console.error("Failed to remove refresh tokens from database", error);
+    }
+    res
+      .clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: NODE_ENV === "production",
+        sameSite: "strict",
+      })
+      .status(200)
+      .json({ success: true, message: "Logged out successfully" });
   } catch (error: unknown) {
     next(error);
   }
