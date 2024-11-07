@@ -1,13 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import UserModel from "../models/user-model";
 import { User } from "../interfaces/entities";
-import { RegistrationData } from "../interfaces/request-interfaces";
+import { LoginData, RegistrationData } from "../interfaces/request-interfaces";
 import { hashPassword } from "../utils/password-utils";
 import {
+  createAccessToken,
   createEmailVerificationToken,
+  createRefreshToken,
   getUserIdFromToken,
 } from "../utils/token-utils";
 import { sendVerificationEmail } from "../utils/email-utils";
+import TokenModel from "../models/token-model";
 
 /**
  * Registers a new user.
@@ -66,6 +69,41 @@ export async function verifyUser(
       success: true,
       message: "User has been successfully verified",
     });
+  } catch (error: unknown) {
+    next(error);
+  }
+}
+
+/**
+ * Logins the user.
+ * @param {Request} req - The request object containing username and password.
+ * @param {Response} res - The response object to send back.
+ * @param {NextFunction} next - The next middleware function.
+ * @returns A promise that resolves to void.
+ */
+export async function loginUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { username }: LoginData = req.body;
+    const userId: string = await UserModel.getUserId({ username: username });
+    const refreshToken: string = createRefreshToken(userId);
+    const accessToken: string = createAccessToken(userId);
+    await TokenModel.insertToken(userId, refreshToken);
+    res
+      .status(201)
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 180 * 24 * 60 * 60 * 1000,
+      })
+      .send({
+        success: true,
+        accessToken: accessToken,
+      });
   } catch (error: unknown) {
     next(error);
   }
