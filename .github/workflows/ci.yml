@@ -18,6 +18,7 @@ jobs:
       SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
       SENDGRID_EMAIL_SENDER: ${{ secrets.SENDGRID_EMAIL_SENDER }}
       WEBSITE_URL: ${{ secrets.WEBSITE_URL }}
+      NODE_ENV: ${{ secrets.NODE_ENV }}
 
     steps:
       - name: Checkout Code
