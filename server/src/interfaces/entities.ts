@@ -11,3 +11,12 @@ export interface User {
   verified: boolean;
   last_verification_sent: Date;
 }
+
+/** Represents a row in the refresh_tokens database. */
+export interface RefreshToken {
+  token_id: string;
+  user_id: string;
+  token: string;
+  created_at: Date;
+  expires_at: Date;
+}
