@@ -2,18 +2,21 @@ import { Router } from "express";
 import {
   loginValidator,
   logoutValidator,
+  refreshValidator,
   registerUserValidator,
   verifyEmailValidator,
 } from "../validators/account-validators";
 import {
   loginUser,
   logoutUser,
+  refreshTokens,
   registerUser,
   verifyUser,
 } from "../controllers/account-controller";
 import {
   loginUserValidationErrors,
   logoutValidationErrors,
+  refreshValidationErrors,
   registerUserValidationErrors,
   verifyEmailValidationErrors,
 } from "../middlewares/validation-error-handler";
@@ -37,5 +40,12 @@ router.put(
 router.post("/login", loginValidator, loginUserValidationErrors, loginUser);
 
 router.post("/logout", logoutValidator, logoutValidationErrors, logoutUser);
+
+router.post(
+  "/refresh",
+  refreshValidator,
+  refreshValidationErrors,
+  refreshTokens
+);
 
 export default router;

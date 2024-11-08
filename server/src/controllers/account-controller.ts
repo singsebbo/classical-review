@@ -142,3 +142,29 @@ export async function logoutUser(
     next(error);
   }
 }
+
+/**
+ * Refreshes the user's tokens.
+ * @param {Request} req - The request object containing the bearer token.
+ * @param {Response} res - The response object to send back.
+ * @param {NextFunction} next - The next middleware function.
+ * @returns A promise that resolves to void.
+ */
+export async function refreshTokens(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    /**
+     * @todo Get the userId from the refresh token
+     * @todo Remove all existing refresh tokens from database
+     * @todo Create a new refresh token
+     * @todo Insert the new refresh token into the database
+     * @todo Create a new access token
+     * @todo Send back the refresh and access token to the user
+     */
+  } catch (error: unknown) {
+    next(error);
+  }
+}
