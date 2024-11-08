@@ -156,14 +156,24 @@ export async function refreshTokens(
   next: NextFunction
 ): Promise<void> {
   try {
-    /**
-     * @todo Get the userId from the refresh token
-     * @todo Remove all existing refresh tokens from database
-     * @todo Create a new refresh token
-     * @todo Insert the new refresh token into the database
-     * @todo Create a new access token
-     * @todo Send back the refresh and access token to the user
-     */
+    const refreshToken: string = req.cookies.refreshToken;
+    const userId: string = getUserIdFromToken(refreshToken);
+    await TokenModel.removeExistingTokens(userId);
+    const newRefreshToken: string = createRefreshToken(userId);
+    await TokenModel.insertToken(userId, newRefreshToken);
+    const newAccessToken: string = createAccessToken(userId);
+    res
+      .status(200)
+      .cookie("refreshToken", newRefreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 180 * 24 * 60 * 60 * 1000,
+      })
+      .send({
+        success: true,
+        accessToken: newAccessToken,
+      });
   } catch (error: unknown) {
     next(error);
   }
