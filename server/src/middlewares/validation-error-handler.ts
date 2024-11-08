@@ -92,6 +92,6 @@ export function refreshValidationErrors(
   createValidationError(
     req,
     next,
-    "Validation error(s) encountered refreshing tokens"
+    "Validation error(s) encountered while refreshing tokens"
   );
 }
