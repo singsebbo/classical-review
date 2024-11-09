@@ -225,14 +225,14 @@ function validRefreshToken(): ValidationChain {
     });
 }
 
-/** Validates express request for POST /api/account/register */
+/** Validates Express request for POST /api/account/register */
 export const registerUserValidator: ValidationChain[] = [
   validateUsername(),
   validateEmail(),
   validatePassword(),
 ];
 
-/** Validates express request for POST /api/account/verify-email */
+/** Validates Express request for POST /api/account/verify-email */
 export const verifyEmailValidator: ValidationChain[] = [
   validEmailVerificationToken(),
 ];
