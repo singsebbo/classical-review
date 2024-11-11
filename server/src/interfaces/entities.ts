@@ -20,3 +20,12 @@ export interface RefreshToken {
   created_at: Date;
   expires_at: Date;
 }
+
+/** Represents a row in the composer database. */
+export interface Composer {
+  composer_id: string;
+  name: string;
+  date_of_birth: Date;
+  date_of_death: Date;
+  image_url: string;
+}
