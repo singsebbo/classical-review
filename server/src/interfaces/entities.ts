@@ -29,3 +29,12 @@ export interface Composer {
   date_of_death: Date;
   image_url: string;
 }
+
+/** Represents a row in the compositions database. */
+export interface Composition {
+  composition_id: string;
+  composer_id: string;
+  title: string;
+  subtitle: string;
+  genre: string;
+}
