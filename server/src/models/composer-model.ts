@@ -3,6 +3,7 @@ import database from "../database";
 import { Composer } from "../interfaces/entities";
 import ModelError from "../errors/model-error";
 
+/** Contains the database actions for the composer table. */
 class ComposerModel {
   /**
    * Inserts a composer into the database.
