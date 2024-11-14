@@ -4,7 +4,8 @@
   "main": "server.ts",
   "scripts": {
     "start": "npx tsx src/server.ts",
-    "test": "jest --verbose --detectOpenHandles --runInBand"
+    "test": "jest --verbose --detectOpenHandles --runInBand",
+    "import:data": "npx tsx src/scripts/import-data.ts"
   },
   "keywords": [],
   "author": "",

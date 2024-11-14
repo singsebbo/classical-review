@@ -38,3 +38,25 @@ export interface Composition {
   subtitle: string;
   genre: string;
 }
+
+/** Represents a composer in the Open Opus JSON dump */
+export interface OpenOpusComposer {
+  name: string;
+  complete_name: string;
+  epoch: string;
+  birth: string;
+  death: string | null;
+  popular: string;
+  recommended: string | null;
+  works: OpenOpusWork[];
+}
+
+/** Represents a composition in the OpenOpus JSON dump */
+export interface OpenOpusWork {
+  title: string;
+  subtitle: string;
+  searchterms: string;
+  popular: string;
+  recommended: string;
+  genre: string;
+}
