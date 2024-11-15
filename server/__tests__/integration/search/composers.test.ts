@@ -1,9 +1,13 @@
 import request, { Response as SupertestResponse } from "supertest";
-import { Request, Response } from "express";
 import app from "../../../src/app";
 import * as searchController from "../../../src/controllers/search-controllers";
+import ModelError from "../../../src/errors/model-error";
+import ComposerModel from "../../../src/models/composer-model";
+import { Composer } from "../../../src/interfaces/entities";
 
 let consoleErrorSpy: jest.SpyInstance;
+
+jest.mock("../../../src/models/composer-model");
 
 beforeAll((): void => {
   consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(jest.fn());
@@ -98,6 +102,47 @@ describe("GET /api/search/composers tests", (): void => {
           },
         ],
       });
+    });
+  });
+  describe("Controller error tests", (): void => {
+    test("should fail if composer model fails", async (): Promise<void> => {
+      const mockError: ModelError = new ModelError(
+        "Database error while getting composers.",
+        500
+      );
+      (ComposerModel.getComposers as jest.Mock).mockRejectedValue(mockError);
+      const response: SupertestResponse = await request(app)
+        .get("/api/search/composers")
+        .query({
+          term: "Bach",
+        });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toEqual({
+        success: false,
+        message: mockError.message,
+      });
+    });
+  });
+  test("should successfully get composers", async (): Promise<void> => {
+    const composers: Partial<Composer>[] = [
+      {
+        composer_id: "1",
+        name: "Bach",
+        date_of_death: null,
+        image_url: null,
+      },
+    ];
+    (ComposerModel.getComposers as jest.Mock).mockResolvedValue(composers);
+    const response: SupertestResponse = await request(app)
+      .get("/api/search/composers")
+      .query({
+        term: "Bach",
+      });
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual({
+      success: true,
+      composers: composers,
     });
   });
 });
