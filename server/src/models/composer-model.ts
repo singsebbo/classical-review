@@ -41,6 +41,28 @@ class ComposerModel {
       throw new ModelError("Error while inserting composer into database", 500);
     }
   }
+
+  /**
+   * Gets an array of composers given the search term.
+   * @param {string} searchTerm - What to search on.
+   * @returns A promise that resolves to the array of composers matching the serach term.
+   * @throws A ModelError if the database operation fails.
+   */
+  static async getComposers(searchTerm: string): Promise<Composer[]> {
+    try {
+      const query = `
+        SELECT *
+        FROM composers
+        WHERE UNACCENT(name) ILIKE UNACCENT($1)
+        ORDER BY name ASC;
+      `;
+      const values: [string] = [`%${searchTerm}%`];
+      const result: QueryResult<Composer> = await database.query(query, values);
+      return result.rows;
+    } catch (error: unknown) {
+      throw new ModelError("Database error while getting composers.", 500);
+    }
+  }
 }
 
 export default ComposerModel;
