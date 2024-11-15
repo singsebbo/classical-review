@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import { Composer } from "../interfaces/entities";
+import ComposerModel from "../models/composer-model";
 
 export async function searchComposers(
   req: Request,
@@ -7,10 +9,11 @@ export async function searchComposers(
 ): Promise<void> {
   try {
     const term: string = req.query.term as string;
-    /**
-     * @todo Query database and store the result
-     * @todo Send a response containing an array of objects representing composers
-     */
+    const composers: Composer[] = await ComposerModel.getComposers(term);
+    res.status(200).json({
+      success: true,
+      composers: composers,
+    });
   } catch (error: unknown) {
     next(error);
   }
