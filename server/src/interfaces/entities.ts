@@ -27,7 +27,7 @@ export interface Composer {
   name: string;
   date_of_birth: Date;
   date_of_death: Date | null;
-  image_url: string;
+  image_url: string | null;
 }
 
 /** Represents a row in the compositions database. */
