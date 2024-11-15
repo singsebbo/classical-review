@@ -95,3 +95,16 @@ export function refreshValidationErrors(
     "Validation error(s) encountered while refreshing tokens"
   );
 }
+
+/** Handles validation errors for GET /api/search/composers */
+export function searchComposersValidationErrors(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  createValidationError(
+    req,
+    next,
+    "Validation error(s) encountered while searching composers"
+  );
+}
