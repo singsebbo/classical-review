@@ -26,7 +26,7 @@ export interface Composer {
   composer_id: string;
   name: string;
   date_of_birth: Date;
-  date_of_death: Date;
+  date_of_death: Date | null;
   image_url: string;
 }
 
