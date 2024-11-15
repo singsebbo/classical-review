@@ -28,7 +28,7 @@ async function fetchOpenOpusData(): Promise<OpenOpusComposer[]> {
 async function insertData(c: OpenOpusComposer): Promise<void> {
   try {
     const composer: Composer = await ComposerModel.insertComposer(
-      c.name,
+      c.complete_name,
       c.birth,
       c.death
     );
