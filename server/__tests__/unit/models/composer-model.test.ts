@@ -36,3 +36,21 @@ describe("insertComposer tests", (): void => {
     ).resolves.toEqual(mockResult.rows[0]);
   });
 });
+
+describe("getComposers tests", (): void => {
+  const searchTerm = "bac";
+  test("should fail if query fails", async (): Promise<void> => {
+    const mockError: Error = new Error("Database connection failed.");
+    (database.query as jest.Mock).mockRejectedValue(mockError);
+    await expect(ComposerModel.getComposers(searchTerm)).rejects.toThrow(
+      new ModelError("Database error while getting composers.", 500)
+    );
+  });
+  test("should return the composers", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = { rows: [{ id: 1 }, { id: 2 }] };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(ComposerModel.getComposers(searchTerm)).resolves.toEqual(
+      mockResult.rows
+    );
+  });
+});
