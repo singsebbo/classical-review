@@ -1,13 +1,16 @@
 import { Router } from "express";
 import {
   searchComposersValidator,
+  searchComposerValidator,
   searchCompositionsValidator,
 } from "../validators/search-validators";
 import {
   searchComposersValidationErrors,
+  searchComposerValidationErrors,
   searchCompositionsValidationErrors,
 } from "../middlewares/validation-error-handler";
 import {
+  searchComposer,
   searchComposers,
   searchCompositions,
 } from "../controllers/search-controllers";
@@ -26,6 +29,13 @@ router.get(
   searchCompositionsValidator,
   searchCompositionsValidationErrors,
   searchCompositions
+);
+
+router.get(
+  "/composer",
+  searchComposerValidator,
+  searchComposerValidationErrors,
+  searchComposer
 );
 
 export default router;

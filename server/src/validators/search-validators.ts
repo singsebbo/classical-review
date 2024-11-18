@@ -17,3 +17,10 @@ export const searchComposersValidator: ValidationChain[] = [
 export const searchCompositionsValidator: ValidationChain[] = [
   validateSearchTerm(),
 ];
+
+/** Validates Express request for GET /api/search/composer */
+export const searchComposerValidator: ValidationChain[] = [
+  /**
+   * @todo Verify composer_id exists
+   */
+];

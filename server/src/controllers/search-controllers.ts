@@ -52,3 +52,27 @@ export async function searchCompositions(
     next(error);
   }
 }
+
+/**
+ * Gets composer data given a composer ID.
+ * @param {Request} req - The request object containing user details.
+ * @param {Response} res - The response object to send back.
+ * @param {NextFunction} next - The next middleware function.
+ * @returns {Promise<void>} A promise that resolves to void.
+ */
+export async function searchComposer(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    /**
+     * @todo Get composer_id from request body
+     * @todo Get composer data
+     * @todo Get composer works
+     * @todo Send response
+     */
+  } catch (error: unknown) {
+    next(error);
+  }
+}

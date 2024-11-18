@@ -121,3 +121,16 @@ export function searchCompositionsValidationErrors(
     "Validation error(s) encountered while searching compositions"
   );
 }
+
+/** Handles validation errors for GET /api/search/composer */
+export function searchComposerValidationErrors(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  createValidationError(
+    req,
+    next,
+    "Validation error(s) encountered while getting composer data"
+  );
+}
