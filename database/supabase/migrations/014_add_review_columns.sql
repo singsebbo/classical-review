@@ -1,0 +1,2 @@
+ALTER TABLE compositions ADD COLUMN IF NOT EXISTS average_review FLOAT DEFAULT 0;
+ALTER TABLE compositions ADD COLUMN IF NOT EXISTS total_reviews INT DEFAULT 0;
