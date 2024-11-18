@@ -67,12 +67,13 @@ export async function searchComposer(
 ): Promise<void> {
   try {
     /**
-     * @todo Get composer_id from request body
-     * @todo Get composer data
+     * @done Get composer_id from request body
+     * @done Get composer data
      * @todo Get composer works
      * @todo Send response
      */
     const composerId: string = req.body.composer_id;
+    const composerData: Composer = await ComposerModel.getComposer(composerId);
   } catch (error: unknown) {
     next(error);
   }
