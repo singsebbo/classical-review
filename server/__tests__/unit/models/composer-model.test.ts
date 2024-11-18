@@ -75,3 +75,28 @@ describe("composerExists tests", (): void => {
     await expect(ComposerModel.composerExists(composerId)).resolves.toBe(false);
   });
 });
+
+describe("getComposer tests", (): void => {
+  const composerId = "2987234294";
+  test("should fail if database query fails", async (): Promise<void> => {
+    const mockError: Error = new Error("Database connection failed");
+    (database.query as jest.Mock).mockRejectedValue(mockError);
+    await expect(ComposerModel.getComposer(composerId)).rejects.toThrow(
+      new ModelError("Database error while getting composer.", 500)
+    );
+  });
+  test("should fail if no rows were found", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = { rows: [] };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(ComposerModel.getComposer(composerId)).rejects.toThrow(
+      new ModelError("No composer with the given ID was found.", 400)
+    );
+  });
+  test("should successfully return composer", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = { rows: [{ composer_id: composerId }] };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(ComposerModel.getComposer(composerId)).resolves.toEqual(
+      mockResult.rows[0]
+    );
+  });
+});
