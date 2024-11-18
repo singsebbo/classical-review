@@ -28,6 +28,8 @@ export interface Composer {
   date_of_birth: Date;
   date_of_death: Date | null;
   image_url: string | null;
+  average_review: number;
+  total_reviews: number;
 }
 
 /** Represents a row in the compositions database. */
