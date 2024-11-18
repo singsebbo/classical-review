@@ -37,6 +37,8 @@ export interface Composition {
   title: string;
   subtitle: string;
   genre: string;
+  average_review: number;
+  total_reviews: number;
 }
 
 /** Represents a composer in the Open Opus JSON dump */
