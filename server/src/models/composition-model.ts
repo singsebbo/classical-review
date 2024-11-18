@@ -75,6 +75,30 @@ class CompositionModel {
       throw new ModelError("Database error while getting compositions.", 500);
     }
   }
+
+  /**
+   * Gets the compositions of a composer given the composer's ID.
+   * @param {string} composerId - The ID of the composer.
+   * @returns A promise that resolves to an array of compositions.
+   * @throws A ModelError if the database query fails.
+   */
+  static async getComposerWorks(composerId: string): Promise<Composition[]> {
+    try {
+      const query = `
+          SELECT *
+          FROM compositions
+          WHERE composer_id = $1;
+        `;
+      const values: [string] = [composerId];
+      const result: QueryResult<Composition> = await database.query(
+        query,
+        values
+      );
+      return result.rows;
+    } catch (error: unknown) {
+      throw new ModelError("Database error while getting composer works.", 500);
+    }
+  }
 }
 
 export default CompositionModel;
