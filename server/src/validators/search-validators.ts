@@ -15,7 +15,5 @@ export const searchComposersValidator: ValidationChain[] = [
 
 /** Validates Express request for GET /api/search/compositions */
 export const searchCompositionsValidator: ValidationChain[] = [
-  /**
-   * @todo Validate the search term
-   */
+  validateSearchTerm(),
 ];
