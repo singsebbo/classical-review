@@ -63,6 +63,32 @@ class ComposerModel {
       throw new ModelError("Database error while getting composers.", 500);
     }
   }
+
+  /**
+   * Returns a boolean that represents composer existence.
+   * @param {string} composerId - The ID of the composer.
+   * @returns A promise that resolves to a boolean.
+   * @throws A ModelError if the database query fails.
+   */
+  static async composerExists(composerId: string): Promise<boolean> {
+    try {
+      const query = `
+        SELECT 1
+        FROM composers
+        WHERE composer_id = $1
+        LIMIT 1;
+      `;
+      const values: [string] = [composerId];
+      const result: QueryResult<Composer> = await database.query(query, values);
+      if (result.rows.length === 1) return true;
+      return false;
+    } catch (error: unknown) {
+      throw new ModelError(
+        "Database error while checking if composer exists.",
+        500
+      );
+    }
+  }
 }
 
 export default ComposerModel;
