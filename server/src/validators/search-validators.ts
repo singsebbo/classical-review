@@ -12,3 +12,10 @@ function validateSearchTerm(): ValidationChain {
 export const searchComposersValidator: ValidationChain[] = [
   validateSearchTerm(),
 ];
+
+/** Validates Express request for GET /api/search/compositions */
+export const searchCompositionsValidator: ValidationChain[] = [
+  /**
+   * @todo Validate the search term
+   */
+];

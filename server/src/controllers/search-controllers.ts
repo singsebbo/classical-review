@@ -25,3 +25,22 @@ export async function searchComposers(
     next(error);
   }
 }
+
+/**
+ * Searches for compositions given a search term.
+ * @param {Request} req - The request object containing user details.
+ * @param {Response} res - The response object to send back.
+ * @param {NextFunction} next - The next middleware function.
+ * @returns {Promise<void>} A promise that resolves to void.
+ */
+export async function searchCompositions(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  /**
+   * @todo Get the search term from the query string
+   * @todo Get the compositions given the query string
+   * @todo Send the response
+   */
+}

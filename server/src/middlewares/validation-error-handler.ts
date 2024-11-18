@@ -108,3 +108,16 @@ export function searchComposersValidationErrors(
     "Validation error(s) encountered while searching composers"
   );
 }
+
+/** Handles validation errors for GET /api/search/compositions */
+export function searchCompositionsValidationErrors(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  createValidationError(
+    req,
+    next,
+    "Validation error(s) encountered while searching compositions"
+  );
+}
