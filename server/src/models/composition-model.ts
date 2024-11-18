@@ -50,6 +50,31 @@ class CompositionModel {
       throw new ModelError("Database error while inserting composition.", 500);
     }
   }
+
+  /**
+   * Gets an array of compositions given the search term.
+   * @param {string} searchTerm - What to search on.
+   * @returns A promise that resolves to the array of composers matching the serach term.
+   * @throws A ModelError if the database operation fails.
+   */
+  static async getCompositions(searchTerm: string): Promise<Composition[]> {
+    try {
+      const query = `
+        SELECT *
+        FROM compositions
+        WHERE UNACCENT(title) ILIKE UNACCENT($1)
+        ORDER BY title ASC;
+      `;
+      const values: [string] = [`%${searchTerm}%`];
+      const result: QueryResult<Composition> = await database.query(
+        query,
+        values
+      );
+      return result.rows;
+    } catch (error: unknown) {
+      throw new ModelError("Database error while getting compositions.", 500);
+    }
+  }
 }
 
 export default CompositionModel;
