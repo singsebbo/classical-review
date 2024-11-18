@@ -48,3 +48,21 @@ describe("insertComposition tests", (): void => {
     );
   });
 });
+
+describe("getCompositions tests", (): void => {
+  const searchTerm = "sonata";
+  test("should fail if query fails", async (): Promise<void> => {
+    const mockError: Error = new Error("Database connection failed.");
+    (database.query as jest.Mock).mockRejectedValue(mockError);
+    await expect(CompositionModel.getCompositions(searchTerm)).rejects.toThrow(
+      new ModelError("Database error while getting compositions.", 500)
+    );
+  });
+  test("should return the compositions", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = { rows: [{ id: 1 }, { id: 2 }] };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(CompositionModel.getCompositions(searchTerm)).resolves.toEqual(
+      mockResult.rows
+    );
+  });
+});
