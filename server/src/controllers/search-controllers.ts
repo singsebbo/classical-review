@@ -72,6 +72,7 @@ export async function searchComposer(
      * @todo Get composer works
      * @todo Send response
      */
+    const composerId: string = req.body.composer_id;
   } catch (error: unknown) {
     next(error);
   }
