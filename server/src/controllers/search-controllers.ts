@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { Composer } from "../interfaces/entities";
+import { Composer, Composition } from "../interfaces/entities";
 import ComposerModel from "../models/composer-model";
+import CompositionModel from "../models/composition-model";
 
 /**
  * Searches for composers given a search term.
@@ -38,10 +39,16 @@ export async function searchCompositions(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  /**
-   * @done Get the search term from the query string
-   * @todo Get the compositions given the query string
-   * @todo Send the response
-   */
-  const term: string = req.query.term as string;
+  try {
+    const term: string = req.query.term as string;
+    const compositions: Composition[] = await CompositionModel.getCompositions(
+      term
+    );
+    res.status(200).json({
+      success: true,
+      compositions: compositions,
+    });
+  } catch (error: unknown) {
+    next(error);
+  }
 }
