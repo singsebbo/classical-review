@@ -39,8 +39,9 @@ export async function searchCompositions(
   next: NextFunction
 ): Promise<void> {
   /**
-   * @todo Get the search term from the query string
+   * @done Get the search term from the query string
    * @todo Get the compositions given the query string
    * @todo Send the response
    */
+  const term: string = req.query.term as string;
 }
