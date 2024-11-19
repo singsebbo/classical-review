@@ -28,6 +28,28 @@ class ReviewModel {
       );
     }
   }
+
+  /**
+   * Gets all reviews from the given user.
+   * @param {string} userId - The userId of the reviews to search.
+   * @returns A promise that resolves to an array of reviews.
+   * @throws A ModelError if the database operation fails.
+   */
+  static async getUserReviews(userId: string): Promise<Review[]> {
+    try {
+      const query = `
+        SELECT *
+        FROM reviews
+        WHERE user_id = $1;
+        ORDER BY num_liked DESC;
+      `;
+      const values: [string] = [userId];
+      const result: QueryResult<Review> = await database.query(query, values);
+      return result.rows;
+    } catch (error: unknown) {
+      throw new ModelError("Database error while getting user reviews.", 500);
+    }
+  }
 }
 
 export default ReviewModel;
