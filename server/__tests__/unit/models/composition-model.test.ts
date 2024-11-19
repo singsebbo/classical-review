@@ -66,3 +66,33 @@ describe("getCompositions tests", (): void => {
     );
   });
 });
+
+describe("compositionExists tests", (): void => {
+  const compositionId = "ajfaspdfj2902934";
+  test("should fail if database query fails", async (): Promise<void> => {
+    const mockError: Error = new Error("Database connection failed");
+    (database.query as jest.Mock).mockRejectedValue(mockError);
+    await expect(
+      CompositionModel.compositionExists(compositionId)
+    ).rejects.toThrow(
+      new ModelError(
+        "Database error while checking if composition exists.",
+        500
+      )
+    );
+  });
+  test("should return true", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = { rows: [{ composition_id: "1" }] };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(
+      CompositionModel.compositionExists(compositionId)
+    ).resolves.toBe(true);
+  });
+  test("should return false", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = { rows: [] };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(
+      CompositionModel.compositionExists(compositionId)
+    ).resolves.toBe(false);
+  });
+});
