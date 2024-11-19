@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { Composer, Composition, Review } from "../interfaces/entities";
+import { Composer, Composition, Review, User } from "../interfaces/entities";
 import ComposerModel from "../models/composer-model";
 import CompositionModel from "../models/composition-model";
 import ReviewModel from "../models/review-model";
+import UserModel from "../models/user-model";
 
 /**
  * Searches for composers given a search term.
@@ -125,11 +126,13 @@ export async function searchUser(
 ): Promise<void> {
   try {
     /**
-     * @todo Get the username from the request body
-     * @todo Gets the user data from the username
+     * @done Get the username from the request body
+     * @done Gets the user data from the username
      * @todo Gets the user review data from the username
      * @todo Send the response
      */
+    const username: string = req.body.username;
+    const userData: User = await UserModel.getUser({ username });
   } catch (error: unknown) {
     next(error);
   }
