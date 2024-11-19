@@ -268,6 +268,32 @@ class UserModel {
       throw new ModelError("Database error while getting user ID.", 500);
     }
   }
+
+  /**
+   * Returns a boolean representing whether the user exists.
+   * @param {UserIdentifier} uniqueIndentifier - Either a userId, username, or email.
+   * @returns A promise that resolves to a boolean representing if the user exists.
+   * @throws A ModelError if a database error occurs.
+   */
+  static async userExists(uniqueIndentifier: UserIdentifier): Promise<boolean> {
+    try {
+      const result: QueryResult<User> = await UserModel.getUserResult(
+        uniqueIndentifier
+      );
+      if (result.rows.length === 0) {
+        return false;
+      }
+      return true;
+    } catch (error: unknown) {
+      if (error instanceof ModelError) {
+        throw error;
+      }
+      throw new ModelError(
+        "An unexpected error has occurred while checking user existence.",
+        500
+      );
+    }
+  }
 }
 
 export default UserModel;
