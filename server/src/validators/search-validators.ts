@@ -1,6 +1,7 @@
 import { query, body, ValidationChain } from "express-validator";
 import ComposerModel from "../models/composer-model";
 import CompositionModel from "../models/composition-model";
+import UserModel from "../models/user-model";
 
 function validateSearchTerm(): ValidationChain {
   return query("term")
@@ -45,6 +46,24 @@ function validateCompositionId(): ValidationChain {
     });
 }
 
+function validateUsername(): ValidationChain {
+  return body("username")
+    .exists()
+    .withMessage("Username must exist.")
+    .bail()
+    .isString()
+    .withMessage("Username must be a string.")
+    .bail()
+    .custom(async (username: string): Promise<void> => {
+      const userExists: boolean = await UserModel.userExists({
+        username: username,
+      });
+      if (!userExists) {
+        throw new Error("User does not exist.");
+      }
+    });
+}
+
 /** Validates Express request for GET /api/search/composers */
 export const searchComposersValidator: ValidationChain[] = [
   validateSearchTerm(),
@@ -66,10 +85,4 @@ export const searchCompositionValidator: ValidationChain[] = [
 ];
 
 /** Validates Express request for GET /api/search/user */
-export const searchUserValidator: ValidationChain[] = [
-  /**
-   * @todo Check for username existence in body
-   * @todo Check that username is a string
-   * @todo Check that the user exists
-   */
-];
+export const searchUserValidator: ValidationChain[] = [validateUsername()];
