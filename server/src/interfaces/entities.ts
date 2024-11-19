@@ -64,3 +64,14 @@ export interface OpenOpusWork {
   recommended: string;
   genre: string;
 }
+
+/** Represents a review in the reviews database. */
+export interface Review {
+  review_id: string;
+  composition_id: string;
+  user_id: string;
+  rating: number;
+  comment: string;
+  created_at: Date;
+  last_modified_at: Date;
+}
