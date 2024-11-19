@@ -66,14 +66,15 @@ export async function searchComposer(
   next: NextFunction
 ): Promise<void> {
   try {
-    /**
-     * @done Get composer_id from request body
-     * @done Get composer data
-     * @todo Get composer works
-     * @todo Send response
-     */
     const composerId: string = req.body.composer_id;
     const composerData: Composer = await ComposerModel.getComposer(composerId);
+    const composerWorks: Composition[] =
+      await CompositionModel.getComposerWorks(composerId);
+    res.status(200).json({
+      success: true,
+      composerData: composerData,
+      composerWorks: composerWorks,
+    });
   } catch (error: unknown) {
     next(error);
   }
