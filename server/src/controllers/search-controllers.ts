@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { Composer, Composition } from "../interfaces/entities";
+import { Composer, Composition, Review } from "../interfaces/entities";
 import ComposerModel from "../models/composer-model";
 import CompositionModel from "../models/composition-model";
+import ReviewModel from "../models/review-model";
 
 /**
  * Searches for composers given a search term.
@@ -96,11 +97,14 @@ export async function searchComposition(
     /**
      * @done Get composition ID from body
      * @done Get composition data
-     * @todo Get review data
+     * @done Get review data
      * @todo Send back response
      */
     const compositionId: string = req.body.composition_id;
     const compositionData: Composition = await CompositionModel.getComposition(
+      compositionId
+    );
+    const reviewData: Review[] = await ReviewModel.getCompositionReviews(
       compositionId
     );
   } catch (error: unknown) {
