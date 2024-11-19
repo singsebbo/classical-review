@@ -96,3 +96,32 @@ describe("compositionExists tests", (): void => {
     ).resolves.toBe(false);
   });
 });
+
+describe("getComposition tests", (): void => {
+  const compositionId = "9280ih0983urs9fo";
+  test("should fail if database query fails", async (): Promise<void> => {
+    const mockError: Error = new Error("Database connection failed");
+    (database.query as jest.Mock).mockRejectedValue(mockError);
+    await expect(
+      CompositionModel.getComposition(compositionId)
+    ).rejects.toThrow(
+      new ModelError("Database error while getting composition.", 500)
+    );
+  });
+  test("should fail if no composition was found", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = { rows: [] };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(
+      CompositionModel.getComposition(compositionId)
+    ).rejects.toThrow(
+      new ModelError("No composition with the given ID was found.", 400)
+    );
+  });
+  test("should successfully get the composition", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = { rows: [{ composition_id: "1" }] };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(
+      CompositionModel.getComposition(compositionId)
+    ).resolves.toEqual(mockResult.rows[0]);
+  });
+});
