@@ -73,8 +73,8 @@ export async function searchComposer(
       await CompositionModel.getComposerWorks(composerId);
     res.status(200).json({
       success: true,
-      composerData: composerData,
-      composerWorks: composerWorks,
+      composer: composerData,
+      compositions: composerWorks,
     });
   } catch (error: unknown) {
     next(error);

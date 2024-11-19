@@ -175,8 +175,8 @@ describe("GET /api/search/composer tests", (): void => {
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual({
       success: true,
-      composerData: mockComposer,
-      composerWorks: mockComposerWorks,
+      composer: mockComposer,
+      compositions: mockComposerWorks,
     });
   });
 });
