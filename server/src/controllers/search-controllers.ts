@@ -125,14 +125,25 @@ export async function searchUser(
   next: NextFunction
 ): Promise<void> {
   try {
-    /**
-     * @done Get the username from the request body
-     * @done Gets the user data from the username
-     * @todo Gets the user review data from the username
-     * @todo Send the response
-     */
     const username: string = req.body.username;
     const userData: User = await UserModel.getUser({ username });
+    const reviewData: Review[] = await ReviewModel.getUserReviews(
+      userData.user_id
+    );
+    const userDisplayData: Partial<User> = {
+      user_id: userData.user_id,
+      username: username,
+      bio: userData.bio,
+      created_at: userData.created_at,
+      profile_picture_url: userData.profile_picture_url,
+      average_review: userData.average_review,
+      total_reviews: userData.total_reviews,
+    };
+    res.status(200).json({
+      success: true,
+      user: userDisplayData,
+      reviews: reviewData,
+    });
   } catch (error: unknown) {
     next(error);
   }
