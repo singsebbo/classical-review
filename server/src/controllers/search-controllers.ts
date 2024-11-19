@@ -94,10 +94,12 @@ export async function searchComposition(
 ): Promise<void> {
   try {
     /**
-     * @todo Get composition ID from body
+     * @done Get composition ID from body
      * @todo Get composition data
+     * @todo Get review data
      * @todo Send back response
      */
+    const compositionId: string = req.body.composition_id;
   } catch (error: unknown) {
     next(error);
   }
