@@ -94,12 +94,6 @@ export async function searchComposition(
   next: NextFunction
 ): Promise<void> {
   try {
-    /**
-     * @done Get composition ID from body
-     * @done Get composition data
-     * @done Get review data
-     * @todo Send back response
-     */
     const compositionId: string = req.body.composition_id;
     const compositionData: Composition = await CompositionModel.getComposition(
       compositionId
@@ -107,6 +101,11 @@ export async function searchComposition(
     const reviewData: Review[] = await ReviewModel.getCompositionReviews(
       compositionId
     );
+    res.status(200).json({
+      success: true,
+      composition: compositionData,
+      reviews: reviewData,
+    });
   } catch (error: unknown) {
     next(error);
   }
