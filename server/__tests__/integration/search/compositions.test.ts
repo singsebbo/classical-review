@@ -1,13 +1,13 @@
 import request, { Response as SupertestResponse } from "supertest";
 import app from "../../../src/app";
 import * as searchController from "../../../src/controllers/search-controllers";
+import CompositionModel from "../../../src/models/composition-model";
+import { Composition } from "../../../src/interfaces/entities";
 import ModelError from "../../../src/errors/model-error";
-import ComposerModel from "../../../src/models/composer-model";
-import { Composer } from "../../../src/interfaces/entities";
 
 let consoleErrorSpy: jest.SpyInstance;
 
-jest.mock("../../../src/models/composer-model");
+jest.mock("../../../src/models/composition-model");
 
 beforeAll((): void => {
   consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(jest.fn());
@@ -17,19 +17,19 @@ afterEach((): void => {
   consoleErrorSpy.mockClear();
 });
 
-describe("GET /api/search/composers tests", (): void => {
+describe("GET /api/search/compositions tests", (): void => {
   describe("Validation error tests", (): void => {
-    test("should output validation errors to console and not call searchComposers", async (): Promise<void> => {
-      const searchComposersMock: jest.SpyInstance = jest
-        .spyOn(searchController, "searchComposers")
+    test("should output validation errors to console and not call searchCompositions", async (): Promise<void> => {
+      const searchCompositionsMock: jest.SpyInstance = jest
+        .spyOn(searchController, "searchCompositions")
         .mockImplementation(jest.fn());
       const response: SupertestResponse = await request(app).get(
-        "/api/search/composers"
+        "/api/search/compositions"
       );
       expect(consoleErrorSpy).toHaveBeenCalledTimes(2);
       expect(consoleErrorSpy).toHaveBeenNthCalledWith(
         1,
-        "Validation error(s) encountered while searching composers:\n",
+        "Validation error(s) encountered while searching compositions:\n",
         expect.any(String)
       );
       expect(consoleErrorSpy).toHaveBeenNthCalledWith(
@@ -40,7 +40,7 @@ describe("GET /api/search/composers tests", (): void => {
           message: "Search term must be between 1 and 50 characters.",
         }
       );
-      expect(searchComposersMock).not.toHaveBeenCalled();
+      expect(searchCompositionsMock).not.toHaveBeenCalled();
       expect(response.statusCode).toBe(400);
       expect(response.body).toEqual({
         success: false,
@@ -51,11 +51,11 @@ describe("GET /api/search/composers tests", (): void => {
           },
         ],
       });
-      searchComposersMock.mockRestore();
+      searchCompositionsMock.mockRestore();
     });
     test("should fail with a missing search term", async (): Promise<void> => {
       const response: SupertestResponse = await request(app).get(
-        "/api/search/composers"
+        "/api/search/compositions"
       );
       expect(consoleErrorSpy).toHaveBeenCalled();
       expect(response.statusCode).toBe(400);
@@ -71,7 +71,7 @@ describe("GET /api/search/composers tests", (): void => {
     });
     test("should fail with an empty search term", async (): Promise<void> => {
       const response: SupertestResponse = await request(app)
-        .get("/api/search/composers")
+        .get("/api/search/compositions")
         .query({ term: "" });
       expect(consoleErrorSpy).toHaveBeenCalled();
       expect(response.statusCode).toBe(400);
@@ -87,7 +87,7 @@ describe("GET /api/search/composers tests", (): void => {
     });
     test("should fail with a search term that is too long", async (): Promise<void> => {
       const response: SupertestResponse = await request(app)
-        .get("/api/search/composers")
+        .get("/api/search/compositions")
         .query({
           term: "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz",
         });
@@ -105,16 +105,18 @@ describe("GET /api/search/composers tests", (): void => {
     });
   });
   describe("Controller error tests", (): void => {
-    test("should fail if composer model fails", async (): Promise<void> => {
+    test("should fail if composition model fails", async (): Promise<void> => {
       const mockError: ModelError = new ModelError(
-        "Database error while getting composers.",
+        "Database error while getting compositions.",
         500
       );
-      (ComposerModel.getComposers as jest.Mock).mockRejectedValue(mockError);
+      (CompositionModel.getCompositions as jest.Mock).mockRejectedValue(
+        mockError
+      );
       const response: SupertestResponse = await request(app)
-        .get("/api/search/composers")
+        .get("/api/search/compositions")
         .query({
-          term: "Bach",
+          term: "sonata",
         });
       expect(consoleErrorSpy).toHaveBeenCalled();
       expect(response.statusCode).toBe(500);
@@ -124,25 +126,26 @@ describe("GET /api/search/composers tests", (): void => {
       });
     });
   });
-  test("should successfully get composers", async (): Promise<void> => {
-    const composers: Partial<Composer>[] = [
+  test("should successfully get compositions", async (): Promise<void> => {
+    const compositions: Partial<Composition>[] = [
       {
+        composition_id: "1",
         composer_id: "1",
-        name: "Bach",
-        date_of_death: null,
-        image_url: null,
+        title: "sonata number 2",
       },
     ];
-    (ComposerModel.getComposers as jest.Mock).mockResolvedValue(composers);
+    (CompositionModel.getCompositions as jest.Mock).mockResolvedValue(
+      compositions
+    );
     const response: SupertestResponse = await request(app)
-      .get("/api/search/composers")
+      .get("/api/search/compositions")
       .query({
-        term: "Bach",
+        term: "sonata",
       });
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual({
       success: true,
-      composers: composers,
+      compositions: compositions,
     });
   });
 });
