@@ -1,5 +1,6 @@
 import { query, body, ValidationChain } from "express-validator";
 import ComposerModel from "../models/composer-model";
+import CompositionModel from "../models/composition-model";
 
 function validateSearchTerm(): ValidationChain {
   return query("term")
@@ -27,6 +28,23 @@ function validateComposerId(): ValidationChain {
     });
 }
 
+function validateCompositionId(): ValidationChain {
+  return body("compositionId")
+    .exists()
+    .withMessage("Composition ID must exist.")
+    .bail()
+    .isString()
+    .withMessage("Composition ID must be a string.")
+    .bail()
+    .custom(async (compositionId: string): Promise<void> => {
+      const compositionExists: boolean =
+        await CompositionModel.compositionExists(compositionId);
+      if (!compositionExists) {
+        throw new Error("Composition does not exist.");
+      }
+    });
+}
+
 /** Validates Express request for GET /api/search/composers */
 export const searchComposersValidator: ValidationChain[] = [
   validateSearchTerm(),
@@ -44,7 +62,5 @@ export const searchComposerValidator: ValidationChain[] = [
 
 /** Validates Express request for GET /api/search/composition */
 export const searchCompositionValidator: ValidationChain[] = [
-  /**
-   * @todo Validate composition ID
-   */
+  validateCompositionId(),
 ];
