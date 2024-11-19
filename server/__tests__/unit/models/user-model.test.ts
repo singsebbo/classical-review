@@ -519,3 +519,67 @@ describe("userExists tests", (): void => {
     await expect(UserModel.userExists(uniqueIdentifier)).resolves.toBe(true);
   });
 });
+
+describe("getUser tests", (): void => {
+  let getUserResultMock: jest.SpyInstance;
+  beforeEach((): void => {
+    getUserResultMock = jest
+      .spyOn(UserModel, "getUserResult")
+      .mockImplementation(jest.fn());
+  });
+  afterAll((): void => {
+    getUserResultMock.mockRestore();
+  });
+  const uniqueIdentifier: ByUsername = { username: "testuser" };
+  test("getUserResult throws a ModelError", async (): Promise<void> => {
+    const mockError: ModelError = new ModelError(
+      "Database connection failed",
+      500
+    );
+    (UserModel.getUserResult as jest.Mock).mockRejectedValue(mockError);
+    await expect(UserModel.getUser(uniqueIdentifier)).rejects.toThrow(
+      mockError
+    );
+  });
+  test("getUserResult throws a non ModelError", async (): Promise<void> => {
+    const mockError: Error = new Error("Random error");
+    (UserModel.getUserResult as jest.Mock).mockRejectedValue(mockError);
+    await expect(UserModel.getUser(uniqueIdentifier)).rejects.toThrow(
+      new ModelError(
+        "An unexpected error has occurred while getting user.",
+        500
+      )
+    );
+  });
+  test("no user is found", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = { rows: [] };
+    (UserModel.getUserResult as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.getUser(uniqueIdentifier)).rejects.toThrow(
+      new ModelError("No user found while getting user.", 400)
+    );
+  });
+  test("successfully returns the user", async (): Promise<void> => {
+    const mockResult: { rows: User[] } = {
+      rows: [
+        {
+          user_id: "userid",
+          username: "username",
+          email: "email@domain.com",
+          password_hash: "thispasswordHash12",
+          bio: null,
+          created_at: new Date(),
+          last_modified_at: new Date(),
+          profile_picture_url: null,
+          verified: false,
+          last_verification_sent: new Date(),
+          average_review: 3,
+          total_reviews: 12,
+        },
+      ],
+    };
+    (UserModel.getUserResult as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.getUser(uniqueIdentifier)).resolves.toEqual(
+      mockResult.rows[0]
+    );
+  });
+});
