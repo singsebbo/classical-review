@@ -10,6 +10,8 @@ export interface User {
   profile_picture_url: string | null;
   verified: boolean;
   last_verification_sent: Date;
+  average_review: number;
+  total_reviews: number;
 }
 
 /** Represents a row in the refresh_tokens database. */
