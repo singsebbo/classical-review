@@ -5,11 +5,11 @@ export interface User {
   email: string;
   password_hash: string;
   bio: string | null;
-  created_at: Date;
-  last_modified_at: Date;
+  created_at: Date | string;
+  last_modified_at: Date | string;
   profile_picture_url: string | null;
   verified: boolean;
-  last_verification_sent: Date;
+  last_verification_sent: Date | string;
   average_review: number;
   total_reviews: number;
 }
@@ -19,16 +19,16 @@ export interface RefreshToken {
   token_id: string;
   user_id: string;
   token: string;
-  created_at: Date;
-  expires_at: Date;
+  created_at: Date | string;
+  expires_at: Date | string;
 }
 
 /** Represents a row in the composer database. */
 export interface Composer {
   composer_id: string;
   name: string;
-  date_of_birth: Date;
-  date_of_death: Date | null;
+  date_of_birth: Date | string;
+  date_of_death: Date | string | null;
   image_url: string | null;
   average_review: number;
   total_reviews: number;
@@ -74,7 +74,7 @@ export interface Review {
   user_id: string;
   rating: number;
   comment: string;
-  created_at: Date;
-  last_modified_at: Date;
+  created_at: Date | string;
+  last_modified_at: Date | string;
   num_liked: number;
 }
