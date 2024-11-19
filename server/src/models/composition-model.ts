@@ -130,6 +130,40 @@ class CompositionModel {
       );
     }
   }
+
+  /**
+   * Returns the composition data given the ID.
+   * @param {string} compositionId - The ID of the composition to find in the database.
+   * @returns A promise that resolves to the composition.
+   * @throws A ModelError if a database error occurs or if the composition is not found.
+   */
+  static async getComposition(compositionId: string): Promise<Composition> {
+    try {
+      const query = `
+          SELECT 1
+          FROM compositions
+          WHERE composition_id = $1
+          LIMIT 1;
+        `;
+      const values: [string] = [compositionId];
+      const result: QueryResult<Composition> = await database.query(
+        query,
+        values
+      );
+      if (result.rows.length === 0) {
+        throw new ModelError(
+          "No composition with the given ID was found.",
+          400
+        );
+      }
+      return result.rows[0];
+    } catch (error: unknown) {
+      if (error instanceof ModelError) {
+        throw error;
+      }
+      throw new ModelError("Database error while getting composition.", 500);
+    }
+  }
 }
 
 export default CompositionModel;
