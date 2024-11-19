@@ -25,3 +25,23 @@ describe("getCompositionReviews tests", (): void => {
     ).resolves.toEqual(mockResult.rows);
   });
 });
+
+describe("getUserReviews tests", (): void => {
+  const userId = "abc1";
+  test("should fail if the query fails", async (): Promise<void> => {
+    const mockError: Error = new Error("Database connection failed");
+    (database.query as jest.Mock).mockRejectedValue(mockError);
+    expect(ReviewModel.getUserReviews(userId)).rejects.toThrow(
+      new ModelError("Database error while getting user reviews.", 500)
+    );
+  });
+  test("should successfully return reviews", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = {
+      rows: [{ review_id: "1" }, { review_id: "2" }],
+    };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    expect(ReviewModel.getUserReviews(userId)).resolves.toEqual(
+      mockResult.rows
+    );
+  });
+});
