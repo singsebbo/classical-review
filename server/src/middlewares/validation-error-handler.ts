@@ -134,3 +134,16 @@ export function searchComposerValidationErrors(
     "Validation error(s) encountered while getting composer data"
   );
 }
+
+/** Handles validation errors for GET /api/search/composition */
+export function searchCompositionValidationErrors(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  createValidationError(
+    req,
+    next,
+    "Validation error(s) encountered while getting composition data"
+  );
+}

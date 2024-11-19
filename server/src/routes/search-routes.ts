@@ -3,15 +3,18 @@ import {
   searchComposersValidator,
   searchComposerValidator,
   searchCompositionsValidator,
+  searchCompositionValidator,
 } from "../validators/search-validators";
 import {
   searchComposersValidationErrors,
   searchComposerValidationErrors,
   searchCompositionsValidationErrors,
+  searchCompositionValidationErrors,
 } from "../middlewares/validation-error-handler";
 import {
   searchComposer,
   searchComposers,
+  searchComposition,
   searchCompositions,
 } from "../controllers/search-controllers";
 
@@ -36,6 +39,13 @@ router.get(
   searchComposerValidator,
   searchComposerValidationErrors,
   searchComposer
+);
+
+router.get(
+  "/composition",
+  searchCompositionValidator,
+  searchCompositionValidationErrors,
+  searchComposition
 );
 
 export default router;

@@ -79,3 +79,26 @@ export async function searchComposer(
     next(error);
   }
 }
+
+/**
+ * Gets composition data given a composition ID.
+ * @param {Request} req - The request object containing composition ID.
+ * @param {Response} res - The response object to send back.
+ * @param {NextFunction} next - The next middleware function.
+ * @returns {Promise<void>} A promise that resolves to void.
+ */
+export async function searchComposition(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    /**
+     * @todo Get composition ID from body
+     * @todo Get composition data
+     * @todo Send back response
+     */
+  } catch (error: unknown) {
+    next(error);
+  }
+}

@@ -41,3 +41,10 @@ export const searchCompositionsValidator: ValidationChain[] = [
 export const searchComposerValidator: ValidationChain[] = [
   validateComposerId(),
 ];
+
+/** Validates Express request for GET /api/search/composition */
+export const searchCompositionValidator: ValidationChain[] = [
+  /**
+   * @todo Validate composition ID
+   */
+];
