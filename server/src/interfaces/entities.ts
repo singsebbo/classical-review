@@ -74,4 +74,5 @@ export interface Review {
   comment: string;
   created_at: Date;
   last_modified_at: Date;
+  num_liked: number;
 }
