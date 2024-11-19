@@ -4,6 +4,7 @@ import app from "../../../src/app";
 import UserModel from "../../../src/models/user-model";
 import ModelError from "../../../src/errors/model-error";
 import ReviewModel from "../../../src/models/review-model";
+import { Review, User } from "../../../src/interfaces/entities";
 
 let consoleErrorSpy: jest.SpyInstance;
 
@@ -141,5 +142,53 @@ describe("GET /api/search/user tests", (): void => {
         });
       });
     });
+  });
+  test("should successfully respond", async (): Promise<void> => {
+    (UserModel.userExists as jest.Mock).mockResolvedValue(true);
+    const mockUser: User = {
+      user_id: "1",
+      username: username,
+      email: "",
+      password_hash: "",
+      bio: null,
+      created_at: new Date().toISOString(),
+      last_modified_at: new Date().toISOString(),
+      profile_picture_url: null,
+      verified: false,
+      last_verification_sent: new Date().toISOString(),
+      average_review: 5,
+      total_reviews: 1,
+    };
+    const mockUserDisplayData: Partial<User> = {
+      user_id: mockUser.user_id,
+      username: mockUser.username,
+      bio: mockUser.bio,
+      created_at: mockUser.created_at,
+      profile_picture_url: mockUser.profile_picture_url,
+      average_review: mockUser.average_review,
+      total_reviews: mockUser.total_reviews,
+    };
+    (UserModel.getUser as jest.Mock).mockResolvedValue(mockUser);
+    const mockReviews: Review[] = [
+      {
+        review_id: "1",
+        composition_id: "1",
+        user_id: "1",
+        rating: 5,
+        comment: "Good",
+        created_at: new Date().toISOString(),
+        last_modified_at: new Date().toISOString(),
+        num_liked: 0,
+      },
+    ];
+    (ReviewModel.getUserReviews as jest.Mock).mockResolvedValue(mockReviews);
+    const response: SupertestResponse = await request(app)
+      .get("/api/search/user")
+      .send({ username: username });
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty("success", true);
+    expect(response.body).toHaveProperty("user", mockUserDisplayData);
+    expect(response.body).toHaveProperty("reviews", mockReviews);
   });
 });
