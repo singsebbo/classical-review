@@ -110,3 +110,27 @@ export async function searchComposition(
     next(error);
   }
 }
+
+/**
+ * Gets user data given a username.
+ * @param {Request} req - The request object containing the username.
+ * @param {Response} res - The response object to send back.
+ * @param {NextFunction} next - The next middleware function.
+ * @returns {Promise<void>} A promise that resolves to void.
+ */
+export async function searchUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    /**
+     * @todo Get the username from the request body
+     * @todo Gets the user data from the username
+     * @todo Gets the user review data from the username
+     * @todo Send the response
+     */
+  } catch (error: unknown) {
+    next(error);
+  }
+}

@@ -4,18 +4,21 @@ import {
   searchComposerValidator,
   searchCompositionsValidator,
   searchCompositionValidator,
+  searchUserValidator,
 } from "../validators/search-validators";
 import {
   searchComposersValidationErrors,
   searchComposerValidationErrors,
   searchCompositionsValidationErrors,
   searchCompositionValidationErrors,
+  searchUserValidationErrors,
 } from "../middlewares/validation-error-handler";
 import {
   searchComposer,
   searchComposers,
   searchComposition,
   searchCompositions,
+  searchUser,
 } from "../controllers/search-controllers";
 
 const router: Router = Router();
@@ -46,6 +49,13 @@ router.get(
   searchCompositionValidator,
   searchCompositionValidationErrors,
   searchComposition
+);
+
+router.get(
+  "/user",
+  searchUserValidator,
+  searchUserValidationErrors,
+  searchUser
 );
 
 export default router;

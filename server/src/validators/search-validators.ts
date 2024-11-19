@@ -64,3 +64,12 @@ export const searchComposerValidator: ValidationChain[] = [
 export const searchCompositionValidator: ValidationChain[] = [
   validateCompositionId(),
 ];
+
+/** Validates Express request for GET /api/search/user */
+export const searchUserValidator: ValidationChain[] = [
+  /**
+   * @todo Check for username existence in body
+   * @todo Check that username is a string
+   * @todo Check that the user exists
+   */
+];

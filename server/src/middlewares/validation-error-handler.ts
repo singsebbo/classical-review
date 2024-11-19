@@ -147,3 +147,16 @@ export function searchCompositionValidationErrors(
     "Validation error(s) encountered while getting composition data"
   );
 }
+
+/** Handles validation errors for GET /api/search/user */
+export function searchUserValidationErrors(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  createValidationError(
+    req,
+    next,
+    "Validation error(s) encountered while getting user data"
+  );
+}
