@@ -472,3 +472,46 @@ describe("getUserId tests", (): void => {
     await expect(UserModel.getUserId(userIdentifier)).resolves.toBe(userId);
   });
 });
+
+describe("userExists tests", (): void => {
+  let getUserResultMock: jest.SpyInstance;
+  beforeEach((): void => {
+    getUserResultMock = jest
+      .spyOn(UserModel, "getUserResult")
+      .mockImplementation(jest.fn());
+  });
+  afterAll((): void => {
+    getUserResultMock.mockRestore();
+  });
+  const uniqueIdentifier: ByUsername = { username: "testuser" };
+  test("getUserResult throws a ModelError", async (): Promise<void> => {
+    const mockError: ModelError = new ModelError(
+      "Database connection failed",
+      500
+    );
+    (UserModel.getUserResult as jest.Mock).mockRejectedValue(mockError);
+    await expect(UserModel.userExists(uniqueIdentifier)).rejects.toThrow(
+      mockError
+    );
+  });
+  test("getUserResult throws a non ModelError", async (): Promise<void> => {
+    const mockError: Error = new Error("Random error");
+    (UserModel.getUserResult as jest.Mock).mockRejectedValue(mockError);
+    await expect(UserModel.userExists(uniqueIdentifier)).rejects.toThrow(
+      new ModelError(
+        "An unexpected error has occurred while checking user existence.",
+        500
+      )
+    );
+  });
+  test("successfully returns false", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = { rows: [] };
+    (UserModel.getUserResult as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.userExists(uniqueIdentifier)).resolves.toBe(false);
+  });
+  test("successfully returns true", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = { rows: [{}] };
+    (UserModel.getUserResult as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.userExists(uniqueIdentifier)).resolves.toBe(true);
+  });
+});
