@@ -99,6 +99,37 @@ class CompositionModel {
       throw new ModelError("Database error while getting composer works.", 500);
     }
   }
+
+  /**
+   * Checks if the given composition exists.
+   * @param {string} compositionId - The composition ID to search for.
+   * @returns A promise that resolves to a boolean representing if the composition exists.
+   * @throws A ModelError if the database operation fails.
+   */
+  static async compositionExists(compositionId: string): Promise<boolean> {
+    try {
+      const query = `
+        SELECT 1
+        FROM compositions
+        WHERE composition_id = $1
+        LIMIT 1;
+      `;
+      const values: [string] = [compositionId];
+      const result: QueryResult<Composition> = await database.query(
+        query,
+        values
+      );
+      if (result.rows.length === 1) {
+        return true;
+      }
+      return false;
+    } catch (error: unknown) {
+      throw new ModelError(
+        "Database error while checking if composition exists.",
+        500
+      );
+    }
+  }
 }
 
 export default CompositionModel;
