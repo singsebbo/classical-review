@@ -63,8 +63,8 @@ describe("createUser tests", (): void => {
       profile_picture_url: null,
       verified: false,
       last_verification_sent: new Date(),
-      average_review: 3,
-      total_reviews: 12,
+      average_review: 0,
+      total_reviews: 0,
     };
     const mockResult: { rowCount: number; rows: User[] } = {
       rowCount: 1,
@@ -238,8 +238,8 @@ describe("setUserVerified tests", (): void => {
       profile_picture_url: null,
       verified: false,
       last_verification_sent: new Date(),
-      average_review: 3,
-      total_reviews: 12,
+      average_review: 0,
+      total_reviews: 0,
     };
     const mockResult: { rowCount: number; rows: User[] } = {
       rowCount: 1,
