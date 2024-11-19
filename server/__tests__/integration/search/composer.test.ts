@@ -4,6 +4,7 @@ import * as searchController from "../../../src/controllers/search-controllers";
 import ComposerModel from "../../../src/models/composer-model";
 import CompositionModel from "../../../src/models/composition-model";
 import ModelError from "../../../src/errors/model-error";
+import { Composer, Composition } from "../../../src/interfaces/entities";
 
 let consoleErrorSpy: jest.SpyInstance;
 
@@ -152,6 +153,30 @@ describe("GET /api/search/composer tests", (): void => {
           message: mockError.message,
         });
       });
+    });
+  });
+  test("should successfully searchComposer", async (): Promise<void> => {
+    (ComposerModel.composerExists as jest.Mock).mockResolvedValue(true);
+    const mockComposer: Partial<Composer> = { composer_id: "1" };
+    (ComposerModel.getComposer as jest.Mock).mockResolvedValue(mockComposer);
+    const mockComposerWorks: Partial<Composition>[] = [
+      { composition_id: "1", composer_id: "1" },
+      { composition_id: "2", composer_id: "1" },
+    ];
+    (CompositionModel.getComposerWorks as jest.Mock).mockResolvedValue(
+      mockComposerWorks
+    );
+    const response: SupertestResponse = await request(app)
+      .get("/api/search/composer")
+      .send({
+        composerId: "1",
+      });
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual({
+      success: true,
+      composerData: mockComposer,
+      composerWorks: mockComposerWorks,
     });
   });
 });
