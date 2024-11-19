@@ -2,10 +2,13 @@ import request, { Response as SupertestResponse } from "supertest";
 import app from "../../../src/app";
 import * as searchController from "../../../src/controllers/search-controllers";
 import ComposerModel from "../../../src/models/composer-model";
+import CompositionModel from "../../../src/models/composition-model";
+import ModelError from "../../../src/errors/model-error";
 
 let consoleErrorSpy: jest.SpyInstance;
 
 jest.mock("../../../src/models/composer-model");
+jest.mock("../../../src/models/composition-model");
 
 beforeAll((): void => {
   consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(jest.fn());
@@ -103,6 +106,50 @@ describe("GET /api/search/composer tests", (): void => {
               message: "Composer does not exist.",
             },
           ],
+        });
+      });
+    });
+    describe("Controller error tests", (): void => {
+      beforeAll((): void => {
+        (ComposerModel.composerExists as jest.Mock).mockResolvedValue(true);
+      });
+      test("getComposer fails", async (): Promise<void> => {
+        const mockError: ModelError = new ModelError(
+          "Composer Model failed.",
+          500
+        );
+        (ComposerModel.getComposer as jest.Mock).mockRejectedValue(mockError);
+        const response: SupertestResponse = await request(app)
+          .get("/api/search/composer")
+          .send({
+            composerId: "1",
+          });
+        expect(consoleErrorSpy).toHaveBeenCalled();
+        expect(response.statusCode).toBe(500);
+        expect(response.body).toEqual({
+          success: false,
+          message: mockError.message,
+        });
+      });
+      test("getComposerWorks fails", async (): Promise<void> => {
+        (ComposerModel.getComposer as jest.Mock).mockResolvedValue({});
+        const mockError: ModelError = new ModelError(
+          "Composition Model failed.",
+          500
+        );
+        (CompositionModel.getComposerWorks as jest.Mock).mockRejectedValue(
+          mockError
+        );
+        const response: SupertestResponse = await request(app)
+          .get("/api/search/composer")
+          .send({
+            composerId: "1",
+          });
+        expect(consoleErrorSpy).toHaveBeenCalled();
+        expect(response.statusCode).toBe(500);
+        expect(response.body).toEqual({
+          success: false,
+          message: mockError.message,
         });
       });
     });
