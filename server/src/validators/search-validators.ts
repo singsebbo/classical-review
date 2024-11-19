@@ -14,6 +14,9 @@ function validateComposerId(): ValidationChain {
     .exists()
     .withMessage("Composer ID must exist.")
     .bail()
+    .isString()
+    .withMessage("Composer ID must be a string.")
+    .bail()
     .custom(async (composerId: string): Promise<void> => {
       const composerExists: boolean = await ComposerModel.composerExists(
         composerId
