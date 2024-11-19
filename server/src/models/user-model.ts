@@ -294,6 +294,32 @@ class UserModel {
       );
     }
   }
+
+  /**
+   * Returns a user.
+   * @param {UserIdentifier} uniqueIndentifier - Either a userId, username, or email.
+   * @returns A promise that resolves to user.
+   * @throws A ModelError if a database error occurs or if no user is found.
+   */
+  static async getUser(uniqueIndentifier: UserIdentifier): Promise<User> {
+    try {
+      const result: QueryResult<User> = await UserModel.getUserResult(
+        uniqueIndentifier
+      );
+      if (result.rows.length === 0) {
+        throw new ModelError("No user found while getting user.", 400);
+      }
+      return result.rows[0];
+    } catch (error: unknown) {
+      if (error instanceof ModelError) {
+        throw error;
+      }
+      throw new ModelError(
+        "An unexpected error has occurred while getting user.",
+        500
+      );
+    }
+  }
 }
 
 export default UserModel;
