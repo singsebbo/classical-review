@@ -95,11 +95,14 @@ export async function searchComposition(
   try {
     /**
      * @done Get composition ID from body
-     * @todo Get composition data
+     * @done Get composition data
      * @todo Get review data
      * @todo Send back response
      */
     const compositionId: string = req.body.composition_id;
+    const compositionData: Composition = await CompositionModel.getComposition(
+      compositionId
+    );
   } catch (error: unknown) {
     next(error);
   }
