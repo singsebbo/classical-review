@@ -4,6 +4,7 @@ import ValidatorError, {
   ValidationErrorDetail,
 } from "../errors/validator-error";
 import EmailError from "../errors/email-error";
+import AuthenticationError from "../errors/authentication-error";
 
 /** Response format to send back after an error. */
 interface ErrorResponse {
@@ -25,6 +26,16 @@ function errorHandler(
   res: Response,
   next: NextFunction
 ): void {
+  // Handle authentication errors
+  if (error instanceof AuthenticationError) {
+    const errorResponse: ErrorResponse = {
+      success: false,
+      message: error.message,
+    };
+    res.status(error.statusCode || 401).json(errorResponse);
+    return;
+  }
+
   // Handle validation errors
   if (error instanceof ValidatorError) {
     console.error(`${error.message}:\n`, error.stack);
