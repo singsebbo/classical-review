@@ -7,10 +7,9 @@ import { makeReviewAuthenticationError } from "../middlewares/authentication-err
 
 const router: Router = Router();
 
-router.use(bearerTokenValidator);
-
 router.post(
   "/make-review",
+  bearerTokenValidator,
   makeReviewAuthenticationError,
   makeReviewValidator,
   makeReviewValidationErrors,
