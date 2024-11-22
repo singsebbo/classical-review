@@ -5,6 +5,7 @@ import ValidatorError, {
   ValidationErrorDetail,
 } from "../../../src/errors/validator-error";
 import EmailError from "../../../src/errors/email-error";
+import AuthenticationError from "../../../src/errors/authentication-error";
 
 let req: Partial<Request>;
 let res: Partial<Response>;
@@ -127,5 +128,16 @@ test("should handle generic error", (): void => {
   expect(res.json).toHaveBeenCalledWith({
     success: false,
     message: "An unexpected error occured",
+  });
+});
+
+test("should handle authentication errors", (): void => {
+  const error: AuthenticationError = new AuthenticationError("Auth error");
+  errorHandler(error, req as Request, res as Response, next);
+  expect(consoleErrorSpy).not.toHaveBeenCalled();
+  expect(res.status).toHaveBeenCalledWith(401);
+  expect(res.json).toHaveBeenCalledWith({
+    success: false,
+    message: "Auth error",
   });
 });
