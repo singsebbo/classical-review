@@ -68,7 +68,7 @@ export async function searchComposer(
   next: NextFunction
 ): Promise<void> {
   try {
-    const composerId: string = req.body.composer_id;
+    const composerId: string = req.query.composer_id as string;
     const composerData: Composer = await ComposerModel.getComposer(composerId);
     const composerWorks: Composition[] =
       await CompositionModel.getComposerWorks(composerId);
@@ -95,7 +95,7 @@ export async function searchComposition(
   next: NextFunction
 ): Promise<void> {
   try {
-    const compositionId: string = req.body.composition_id;
+    const compositionId: string = req.query.composition_id as string;
     const compositionData: Composition = await CompositionModel.getComposition(
       compositionId
     );
@@ -125,7 +125,7 @@ export async function searchUser(
   next: NextFunction
 ): Promise<void> {
   try {
-    const username: string = req.body.username;
+    const username: string = req.query.username as string;
     const userData: User = await UserModel.getUser({ username });
     const reviewData: Review[] = await ReviewModel.getUserReviews(
       userData.user_id

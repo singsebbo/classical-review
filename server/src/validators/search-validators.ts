@@ -12,12 +12,9 @@ function validateSearchTerm(): ValidationChain {
 }
 
 function validateComposerId(): ValidationChain {
-  return body("composerId")
+  return query("composerId")
     .exists()
     .withMessage("Composer ID must exist.")
-    .bail()
-    .isString()
-    .withMessage("Composer ID must be a string.")
     .bail()
     .custom(async (composerId: string): Promise<void> => {
       const composerExists: boolean = await ComposerModel.composerExists(
@@ -30,12 +27,9 @@ function validateComposerId(): ValidationChain {
 }
 
 function validateCompositionId(): ValidationChain {
-  return body("compositionId")
+  return query("compositionId")
     .exists()
     .withMessage("Composition ID must exist.")
-    .bail()
-    .isString()
-    .withMessage("Composition ID must be a string.")
     .bail()
     .custom(async (compositionId: string): Promise<void> => {
       const compositionExists: boolean =
@@ -47,12 +41,9 @@ function validateCompositionId(): ValidationChain {
 }
 
 function validateUsername(): ValidationChain {
-  return body("username")
+  return query("username")
     .exists()
     .withMessage("Username must exist.")
-    .bail()
-    .isString()
-    .withMessage("Username must be a string.")
     .bail()
     .custom(async (username: string): Promise<void> => {
       const userExists: boolean = await UserModel.userExists({
