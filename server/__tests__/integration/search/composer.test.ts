@@ -72,29 +72,11 @@ describe("GET /api/search/composer tests", (): void => {
           ],
         });
       });
-      test("should fail if composer ID is not a string", async (): Promise<void> => {
-        const response: SupertestResponse = await request(app)
-          .get("/api/search/composer")
-          .send({
-            composerId: 2,
-          });
-        expect(consoleErrorSpy).toHaveBeenCalled();
-        expect(response.statusCode).toBe(400);
-        expect(response.body).toEqual({
-          success: false,
-          message: [
-            {
-              type: "field",
-              message: "Composer ID must be a string.",
-            },
-          ],
-        });
-      });
       test("should fail if composer does not exist", async (): Promise<void> => {
         (ComposerModel.composerExists as jest.Mock).mockResolvedValue(false);
         const response: SupertestResponse = await request(app)
           .get("/api/search/composer")
-          .send({
+          .query({
             composerId: "1",
           });
         expect(consoleErrorSpy).toHaveBeenCalled();
@@ -122,7 +104,7 @@ describe("GET /api/search/composer tests", (): void => {
         (ComposerModel.getComposer as jest.Mock).mockRejectedValue(mockError);
         const response: SupertestResponse = await request(app)
           .get("/api/search/composer")
-          .send({
+          .query({
             composerId: "1",
           });
         expect(consoleErrorSpy).toHaveBeenCalled();
@@ -143,7 +125,7 @@ describe("GET /api/search/composer tests", (): void => {
         );
         const response: SupertestResponse = await request(app)
           .get("/api/search/composer")
-          .send({
+          .query({
             composerId: "1",
           });
         expect(consoleErrorSpy).toHaveBeenCalled();
@@ -168,7 +150,7 @@ describe("GET /api/search/composer tests", (): void => {
     );
     const response: SupertestResponse = await request(app)
       .get("/api/search/composer")
-      .send({
+      .query({
         composerId: "1",
       });
     expect(consoleErrorSpy).not.toHaveBeenCalled();

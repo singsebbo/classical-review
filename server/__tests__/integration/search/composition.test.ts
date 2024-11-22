@@ -73,29 +73,13 @@ describe("GET /api/search/composition tests", (): void => {
           ],
         });
       });
-      test("should fail with a non-string compositionId", async (): Promise<void> => {
-        const response: SupertestResponse = await request(app)
-          .get("/api/search/composition")
-          .send({ compositionId: 1 });
-        expect(consoleErrorSpy).toHaveBeenCalled();
-        expect(response.statusCode).toBe(400);
-        expect(response.body).toEqual({
-          success: false,
-          message: [
-            {
-              type: "field",
-              message: "Composition ID must be a string.",
-            },
-          ],
-        });
-      });
       test("should fail if composition does not exist", async (): Promise<void> => {
         (CompositionModel.compositionExists as jest.Mock).mockResolvedValue(
           false
         );
         const response: SupertestResponse = await request(app)
           .get("/api/search/composition")
-          .send({ compositionId: compositionId });
+          .query({ compositionId: compositionId });
         expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toEqual({
@@ -122,7 +106,7 @@ describe("GET /api/search/composition tests", (): void => {
         );
         const response: SupertestResponse = await request(app)
           .get("/api/search/composition")
-          .send({ compositionId: compositionId });
+          .query({ compositionId: compositionId });
         expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(500);
         expect(response.body).toEqual({
@@ -140,7 +124,7 @@ describe("GET /api/search/composition tests", (): void => {
         );
         const response: SupertestResponse = await request(app)
           .get("/api/search/composition")
-          .send({ compositionId: compositionId });
+          .query({ compositionId: compositionId });
         expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(500);
         expect(response.body).toEqual({
@@ -165,7 +149,7 @@ describe("GET /api/search/composition tests", (): void => {
     );
     const response: SupertestResponse = await request(app)
       .get("/api/search/composition")
-      .send({ compositionId: compositionId });
+      .query({ compositionId: compositionId });
     expect(consoleErrorSpy).not.toHaveBeenCalled();
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual({

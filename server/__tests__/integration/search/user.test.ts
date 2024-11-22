@@ -73,27 +73,11 @@ describe("GET /api/search/user tests", (): void => {
           ],
         });
       });
-      test("should fail if username does not exist", async (): Promise<void> => {
-        const response: SupertestResponse = await request(app)
-          .get("/api/search/user")
-          .send({ username: 1 });
-        expect(consoleErrorSpy).toHaveBeenCalled();
-        expect(response.statusCode).toBe(400);
-        expect(response.body).toEqual({
-          success: false,
-          message: [
-            {
-              type: "field",
-              message: "Username must be a string.",
-            },
-          ],
-        });
-      });
       test("should fail if user does not exist", async (): Promise<void> => {
         (UserModel.userExists as jest.Mock).mockResolvedValue(false);
         const response: SupertestResponse = await request(app)
           .get("/api/search/user")
-          .send({ username: "thisUserDoesNotExist" });
+          .query({ username: "thisUserDoesNotExist" });
         expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toEqual({
@@ -116,7 +100,7 @@ describe("GET /api/search/user tests", (): void => {
         (UserModel.getUser as jest.Mock).mockRejectedValue(mockError);
         const response: SupertestResponse = await request(app)
           .get("/api/search/user")
-          .send({ username: username });
+          .query({ username: username });
         expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(500);
         expect(response.body).toEqual({
@@ -133,7 +117,7 @@ describe("GET /api/search/user tests", (): void => {
         (ReviewModel.getUserReviews as jest.Mock).mockRejectedValue(mockError);
         const response: SupertestResponse = await request(app)
           .get("/api/search/user")
-          .send({ username: username });
+          .query({ username: username });
         expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(500);
         expect(response.body).toEqual({
@@ -184,7 +168,7 @@ describe("GET /api/search/user tests", (): void => {
     (ReviewModel.getUserReviews as jest.Mock).mockResolvedValue(mockReviews);
     const response: SupertestResponse = await request(app)
       .get("/api/search/user")
-      .send({ username: username });
+      .query({ username: username });
     expect(consoleErrorSpy).not.toHaveBeenCalled();
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveProperty("success", true);
