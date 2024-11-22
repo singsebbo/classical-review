@@ -160,3 +160,16 @@ export function searchUserValidationErrors(
     "Validation error(s) encountered while getting user data"
   );
 }
+
+/** Handles validation errors for POST /api/review/make-review */
+export function makeReviewValidationErrors(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  createValidationError(
+    req,
+    next,
+    "Validation error(s) encountered while making a review"
+  );
+}
