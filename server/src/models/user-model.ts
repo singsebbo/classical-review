@@ -338,7 +338,7 @@ class UserModel {
         SET
           total_reviews = total_reviews + 1,
           average_review = (average_review * (total_reviews) + $1) / (total_reviews + 1)
-        WHERE id = $2
+        WHERE user_id = $2
         RETURNING *;
       `;
       const values: [number, string] = [rating, userId];
