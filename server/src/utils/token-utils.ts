@@ -51,3 +51,16 @@ export function getUserIdFromToken(token: string): string {
   const decodedToken: jwt.JwtPayload = jwt.decode(token) as jwt.JwtPayload;
   return decodedToken.userId;
 }
+
+/**
+ * Gets the userId from the bearer Authorization header
+ * @param {string} token - The authorization header
+ * @returns The userId from the token
+ * @remarks
+ * Should only be used when the token has already been verified. The token must also contain the
+ * userId, otherwise it will throw an error.
+ */
+export function getUserIdFromBearer(token: string): string {
+  const bearerToken: string = token.split(" ")[1];
+  return getUserIdFromToken(bearerToken);
+}

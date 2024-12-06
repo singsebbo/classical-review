@@ -2,6 +2,7 @@ import {
   createAccessToken,
   createEmailVerificationToken,
   createRefreshToken,
+  getUserIdFromBearer,
   getUserIdFromToken,
 } from "../../../src/utils/token-utils";
 
@@ -27,4 +28,11 @@ test("should successfully create an access token", (): void => {
   const userId = "asdfafjhad234q";
   const token: string = createAccessToken(userId);
   expect(token).not.toBe(userId);
+});
+
+test("should successfully get the userId from the authorization header", (): void => {
+  const userId = "1234userId";
+  const token: string = createAccessToken(userId);
+  const header: string = `Bearer ${token}`;
+  expect(getUserIdFromBearer(header)).toBe(userId);
 });
