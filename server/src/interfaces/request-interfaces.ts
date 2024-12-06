@@ -10,3 +10,11 @@ export interface LoginData {
   username: string;
   password: string;
 }
+
+/** Data from the user submitting a review. */
+export interface ReviewData {
+  composition_id: string;
+  user_id: string;
+  rating: number;
+  comment: string | null;
+}
