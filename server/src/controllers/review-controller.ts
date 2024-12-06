@@ -3,6 +3,8 @@ import { getUserIdFromBearer } from "../utils/token-utils";
 import { ReviewData } from "../interfaces/request-interfaces";
 import ReviewModel from "../models/review-model";
 import UserModel from "../models/user-model";
+import { Composition } from "../interfaces/entities";
+import CompositionModel from "../models/composition-model";
 
 /**
  * Creates a review of a composition.
@@ -50,6 +52,10 @@ export async function makeReview(
     }
     await ReviewModel.insertReview(reviewData);
     await UserModel.incrementReviewData(rating, userId);
+    const composition: Composition = await CompositionModel.incrementReviewData(
+      rating,
+      compositionId
+    );
   } catch (error: unknown) {
     next(error);
   }
