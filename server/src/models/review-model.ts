@@ -53,6 +53,34 @@ class ReviewModel {
   }
 
   /**
+   * Checks if a user review exists.
+   * @param {string} compositionId - The composition to check.
+   * @param {string} userId - The user to check.
+   * @returns A promise that resolves to a boolean.
+   * @throws A ModelError if the database operation fails.
+   */
+  static async userReviewExists(
+    compositionId: string,
+    userId: string
+  ): Promise<boolean> {
+    try {
+      const query = `
+        SELECT *
+        FROM reviews
+        WHERE composition_id = $1, user_id = $2;
+      `;
+      const values: [string, string] = [compositionId, userId];
+      const result: QueryResult<Review> = await database.query(query, values);
+      return result.rows.length > 0;
+    } catch (error: unknown) {
+      throw new ModelError(
+        "Database query failed while checking if user review exists.",
+        500
+      );
+    }
+  }
+
+  /**
    * Removes existing user reviews for a composition.
    * @param {string} compositionId - The composition to check.
    * @param {string} userId - The user to check.

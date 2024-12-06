@@ -101,3 +101,31 @@ describe("insertReview tests", (): void => {
     );
   });
 });
+
+describe("userReviewExists tests", (): void => {
+  const compositionId = "alsdjfalsasfajsdkf";
+  const userId = "aksljfaskfjasklfasj39ru";
+  test("should fail", async (): Promise<void> => {
+    (database.query as jest.Mock).mockRejectedValue(new Error());
+    await expect(
+      ReviewModel.userReviewExists(compositionId, userId)
+    ).rejects.toThrow(
+      new ModelError(
+        "Database query failed while checking if user review exists.",
+        500
+      )
+    );
+  });
+  test("should successfully return true", async (): Promise<void> => {
+    (database.query as jest.Mock).mockResolvedValue({ rows: [{}] });
+    await expect(
+      ReviewModel.userReviewExists(compositionId, userId)
+    ).resolves.toBe(true);
+  });
+  test("should successfully return false", async (): Promise<void> => {
+    (database.query as jest.Mock).mockResolvedValue({ rows: [] });
+    await expect(
+      ReviewModel.userReviewExists(compositionId, userId)
+    ).resolves.toBe(false);
+  });
+});
