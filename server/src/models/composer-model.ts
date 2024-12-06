@@ -117,6 +117,46 @@ class ComposerModel {
       throw new ModelError("Database error while getting composer.", 500);
     }
   }
+
+  /**
+   * Calculates and sets new review data average of a composer.
+   * @param {number} rating - The rating of the new review.
+   * @param {string} composerId - The composer of the piece.
+   * @returns A promise that resolves to the new Composer row values.
+   * @throws A ModelError if the database query fails or if no rows were affected.
+   */
+  static async incrementReviewData(
+    rating: number,
+    composerId: string
+  ): Promise<Composer> {
+    try {
+      const query = `
+          UPDATE composer
+          SET
+            total_reviews = total_reviews + 1,
+            average_review = (average_review * (total_reviews) + $1) / (total_reviews + 1)
+          WHERE composer_id = $2
+          RETURNING *;
+        `;
+      const values: [number, string] = [rating, composerId];
+      const result: QueryResult<Composer> = await database.query(query, values);
+      if (result.rowCount === 0) {
+        throw new ModelError(
+          "No rows affected while incrementing composer review data.",
+          500
+        );
+      }
+      return result.rows[0];
+    } catch (error: unknown) {
+      if (error instanceof ModelError) {
+        throw error;
+      }
+      throw new ModelError(
+        "Database error while incrementing composer review data.",
+        500
+      );
+    }
+  }
 }
 
 export default ComposerModel;

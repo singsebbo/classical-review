@@ -100,3 +100,40 @@ describe("getComposer tests", (): void => {
     );
   });
 });
+
+describe("incrementReviewData tests", (): void => {
+  const rating = 5;
+  const composerId = "ksajdalf2u34ou32o423";
+  test("should fail if database query fails", async (): Promise<void> => {
+    (database.query as jest.Mock).mockRejectedValue(new Error());
+    await expect(
+      ComposerModel.incrementReviewData(rating, composerId)
+    ).rejects.toThrow(
+      new ModelError(
+        "Database error while incrementing composer review data.",
+        500
+      )
+    );
+  });
+  test("should fail if rowCount is 0", async (): Promise<void> => {
+    (database.query as jest.Mock).mockResolvedValue({ rowCount: 0 });
+    await expect(
+      ComposerModel.incrementReviewData(rating, composerId)
+    ).rejects.toThrow(
+      new ModelError(
+        "No rows affected while incrementing composer review data.",
+        500
+      )
+    );
+  });
+  test("should successfully increment review data", async (): Promise<void> => {
+    const mockResult: { rowCount: number; rows: any[] } = {
+      rowCount: 1,
+      rows: [{ rating, composerId }],
+    };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(
+      ComposerModel.incrementReviewData(rating, composerId)
+    ).resolves.toEqual(mockResult.rows[0]);
+  });
+});
