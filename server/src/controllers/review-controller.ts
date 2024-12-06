@@ -5,6 +5,7 @@ import ReviewModel from "../models/review-model";
 import UserModel from "../models/user-model";
 import { Composition } from "../interfaces/entities";
 import CompositionModel from "../models/composition-model";
+import ComposerModel from "../models/composer-model";
 
 /**
  * Creates a review of a composition.
@@ -19,16 +20,6 @@ export async function makeReview(
   next: NextFunction
 ): Promise<void> {
   try {
-    /**
-     * @todo Get compositionId, rating, and comment if it exists
-     * @todo Extract the userId from the bearer token
-     * @todo Check if the review already exists
-     * @todo Insert the review into the reviews database under the user
-     * @todo Edit the user's review data
-     * @todo Edit the compositions review data
-     * @todo Edit the composer's review data
-     * @todo Send back the response
-     */
     const { compositionId, rating, comment } = req.body;
     const userId: string = getUserIdFromBearer(
       req.headers.authorization as string
@@ -56,6 +47,11 @@ export async function makeReview(
       rating,
       compositionId
     );
+    await ComposerModel.incrementReviewData(rating, composition.composer_id);
+    res.status(201).json({
+      success: true,
+      message: "Review has been successfully created",
+    });
   } catch (error: unknown) {
     next(error);
   }
