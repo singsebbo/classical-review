@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { getUserIdFromBearer } from "../utils/token-utils";
 import { ReviewData } from "../interfaces/request-interfaces";
 import ReviewModel from "../models/review-model";
+import UserModel from "../models/user-model";
 
 /**
  * Creates a review of a composition.
@@ -48,6 +49,7 @@ export async function makeReview(
       return;
     }
     await ReviewModel.insertReview(reviewData);
+    await UserModel.incrementReviewData(rating, userId);
   } catch (error: unknown) {
     next(error);
   }
