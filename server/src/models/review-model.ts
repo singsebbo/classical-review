@@ -77,6 +77,41 @@ class ReviewModel {
       throw new ModelError("Database error while deleting user reviews.", 500);
     }
   }
+
+  /**
+   * Inserts a review.
+   * @param {ReviewData} reviewData - Contains the data necessary to create a review.
+   * @returns A promise that resolves to void.
+   * @throws A ModelError if the database query fails or no rows were affected.
+   */
+  static async insertReview(reviewData: ReviewData): Promise<Review> {
+    try {
+      const query = `
+        INSERT INTO reviews (composition_id, user_id, rating, comment)
+        VALUES ($1, $2, $3, $4)
+        RETURNING *;
+      `;
+      const values: [string, string, number, string | null] = [
+        reviewData.composition_id,
+        reviewData.user_id,
+        reviewData.rating,
+        reviewData.comment ? reviewData.comment : null,
+      ];
+      const result: QueryResult<Review> = await database.query(query, values);
+      if (result.rowCount === 0) {
+        throw new ModelError("No rows affected while inserting review.", 500);
+      }
+      return result.rows[0];
+    } catch (error: unknown) {
+      if (error instanceof ModelError) {
+        throw error;
+      }
+      throw new ModelError(
+        "Database error encountered while inserting review.",
+        500
+      );
+    }
+  }
 }
 
 export default ReviewModel;
