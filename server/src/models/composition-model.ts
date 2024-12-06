@@ -164,6 +164,49 @@ class CompositionModel {
       throw new ModelError("Database error while getting composition.", 500);
     }
   }
+
+  /**
+   * Calculates and sets new review data average of a composition.
+   * @param {number} rating - The rating of the new review.
+   * @param {string} compositionId - The composition of the review.
+   * @returns A promise that resolves to the new Composition row values.
+   * @throws A ModelError if the database query fails or if no rows were affected.
+   */
+  static async incrementReviewData(
+    rating: number,
+    compositionId: string
+  ): Promise<Composition> {
+    try {
+      const query = `
+        UPDATE compositions
+        SET
+          total_reviews = total_reviews + 1,
+          average_review = (average_review * (total_reviews) + $1) / (total_reviews + 1)
+        WHERE composition_id = $2
+        RETURNING *;
+      `;
+      const values: [number, string] = [rating, compositionId];
+      const result: QueryResult<Composition> = await database.query(
+        query,
+        values
+      );
+      if (result.rowCount === 0) {
+        throw new ModelError(
+          "No rows affected while incrementing composition review data.",
+          500
+        );
+      }
+      return result.rows[0];
+    } catch (error: unknown) {
+      if (error instanceof ModelError) {
+        throw error;
+      }
+      throw new ModelError(
+        "Database error while incrementing composition review data.",
+        500
+      );
+    }
+  }
 }
 
 export default CompositionModel;

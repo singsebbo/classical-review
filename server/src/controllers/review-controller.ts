@@ -23,8 +23,8 @@ export async function makeReview(
      * @todo Check if the review already exists
      * @todo Insert the review into the reviews database under the user
      * @todo Edit the user's review data
-     * @todo Edit the composer's review data
      * @todo Edit the compositions review data
+     * @todo Edit the composer's review data
      * @todo Send back the response
      */
     const { compositionId, rating, comment } = req.body;

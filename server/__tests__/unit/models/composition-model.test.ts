@@ -125,3 +125,40 @@ describe("getComposition tests", (): void => {
     ).resolves.toEqual(mockResult.rows[0]);
   });
 });
+
+describe("incrementReviewData tests", (): void => {
+  const rating = 5;
+  const compositionId = "ksajdalf2u34ou32o423";
+  test("should fail if database query fails", async (): Promise<void> => {
+    (database.query as jest.Mock).mockRejectedValue(new Error());
+    await expect(
+      CompositionModel.incrementReviewData(rating, compositionId)
+    ).rejects.toThrow(
+      new ModelError(
+        "Database error while incrementing composition review data.",
+        500
+      )
+    );
+  });
+  test("should fail if rowCount is 0", async (): Promise<void> => {
+    (database.query as jest.Mock).mockResolvedValue({ rowCount: 0 });
+    await expect(
+      CompositionModel.incrementReviewData(rating, compositionId)
+    ).rejects.toThrow(
+      new ModelError(
+        "No rows affected while incrementing composition review data.",
+        500
+      )
+    );
+  });
+  test("should successfully increment review data", async (): Promise<void> => {
+    const mockResult: { rowCount: number; rows: any[] } = {
+      rowCount: 1,
+      rows: [{ rating, compositionId }],
+    };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(
+      CompositionModel.incrementReviewData(rating, compositionId)
+    ).resolves.toEqual(mockResult.rows[0]);
+  });
+});
