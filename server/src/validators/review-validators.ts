@@ -45,7 +45,7 @@ function validateComment(): ValidationChain {
     )
     .bail()
     .isLength({ min: 10, max: 1000 })
-    .withMessage("Comment must be between 10 and 1000 character.")
+    .withMessage("Comment must be between 10 and 1000 characters.")
     .bail()
     .custom((comment: string): boolean => {
       return containsNoProfanity(comment);
