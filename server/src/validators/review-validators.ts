@@ -32,8 +32,7 @@ function validateRating(): ValidationChain {
     .withMessage("Rating must exist.")
     .bail()
     .isInt({ min: 1, max: 5 })
-    .withMessage("Rating must be an integer between 1 and 5.")
-    .bail();
+    .withMessage("Rating must be an integer between 1 and 5.");
 }
 
 function validateComment(): ValidationChain {
