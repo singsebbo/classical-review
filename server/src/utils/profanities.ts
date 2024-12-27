@@ -5,6 +5,7 @@ const profanities: string[] = [
   "kike",
   "nigga",
   "nigger",
+  "shit",
 ];
 
 export default profanities;
