@@ -39,7 +39,7 @@ function validateComment(): ValidationChain {
   return body("comment")
     .optional()
     .trim()
-    .isAlphanumeric("en-US")
+    .isAlphanumeric("en-US", { ignore: " " })
     .withMessage(
       "Comment must be alphanumeric and follow 'en-US' language code."
     )
