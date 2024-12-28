@@ -56,3 +56,26 @@ export async function makeReview(
     next(error);
   }
 }
+
+/**
+ * Deletes a review of a composition.
+ * @param {Request} req - The request object containing the reviewId.
+ * @param {Response} res - The response object to send back.
+ * @param {NextFunction} next - The next middleware function.
+ * @returns {Promise<void>} A promise that resolves to void.
+ */
+export async function deleteReview(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    /**
+     * @todo Get the reviewId from the request
+     * @todo Delete the review
+     * @todo Send a response
+     */
+  } catch (error: unknown) {
+    next(error);
+  }
+}

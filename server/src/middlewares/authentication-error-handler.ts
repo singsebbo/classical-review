@@ -35,3 +35,16 @@ export function makeReviewAuthenticationError(
     "Authentication error encountered while making a review"
   );
 }
+
+/** Handles authentication errors for DELETE /api/review/delete-review */
+export function deleteReviewAuthenticationError(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  createAuthenticationError(
+    req,
+    next,
+    "Authentication error encountered while deleting a review"
+  );
+}

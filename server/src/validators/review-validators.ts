@@ -59,3 +59,11 @@ export const makeReviewValidator: ValidationChain[] = [
   validateRating(),
   validateComment(),
 ];
+
+/** Validates Express request for DELETE /api/review/delete-review */
+export const deleteReviewValidator: ValidationChain[] = [
+  /**
+   * @todo Check that reviewId field exists
+   * @todo Check that review with the reviewId exists and that it matches the bearer
+   */
+];

@@ -173,3 +173,16 @@ export function makeReviewValidationErrors(
     "Validation error(s) encountered while making a review"
   );
 }
+
+/** Handles validation errors for DELETE /api/review/delete-review */
+export function deleteReviewValidationErrors(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  createValidationError(
+    req,
+    next,
+    "Validation error(s) encountered while deleting a review"
+  );
+}
