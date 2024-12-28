@@ -70,11 +70,12 @@ export async function deleteReview(
   next: NextFunction
 ): Promise<void> {
   try {
-    /**
-     * @todo Get the reviewId from the request
-     * @todo Delete the review
-     * @todo Send a response
-     */
+    const { reviewId } = req.body;
+    await ReviewModel.deleteReview(reviewId);
+    res.status(200).send({
+      success: true,
+      message: "Successfully deleted review.",
+    });
   } catch (error: unknown) {
     next(error);
   }
