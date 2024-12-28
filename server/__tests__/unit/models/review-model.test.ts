@@ -137,6 +137,10 @@ describe("getReview tests", (): void => {
       new ModelError("Database error encountered while getting review.", 500)
     );
   });
+  test("should return null if review does not exist", async (): Promise<void> => {
+    (database.query as jest.Mock).mockResolvedValue({ rows: [] });
+    await expect(ReviewModel.getReview("reviewId")).resolves.toEqual(null);
+  });
   test("should successfully return the review", async (): Promise<void> => {
     const mockResult: { rows: any[] } = { rows: [{ reviewId: "4" }] };
     (database.query as jest.Mock).mockResolvedValue(mockResult);

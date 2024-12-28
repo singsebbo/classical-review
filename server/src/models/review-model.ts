@@ -144,10 +144,10 @@ class ReviewModel {
   /**
    * Gets a review.
    * @param {string} reviewId - Contains the reviewId.
-   * @returns A promise that resolves to the review.
+   * @returns A promise that resolves to the review or null if the review does not exist.
    * @throws A ModelError if the database query fails or no rows were affected.
    */
-  static async getReview(reviewId: string): Promise<Review> {
+  static async getReview(reviewId: string): Promise<Review | null> {
     try {
       const query = `
         SELECT *
@@ -157,6 +157,9 @@ class ReviewModel {
       `;
       const values: [string] = [reviewId];
       const result: QueryResult<Review> = await database.query(query, values);
+      if (result.rows.length === 0) {
+        return null;
+      }
       return result.rows[0];
     } catch (error: unknown) {
       throw new ModelError(
