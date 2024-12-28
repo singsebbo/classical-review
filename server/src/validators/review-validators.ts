@@ -1,6 +1,9 @@
 import { body, ValidationChain } from "express-validator";
 import CompositionModel from "../models/composition-model";
 import profanities from "../utils/profanities";
+import { getUserIdFromBearer } from "../utils/token-utils";
+import { Review } from "../interfaces/entities";
+import ReviewModel from "../models/review-model";
 
 /**
  * Checks if text contains any profanity.
@@ -53,6 +56,25 @@ function validateComment(): ValidationChain {
     .withMessage("Comment must not contain profanity.");
 }
 
+function validateReview(): ValidationChain {
+  return body("reviewId")
+    .exists()
+    .withMessage("Review ID must exist.")
+    .bail()
+    .custom(async (reviewId: string, { req }): Promise<void> => {
+      const userId: string = getUserIdFromBearer(
+        req.headers!.authorization.split as string
+      );
+      const review: Review | null = await ReviewModel.getReview(reviewId);
+      if (review === null) {
+        throw new Error("Review does not exist.");
+      }
+      if (review.user_id !== userId) {
+        throw new Error("Review does not match user ID.");
+      }
+    });
+}
+
 /** Validates Express request for POST /api/review/make-review */
 export const makeReviewValidator: ValidationChain[] = [
   validateComposition(),
@@ -61,9 +83,4 @@ export const makeReviewValidator: ValidationChain[] = [
 ];
 
 /** Validates Express request for DELETE /api/review/delete-review */
-export const deleteReviewValidator: ValidationChain[] = [
-  /**
-   * @todo Check that reviewId field exists
-   * @todo Check that review with the reviewId exists and that it matches the bearer
-   */
-];
+export const deleteReviewValidator: ValidationChain[] = [validateReview()];
