@@ -26,7 +26,7 @@ router.post(
 );
 
 router.delete(
-  "delete-review",
+  "/delete-review",
   bearerTokenValidator,
   deleteReviewAuthenticationError,
   deleteReviewValidator,
