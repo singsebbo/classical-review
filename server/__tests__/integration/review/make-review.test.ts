@@ -6,8 +6,15 @@ import {
   createEmailVerificationToken,
 } from "../../../src/utils/token-utils";
 import CompositionModel from "../../../src/models/composition-model";
+import ReviewModel from "../../../src/models/review-model";
+import ModelError from "../../../src/errors/model-error";
+import UserModel from "../../../src/models/user-model";
+import ComposerModel from "../../../src/models/composer-model";
 
 jest.mock("../../../src/models/composition-model");
+jest.mock("../../../src/models/review-model");
+jest.mock("../../../src/models/user-model");
+jest.mock("../../../src/models/composer-model");
 
 let consoleErrorSpy: jest.SpyInstance;
 
@@ -291,6 +298,103 @@ describe("POST /api/review/make-review tests", (): void => {
           },
         ]);
       });
+    });
+  });
+  describe("Controller tests", (): void => {
+    test("should fail if review exists", async (): Promise<void> => {
+      (ReviewModel.userReviewExists as jest.Mock).mockResolvedValue(true);
+      const response: SupertestResponse = await request(app)
+        .post("/api/review/make-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          compositionId: "aslkfjaklasdf",
+          rating: 5,
+          comment: "This is a valid comment",
+        });
+      expect(response.statusCode).toBe(409);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty(
+        "message",
+        "Review already exists on this composition."
+      );
+    });
+    test("should fail if insertReview fails", async (): Promise<void> => {
+      (ReviewModel.userReviewExists as jest.Mock).mockResolvedValue(false);
+      const mockError: ModelError = new ModelError("Fail");
+      (ReviewModel.insertReview as jest.Mock).mockRejectedValue(mockError);
+      const response: SupertestResponse = await request(app)
+        .post("/api/review/make-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          compositionId: "aslkfjaklasdf",
+          rating: 5,
+          comment: "This is a valid comment",
+        });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty("message", mockError.message);
+    });
+    test("should fail if user incrementReviewData fails", async (): Promise<void> => {
+      (ReviewModel.userReviewExists as jest.Mock).mockResolvedValue(false);
+      (ReviewModel.insertReview as jest.Mock).mockResolvedValue(undefined);
+      const mockError: ModelError = new ModelError("Fail");
+      (UserModel.incrementReviewData as jest.Mock).mockRejectedValue(mockError);
+      const response: SupertestResponse = await request(app)
+        .post("/api/review/make-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          compositionId: "aslkfjaklasdf",
+          rating: 5,
+          comment: "This is a valid comment",
+        });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty("message", mockError.message);
+    });
+    test("should fail if composition incrementReviewData fails", async (): Promise<void> => {
+      (ReviewModel.userReviewExists as jest.Mock).mockResolvedValue(false);
+      (ReviewModel.insertReview as jest.Mock).mockResolvedValue(undefined);
+      (UserModel.incrementReviewData as jest.Mock).mockResolvedValue(undefined);
+      const mockError: ModelError = new ModelError("Fail");
+      (CompositionModel.incrementReviewData as jest.Mock).mockRejectedValue(
+        mockError
+      );
+      const response: SupertestResponse = await request(app)
+        .post("/api/review/make-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          compositionId: "aslkfjaklasdf",
+          rating: 5,
+          comment: "This is a valid comment",
+        });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty("message", mockError.message);
+    });
+    test("should fail if composer incrementReviewData fails", async (): Promise<void> => {
+      (ReviewModel.userReviewExists as jest.Mock).mockResolvedValue(false);
+      (ReviewModel.insertReview as jest.Mock).mockResolvedValue(undefined);
+      (UserModel.incrementReviewData as jest.Mock).mockResolvedValue(undefined);
+      (CompositionModel.incrementReviewData as jest.Mock).mockResolvedValue({});
+      const mockError: ModelError = new ModelError("Fail");
+      (ComposerModel.incrementReviewData as jest.Mock).mockRejectedValue(
+        mockError
+      );
+      const response: SupertestResponse = await request(app)
+        .post("/api/review/make-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          compositionId: "aslkfjaklasdf",
+          rating: 5,
+          comment: "This is a valid comment",
+        });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty("message", mockError.message);
     });
   });
 });
