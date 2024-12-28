@@ -140,6 +140,31 @@ class ReviewModel {
       );
     }
   }
+
+  /**
+   * Gets a review.
+   * @param {ReviewData} reviewId - Contains the reviewId.
+   * @returns A promise that resolves to void.
+   * @throws A ModelError if the database query fails or no rows were affected.
+   */
+  static async getReview(reviewId: string): Promise<Review> {
+    try {
+      const query = `
+        SELECT *
+        FROM reviews
+        WHERE review_id = $1
+        LIMIT 1;
+      `;
+      const values: [string] = [reviewId];
+      const result: QueryResult<Review> = await database.query(query, values);
+      return result.rows[0];
+    } catch (error: unknown) {
+      throw new ModelError(
+        "Database error encountered while inserting review.",
+        500
+      );
+    }
+  }
 }
 
 export default ReviewModel;

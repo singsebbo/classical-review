@@ -129,3 +129,19 @@ describe("userReviewExists tests", (): void => {
     ).resolves.toBe(false);
   });
 });
+
+describe("getReview tests", (): void => {
+  test("should fail if query fails", async (): Promise<void> => {
+    (database.query as jest.Mock).mockRejectedValue(new Error());
+    await expect(ReviewModel.getReview("reviewId")).rejects.toThrow(
+      new ModelError("Database error encountered while inserting review.", 500)
+    );
+  });
+  test("should successfully return the review", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = { rows: [{ reviewId: "4" }] };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(ReviewModel.getReview("reviewId")).resolves.toEqual(
+      mockResult.rows[0]
+    );
+  });
+});
