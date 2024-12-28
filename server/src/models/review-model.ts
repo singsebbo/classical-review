@@ -160,7 +160,7 @@ class ReviewModel {
       return result.rows[0];
     } catch (error: unknown) {
       throw new ModelError(
-        "Database error encountered while inserting review.",
+        "Database error encountered while getting review.",
         500
       );
     }

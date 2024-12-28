@@ -134,7 +134,7 @@ describe("getReview tests", (): void => {
   test("should fail if query fails", async (): Promise<void> => {
     (database.query as jest.Mock).mockRejectedValue(new Error());
     await expect(ReviewModel.getReview("reviewId")).rejects.toThrow(
-      new ModelError("Database error encountered while inserting review.", 500)
+      new ModelError("Database error encountered while getting review.", 500)
     );
   });
   test("should successfully return the review", async (): Promise<void> => {
