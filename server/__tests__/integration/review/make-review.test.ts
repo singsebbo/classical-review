@@ -397,4 +397,27 @@ describe("POST /api/review/make-review tests", (): void => {
       expect(response.body).toHaveProperty("message", mockError.message);
     });
   });
+  test("should successfully return a response", async (): Promise<void> => {
+    (ReviewModel.userReviewExists as jest.Mock).mockResolvedValue(false);
+    (ReviewModel.insertReview as jest.Mock).mockResolvedValue(undefined);
+    (UserModel.incrementReviewData as jest.Mock).mockResolvedValue(undefined);
+    (CompositionModel.incrementReviewData as jest.Mock).mockResolvedValue({});
+    (ComposerModel.incrementReviewData as jest.Mock).mockResolvedValue(
+      undefined
+    );
+    const response: SupertestResponse = await request(app)
+      .post("/api/review/make-review")
+      .set("Authorization", `Bearer ${bearerToken}`)
+      .send({
+        compositionId: "aslkfjaklasdf",
+        rating: 5,
+      });
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+    expect(response.statusCode).toBe(201);
+    expect(response.body).toHaveProperty("success", true);
+    expect(response.body).toHaveProperty(
+      "message",
+      "Review has been successfully created"
+    );
+  });
 });
