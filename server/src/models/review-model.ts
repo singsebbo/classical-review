@@ -84,7 +84,7 @@ class ReviewModel {
    * Removes existing user reviews for a composition.
    * @param {string} compositionId - The composition to check.
    * @param {string} userId - The user to check.
-   * @returns A promise that resolves to void.
+   * @returns A promise that resolves to an array of reviews.
    * @throws A ModelError if the database query fails.
    */
   static async removeUserReview(
@@ -109,7 +109,7 @@ class ReviewModel {
   /**
    * Inserts a review.
    * @param {ReviewData} reviewData - Contains the data necessary to create a review.
-   * @returns A promise that resolves to void.
+   * @returns A promise that resolves to the review.
    * @throws A ModelError if the database query fails or no rows were affected.
    */
   static async insertReview(reviewData: ReviewData): Promise<Review> {
@@ -144,7 +144,7 @@ class ReviewModel {
   /**
    * Gets a review.
    * @param {string} reviewId - Contains the reviewId.
-   * @returns A promise that resolves to void.
+   * @returns A promise that resolves to the review.
    * @throws A ModelError if the database query fails or no rows were affected.
    */
   static async getReview(reviewId: string): Promise<Review> {
