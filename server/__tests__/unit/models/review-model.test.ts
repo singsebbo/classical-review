@@ -149,3 +149,28 @@ describe("getReview tests", (): void => {
     );
   });
 });
+
+describe("deleteReview tests", (): void => {
+  test("should fail if query fails", async (): Promise<void> => {
+    (database.query as jest.Mock).mockRejectedValue(new Error());
+    await expect(ReviewModel.deleteReview("reviewId")).rejects.toThrow(
+      new ModelError("Database error encountered while deleting review.", 500)
+    );
+  });
+  test("should fail if no rows were affected", async (): Promise<void> => {
+    (database.query as jest.Mock).mockResolvedValue({ rowCount: 0 });
+    await expect(ReviewModel.deleteReview("reviewId")).rejects.toThrow(
+      new ModelError("Review not found while deleting a review.", 500)
+    );
+  });
+  test("should successfully return the review", async (): Promise<void> => {
+    const mockResult: { rows: any[]; rowCount: number } = {
+      rows: [{ reviewId: "4" }],
+      rowCount: 1,
+    };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(ReviewModel.deleteReview("reviewId")).resolves.toEqual(
+      mockResult.rows[0]
+    );
+  });
+});

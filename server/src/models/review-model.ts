@@ -168,6 +168,37 @@ class ReviewModel {
       );
     }
   }
+
+  /**
+   * Deletes a review given the reviewId.
+   * @param {string} reviewId - The ID of the review to delete.
+   * @returns A promise that resolves to the deleted review.
+   * @throws A ModelError if the database query fails or the review does not exist.
+   */
+  static async deleteReview(reviewId: string): Promise<Review> {
+    try {
+      const query = `
+        DELETE
+        FROM reviews
+        WHERE review_id = $1
+        RETURNING *;
+      `;
+      const values: [string] = [reviewId];
+      const result: QueryResult<Review> = await database.query(query, values);
+      if (result.rowCount === 0) {
+        throw new ModelError("Review not found while deleting a review.", 500);
+      }
+      return result.rows[0];
+    } catch (error: unknown) {
+      if (error instanceof ModelError) {
+        throw error;
+      }
+      throw new ModelError(
+        "Database error encountered while deleting review.",
+        500
+      );
+    }
+  }
 }
 
 export default ReviewModel;
