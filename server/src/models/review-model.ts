@@ -143,7 +143,7 @@ class ReviewModel {
 
   /**
    * Gets a review.
-   * @param {ReviewData} reviewId - Contains the reviewId.
+   * @param {string} reviewId - Contains the reviewId.
    * @returns A promise that resolves to void.
    * @throws A ModelError if the database query fails or no rows were affected.
    */
