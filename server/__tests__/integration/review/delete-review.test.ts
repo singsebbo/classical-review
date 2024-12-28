@@ -151,4 +151,21 @@ describe("DELETE /api/review/delete-review test", (): void => {
       expect(response.body).toHaveProperty("message", mockError.message);
     });
   });
+  test("should successfully delete review", async (): Promise<void> => {
+    (ReviewModel.getReview as jest.Mock).mockResolvedValue({
+      user_id: "dn4up8nps89f",
+    });
+    (ReviewModel.deleteReview as jest.Mock).mockResolvedValue(undefined);
+    const response: SupertestResponse = await request(app)
+      .delete("/api/review/delete-review")
+      .set("Authorization", `Bearer ${bearerToken}`)
+      .send({ reviewId });
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty("success", true);
+    expect(response.body).toHaveProperty(
+      "message",
+      "Successfully deleted review."
+    );
+  });
 });
