@@ -63,7 +63,7 @@ function validateReview(): ValidationChain {
     .bail()
     .custom(async (reviewId: string, { req }): Promise<void> => {
       const userId: string = getUserIdFromBearer(
-        req.headers!.authorization.split as string
+        req.headers!.authorization as string
       );
       const review: Review | null = await ReviewModel.getReview(reviewId);
       if (review === null) {
