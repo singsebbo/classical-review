@@ -3,9 +3,10 @@ import { getUserIdFromBearer } from "../utils/token-utils";
 import { ReviewData } from "../interfaces/request-interfaces";
 import ReviewModel from "../models/review-model";
 import UserModel from "../models/user-model";
-import { Composition } from "../interfaces/entities";
+import { Composition, Review } from "../interfaces/entities";
 import CompositionModel from "../models/composition-model";
 import ComposerModel from "../models/composer-model";
+import LikedReviewsModel from "../models/liked-reviews-model";
 
 /**
  * Creates a review of a composition.
@@ -95,13 +96,23 @@ export async function changeReview(
 ): Promise<void> {
   try {
     /**
-     * @todo Get the information from the request body
-     * @todo Remove likes from the review
+     * @done Get the information from the request body
+     * @done Remove likes from the review
+     * @done Change review data
      * @todo Change aggregate data for the user
      * @todo Change aggregate data for the composer
      * @todo Change aggregate data for the composition
      * @todo Send back response
      */
+    const { reviewId, rating, comment } = req.body;
+    await LikedReviewsModel.removeReviewLikes(reviewId);
+    const oldReview: Review | null = await ReviewModel.getReview(reviewId);
+    if (!oldReview) {
+      throw new Error("Review does not exist.");
+    }
+    comment
+      ? await ReviewModel.updateReview(reviewId, rating, comment)
+      : await ReviewModel.updateReview(reviewId, rating);
   } catch (error: unknown) {
     next(error);
   }
