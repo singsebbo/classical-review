@@ -199,6 +199,51 @@ class ReviewModel {
       );
     }
   }
+
+  /**
+   * Updates a review given the reviewId and the new review data.
+   * @param {string} reviewId - The ID of the review to change.
+   * @param {number} rating - The new rating value.
+   * @param {string} comment - The new comment.
+   * @returns A promise that resolves to the changed review.
+   * @throws A ModelError if the database query fails or the review does not exist.
+   */
+  static async updateReview(
+    reviewId: string,
+    rating: number,
+    comment?: string
+  ): Promise<Review> {
+    try {
+      const query = `
+          UPDATE reviews
+          SET
+            rating = $1
+            comment = $2
+            num_liked = 0
+            last_modified_at = NOW()
+          WHERE review_id = $3
+          RETURNING *;
+        `;
+      const values: [number, string | null, string] = [
+        rating,
+        comment ? comment : null,
+        reviewId,
+      ];
+      const result: QueryResult<Review> = await database.query(query, values);
+      if (result.rowCount === 0) {
+        throw new ModelError("Review not found while changing a review.", 500);
+      }
+      return result.rows[0];
+    } catch (error: unknown) {
+      if (error instanceof ModelError) {
+        throw error;
+      }
+      throw new ModelError(
+        "Database error encountered while changing review.",
+        500
+      );
+    }
+  }
 }
 
 export default ReviewModel;
