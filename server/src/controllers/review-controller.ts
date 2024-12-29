@@ -95,16 +95,10 @@ export async function changeReview(
   next: NextFunction
 ): Promise<void> {
   try {
-    /**
-     * @done Get the information from the request body
-     * @done Remove likes from the review
-     * @done Change review data
-     * @todo Change aggregate data for the user
-     * @todo Change aggregate data for the composer
-     * @todo Change aggregate data for the composition
-     * @todo Send back response
-     */
     const { reviewId, rating, comment } = req.body;
+    const userId: string = getUserIdFromBearer(
+      req.headers.authorization as string
+    );
     await LikedReviewsModel.removeReviewLikes(reviewId);
     const oldReview: Review | null = await ReviewModel.getReview(reviewId);
     if (!oldReview) {
@@ -113,6 +107,24 @@ export async function changeReview(
     comment
       ? await ReviewModel.updateReview(reviewId, rating, comment)
       : await ReviewModel.updateReview(reviewId, rating);
+    await UserModel.updateReviewData(userId, oldReview.rating, rating);
+    const composition: Composition = await CompositionModel.getComposition(
+      oldReview.composition_id
+    );
+    await ComposerModel.updateReviewData(
+      composition.composer_id,
+      oldReview.rating,
+      rating
+    );
+    await CompositionModel.updateReviewData(
+      oldReview.composition_id,
+      oldReview.rating,
+      rating
+    );
+    res.status(200).json({
+      success: true,
+      message: "Review has been successfully changed.",
+    });
   } catch (error: unknown) {
     next(error);
   }
