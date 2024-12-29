@@ -6,7 +6,16 @@ import {
   createEmailVerificationToken,
 } from "../../../src/utils/token-utils";
 import ReviewModel from "../../../src/models/review-model";
+import LikedReviewsModel from "../../../src/models/liked-reviews-model";
+import ModelError from "../../../src/errors/model-error";
+import UserModel from "../../../src/models/user-model";
+import CompositionModel from "../../../src/models/composition-model";
+import ComposerModel from "../../../src/models/composer-model";
 
+jest.mock("../../../src/models/composer-model");
+jest.mock("../../../src/models/composition-model");
+jest.mock("../../../src/models/user-model");
+jest.mock("../../../src/models/liked-reviews-model");
 jest.mock("../../../src/models/review-model");
 
 let consoleErrorSpy: jest.SpyInstance;
@@ -16,7 +25,7 @@ beforeEach((): void => {
 });
 
 afterEach((): void => {
-  consoleErrorSpy.mockRestore();
+  jest.restoreAllMocks();
 });
 
 describe("PUT /api/review/change-review tests", (): void => {
@@ -309,6 +318,156 @@ describe("PUT /api/review/change-review tests", (): void => {
           ]);
         });
       });
+    });
+  });
+  describe("controller error tests", (): void => {
+    beforeEach((): void => {
+      (LikedReviewsModel.removeReviewLikes as jest.Mock).mockResolvedValue(
+        undefined
+      );
+      (ReviewModel.getReview as jest.Mock).mockResolvedValueOnce({
+        user_id: "userId1",
+      });
+      (ReviewModel.updateReview as jest.Mock).mockResolvedValue(undefined);
+      (UserModel.updateReviewData as jest.Mock).mockResolvedValue(undefined);
+      (CompositionModel.getComposition as jest.Mock).mockResolvedValue({
+        composition_id: "2",
+      });
+      (ComposerModel.updateReviewData as jest.Mock).mockResolvedValue(
+        undefined
+      );
+      (CompositionModel.updateReviewData as jest.Mock).mockResolvedValue(
+        undefined
+      );
+    });
+    test("should fail if removeReviewLikes fails", async (): Promise<void> => {
+      (LikedReviewsModel.removeReviewLikes as jest.Mock).mockRejectedValue(
+        new ModelError("Fail", 500)
+      );
+      const response: SupertestResponse = await request(app)
+        .put("/api/review/change-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          reviewId: "aslkfjaklasdf",
+          rating: 5,
+        });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty("message", "Fail");
+    });
+    test("should fail if getReview fails", async (): Promise<void> => {
+      (ReviewModel.getReview as jest.Mock).mockRejectedValueOnce(
+        new ModelError("Fail", 500)
+      );
+      const response: SupertestResponse = await request(app)
+        .put("/api/review/change-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          reviewId: "aslkfjaklasdf",
+          rating: 5,
+        });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty("message", "Fail");
+    });
+    test("should fail if oldReview is null", async (): Promise<void> => {
+      (ReviewModel.getReview as jest.Mock).mockResolvedValueOnce(null);
+      const response: SupertestResponse = await request(app)
+        .put("/api/review/change-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          reviewId: "aslkfjaklasdf",
+          rating: 5,
+        });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty(
+        "message",
+        "An unexpected error occured"
+      );
+    });
+    test("should fail if updateReview fails", async (): Promise<void> => {
+      (ReviewModel.updateReview as jest.Mock).mockRejectedValue(
+        new ModelError("Fail", 500)
+      );
+      const response: SupertestResponse = await request(app)
+        .put("/api/review/change-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          reviewId: "aslkfjaklasdf",
+          rating: 5,
+        });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty("message", "Fail");
+    });
+    test("should fail if user updateReviewData fails", async (): Promise<void> => {
+      (UserModel.updateReviewData as jest.Mock).mockRejectedValue(
+        new ModelError("Fail", 500)
+      );
+      const response: SupertestResponse = await request(app)
+        .put("/api/review/change-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          reviewId: "aslkfjaklasdf",
+          rating: 5,
+        });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty("message", "Fail");
+    });
+    test("should fail if getComposition fails", async (): Promise<void> => {
+      (CompositionModel.getComposition as jest.Mock).mockRejectedValue(
+        new ModelError("Fail", 500)
+      );
+      const response: SupertestResponse = await request(app)
+        .put("/api/review/change-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          reviewId: "aslkfjaklasdf",
+          rating: 5,
+        });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty("message", "Fail");
+    });
+    test("should fail if composer updateReviewData fails", async (): Promise<void> => {
+      (ComposerModel.updateReviewData as jest.Mock).mockRejectedValue(
+        new ModelError("Fail", 500)
+      );
+      const response: SupertestResponse = await request(app)
+        .put("/api/review/change-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          reviewId: "aslkfjaklasdf",
+          rating: 5,
+        });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty("message", "Fail");
+    });
+    test("should fail if composition updateReviewData fails", async (): Promise<void> => {
+      (CompositionModel.updateReviewData as jest.Mock).mockRejectedValue(
+        new ModelError("Fail", 500)
+      );
+      const response: SupertestResponse = await request(app)
+        .put("/api/review/change-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          reviewId: "aslkfjaklasdf",
+          rating: 5,
+        });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty("message", "Fail");
     });
   });
 });
