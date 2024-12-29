@@ -186,3 +186,16 @@ export function deleteReviewValidationErrors(
     "Validation error(s) encountered while deleting a review"
   );
 }
+
+/** Handles validation errors for PUT /api/review/change-review */
+export function changeReviewValidationErrors(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  createValidationError(
+    req,
+    next,
+    "Validation error(s) encountered while changing a review"
+  );
+}

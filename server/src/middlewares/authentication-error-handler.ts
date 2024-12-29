@@ -48,3 +48,16 @@ export function deleteReviewAuthenticationError(
     "Authentication error encountered while deleting a review"
   );
 }
+
+/** Handles authentication errors for PUT /api/review/change-review */
+export function changeReviewAuthenticationError(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  createAuthenticationError(
+    req,
+    next,
+    "Authentication error encountered while changing a review"
+  );
+}

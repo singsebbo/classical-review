@@ -1,15 +1,22 @@
 import { Router } from "express";
 import {
+  changeReviewValidator,
   deleteReviewValidator,
   makeReviewValidator,
 } from "../validators/review-validators";
 import {
+  changeReviewValidationErrors,
   deleteReviewValidationErrors,
   makeReviewValidationErrors,
 } from "../middlewares/validation-error-handler";
-import { deleteReview, makeReview } from "../controllers/review-controller";
+import {
+  changeReview,
+  deleteReview,
+  makeReview,
+} from "../controllers/review-controller";
 import { bearerTokenValidator } from "../validators/authentication-validators";
 import {
+  changeReviewAuthenticationError,
   deleteReviewAuthenticationError,
   makeReviewAuthenticationError,
 } from "../middlewares/authentication-error-handler";
@@ -32,6 +39,15 @@ router.delete(
   deleteReviewValidator,
   deleteReviewValidationErrors,
   deleteReview
+);
+
+router.put(
+  "/change-review",
+  bearerTokenValidator,
+  changeReviewAuthenticationError,
+  changeReviewValidator,
+  changeReviewValidationErrors,
+  changeReview
 );
 
 export default router;

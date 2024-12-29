@@ -80,3 +80,29 @@ export async function deleteReview(
     next(error);
   }
 }
+
+/**
+ * Changes a review of a composition.
+ * @param {Request} req - The request object containing the review to change and the new details.
+ * @param {Response} res - The response object to send back.
+ * @param {NextFunction} next - The next middleware function.
+ * @returns {Promise<void>} A promise that resolves to void.
+ */
+export async function changeReview(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    /**
+     * @todo Get the information from the request body
+     * @todo Remove likes from the review
+     * @todo Change aggregate data for the user
+     * @todo Change aggregate data for the composer
+     * @todo Change aggregate data for the composition
+     * @todo Send back response
+     */
+  } catch (error: unknown) {
+    next(error);
+  }
+}
