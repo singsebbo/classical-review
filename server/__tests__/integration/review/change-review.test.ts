@@ -470,4 +470,41 @@ describe("PUT /api/review/change-review tests", (): void => {
       expect(response.body).toHaveProperty("message", "Fail");
     });
   });
+  describe("successful response", (): void => {
+    beforeEach((): void => {
+      (LikedReviewsModel.removeReviewLikes as jest.Mock).mockResolvedValue(
+        undefined
+      );
+      (ReviewModel.getReview as jest.Mock).mockResolvedValue({
+        user_id: "userId1",
+      });
+      (ReviewModel.updateReview as jest.Mock).mockResolvedValue(undefined);
+      (UserModel.updateReviewData as jest.Mock).mockResolvedValue(undefined);
+      (CompositionModel.getComposition as jest.Mock).mockResolvedValue({
+        composition_id: "2",
+      });
+      (ComposerModel.updateReviewData as jest.Mock).mockResolvedValue(
+        undefined
+      );
+      (CompositionModel.updateReviewData as jest.Mock).mockResolvedValue(
+        undefined
+      );
+    });
+    test("should successfully return a response", async (): Promise<void> => {
+      const response: SupertestResponse = await request(app)
+        .put("/api/review/change-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          reviewId: "aslkfjaklasdf",
+          rating: 5,
+        });
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty("success", true);
+      expect(response.body).toHaveProperty(
+        "message",
+        "Review has been successfully changed."
+      );
+    });
+  });
 });
