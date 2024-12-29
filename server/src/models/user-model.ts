@@ -364,7 +364,6 @@ class UserModel {
   /**
    * Calculates and sets new review data average of a user given a changed rating.
    * @param {string} userId - The user who made the review.
-   * @param {number} oldAverage - The old average review score.
    * @param {number} oldRating - The value of the old rating.
    * @param {number} newRating - The value of the new rating.
    * @returns A promise that resolves to the new User row values.
@@ -372,7 +371,6 @@ class UserModel {
    */
   static async updateReviewData(
     userId: string,
-    oldAverage: number,
     oldRating: number,
     newRating: number
   ): Promise<User> {
@@ -380,16 +378,11 @@ class UserModel {
       const query = `
         UPDATE users
         SET
-          average_review = $1 + (($2 - $3) / total_reviews)
-        WHERE user_id = $4
+          average_review = average_review + (($1 - $2) / total_reviews)
+        WHERE user_id = $3
         RETURNING *;
       `;
-      const values: [number, number, number, string] = [
-        oldAverage,
-        newRating,
-        oldRating,
-        userId,
-      ];
+      const values: [number, number, string] = [newRating, oldRating, userId];
       const result: QueryResult<User> = await database.query(query, values);
       if (result.rowCount === 0) {
         throw new ModelError(
