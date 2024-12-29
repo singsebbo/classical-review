@@ -364,7 +364,6 @@ class UserModel {
   /**
    * Calculates and sets new review data average of a user given a changed rating.
    * @param {string} userId - The user who made the review.
-   * @param {number} total - The total number of reviews.
    * @param {number} oldAverage - The old average review score.
    * @param {number} oldRating - The value of the old rating.
    * @param {number} newRating - The value of the new rating.
@@ -373,7 +372,6 @@ class UserModel {
    */
   static async updateReviewData(
     userId: string,
-    total: number,
     oldAverage: number,
     oldRating: number,
     newRating: number
@@ -382,15 +380,14 @@ class UserModel {
       const query = `
         UPDATE users
         SET
-          average_review = $1 + (($2 - $3) / $4)
-        WHERE user_id = $5
+          average_review = $1 + (($2 - $3) / total_reviews)
+        WHERE user_id = $4
         RETURNING *;
       `;
-      const values: [number, number, number, number, string] = [
+      const values: [number, number, number, string] = [
         oldAverage,
         newRating,
         oldRating,
-        total,
         userId,
       ];
       const result: QueryResult<User> = await database.query(query, values);

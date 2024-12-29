@@ -615,7 +615,7 @@ describe("incrementReviewData tests", (): void => {
 });
 
 describe("updateReviewData tests", (): void => {
-  const args: [string, number, number, number, number] = ["a", 1, 1, 1, 2];
+  const args: [string, number, number, number] = ["a", 1, 1, 2];
   test("should fail if database query fails", async (): Promise<void> => {
     (database.query as jest.Mock).mockRejectedValue(new Error());
     await expect(UserModel.updateReviewData(...args)).rejects.toThrow(
