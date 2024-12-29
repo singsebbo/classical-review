@@ -157,6 +157,51 @@ class ComposerModel {
       );
     }
   }
+
+  /**
+   * Calculates and sets new review data average of a composer given a changed rating.
+   * @param {string} composerId - The composer who made the piece.
+   * @param {number} oldRating - The value of the old rating.
+   * @param {number} newRating - The value of the new rating.
+   * @returns A promise that resolves to the new Composer row values.
+   * @throws A ModelError if the database query fails or if no rows were affected.
+   */
+  static async updateReviewData(
+    composerId: string,
+    oldRating: number,
+    newRating: number
+  ): Promise<Composer> {
+    try {
+      const query = `
+        UPDATE composers
+        SET
+          average_review = average_review + (($1 - $2) / total_reviews)
+        WHERE composer_id = $3
+        RETURNING *;
+      `;
+      const values: [number, number, string] = [
+        newRating,
+        oldRating,
+        composerId,
+      ];
+      const result: QueryResult<Composer> = await database.query(query, values);
+      if (result.rowCount === 0) {
+        throw new ModelError(
+          "No rows affected while updating composer review data.",
+          500
+        );
+      }
+      return result.rows[0];
+    } catch (error: unknown) {
+      if (error instanceof ModelError) {
+        throw error;
+      }
+      throw new ModelError(
+        "Database error while updating composer review data.",
+        500
+      );
+    }
+  }
 }
 
 export default ComposerModel;
