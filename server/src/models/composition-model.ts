@@ -207,6 +207,54 @@ class CompositionModel {
       );
     }
   }
+
+  /**
+   * Calculates and sets new review data average of a composition given a changed rating.
+   * @param {string} compositionId - The composition.
+   * @param {number} oldRating - The value of the old rating.
+   * @param {number} newRating - The value of the new rating.
+   * @returns A promise that resolves to the new Composition row values.
+   * @throws A ModelError if the database query fails or if no rows were affected.
+   */
+  static async updateReviewData(
+    compositionId: string,
+    oldRating: number,
+    newRating: number
+  ): Promise<Composition> {
+    try {
+      const query = `
+        UPDATE compositions
+        SET
+          average_review = average_review + (($1 - $2) / total_reviews)
+        WHERE composition_id = $3
+        RETURNING *;
+      `;
+      const values: [number, number, string] = [
+        newRating,
+        oldRating,
+        compositionId,
+      ];
+      const result: QueryResult<Composition> = await database.query(
+        query,
+        values
+      );
+      if (result.rowCount === 0) {
+        throw new ModelError(
+          "No rows affected while updating composition review data.",
+          500
+        );
+      }
+      return result.rows[0];
+    } catch (error: unknown) {
+      if (error instanceof ModelError) {
+        throw error;
+      }
+      throw new ModelError(
+        "Database error while updating composition review data.",
+        500
+      );
+    }
+  }
 }
 
 export default CompositionModel;
