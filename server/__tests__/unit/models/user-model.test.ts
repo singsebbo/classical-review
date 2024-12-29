@@ -613,3 +613,29 @@ describe("incrementReviewData tests", (): void => {
     ).resolves.toEqual(mockResult.rows[0]);
   });
 });
+
+describe("updateReviewData tests", (): void => {
+  const args: [string, number, number, number, number] = ["a", 1, 1, 1, 2];
+  test("should fail if database query fails", async (): Promise<void> => {
+    (database.query as jest.Mock).mockRejectedValue(new Error());
+    await expect(UserModel.updateReviewData(...args)).rejects.toThrow(
+      new ModelError("Database error while updating user review data.", 500)
+    );
+  });
+  test("should fail if rowCount is 0", async (): Promise<void> => {
+    (database.query as jest.Mock).mockResolvedValue({ rowCount: 0 });
+    await expect(UserModel.updateReviewData(...args)).rejects.toThrow(
+      new ModelError("No rows affected while updating user review data.", 500)
+    );
+  });
+  test("should successfully return the updated user review data", async (): Promise<void> => {
+    const mockResult: { rowCount: number; rows: any[] } = {
+      rowCount: 1,
+      rows: [{ user_id: "1" }],
+    };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.updateReviewData(...args)).resolves.toEqual(
+      mockResult.rows[0]
+    );
+  });
+});

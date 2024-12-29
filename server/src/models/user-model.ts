@@ -360,6 +360,57 @@ class UserModel {
       );
     }
   }
+
+  /**
+   * Calculates and sets new review data average of a user given a changed rating.
+   * @param {string} userId - The user who made the review.
+   * @param {number} total - The total number of reviews.
+   * @param {number} oldAverage - The old average review score.
+   * @param {number} oldRating - The value of the old rating.
+   * @param {number} newRating - The value of the new rating.
+   * @returns A promise that resolves to the new User row values.
+   * @throws A ModelError if the database query fails or if no rows were affected.
+   */
+  static async updateReviewData(
+    userId: string,
+    total: number,
+    oldAverage: number,
+    oldRating: number,
+    newRating: number
+  ): Promise<User> {
+    try {
+      const query = `
+        UPDATE users
+        SET
+          average_review = $1 + (($2 - $3) / $4)
+        WHERE user_id = $5
+        RETURNING *;
+      `;
+      const values: [number, number, number, number, string] = [
+        oldAverage,
+        newRating,
+        oldRating,
+        total,
+        userId,
+      ];
+      const result: QueryResult<User> = await database.query(query, values);
+      if (result.rowCount === 0) {
+        throw new ModelError(
+          "No rows affected while updating user review data.",
+          500
+        );
+      }
+      return result.rows[0];
+    } catch (error: unknown) {
+      if (error instanceof ModelError) {
+        throw error;
+      }
+      throw new ModelError(
+        "Database error while updating user review data.",
+        500
+      );
+    }
+  }
 }
 
 export default UserModel;
