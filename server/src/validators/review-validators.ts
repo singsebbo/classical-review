@@ -87,9 +87,7 @@ export const deleteReviewValidator: ValidationChain[] = [validateReview()];
 
 /** Validates Express request for PUT /api/review/change-review */
 export const changeReviewValidator: ValidationChain[] = [
-  /**
-   * @todo Check reviewID
-   * @todo Check rating
-   * @todo Check new comment
-   */
+  validateReview(),
+  validateRating(),
+  validateComment(),
 ];
