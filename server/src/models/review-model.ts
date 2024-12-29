@@ -215,19 +215,19 @@ class ReviewModel {
   ): Promise<Review> {
     try {
       const query = `
-          UPDATE reviews
-          SET
-            rating = $1
-            comment = $2
-            num_liked = 0
-            last_modified_at = NOW()
-          WHERE review_id = $3
-          RETURNING *;
-        `;
-      const values: [number, string | null, string] = [
+        UPDATE reviews
+        SET
+          rating = $2
+          comment = $3
+          num_liked = 0
+          last_modified_at = NOW()
+        WHERE review_id = $1
+        RETURNING *;
+      `;
+      const values: [string, number, string | null] = [
+        reviewId,
         rating,
         comment ? comment : null,
-        reviewId,
       ];
       const result: QueryResult<Review> = await database.query(query, values);
       if (result.rowCount === 0) {
