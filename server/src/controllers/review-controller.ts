@@ -143,11 +143,16 @@ export async function likeReview(
   next: NextFunction
 ): Promise<void> {
   try {
-    /**
-     * @todo Get the user and the review
-     * @todo Increment the number of likes on the review
-     * @todo Add the liked review to the table
-     */
+    const { reviewId } = req.body;
+    const userId: string = getUserIdFromBearer(
+      req.headers.authorization as string
+    );
+    await ReviewModel.incrementLikes(reviewId);
+    await LikedReviewsModel.insertLikedReview(userId, reviewId);
+    res.status(200).json({
+      success: true,
+      message: "Review successfully liked.",
+    });
   } catch (error: unknown) {
     next(error);
   }
