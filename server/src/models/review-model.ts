@@ -257,7 +257,7 @@ class ReviewModel {
         UPDATE reviews
         SET
           num_liked = num_liked + 1
-        WHERE reviewId = $1
+        WHERE review_id = $1
         RETURNING *;
       `;
       const values: [string] = [reviewId];
