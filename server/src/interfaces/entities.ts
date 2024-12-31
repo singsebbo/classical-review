@@ -78,3 +78,10 @@ export interface Review {
   last_modified_at: Date | string;
   num_liked: number;
 }
+
+/** Represents a row in the liked_reviews database */
+export interface LikedReview {
+  user_id: string;
+  review_id: string;
+  liked_at: Date | string;
+}
