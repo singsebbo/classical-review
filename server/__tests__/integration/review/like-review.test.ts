@@ -178,4 +178,29 @@ describe("POST /api/review/like-review test", (): void => {
       expect(response.body).toHaveProperty("message", mockError.message);
     });
   });
+  describe("successful tests", (): void => {
+    beforeAll((): void => {
+      (ReviewModel.getReview as jest.Mock).mockResolvedValue({});
+      (LikedReviewsModel.getLikedReviews as jest.Mock).mockResolvedValue([]);
+      (ReviewModel.incrementLikes as jest.Mock).mockResolvedValue(undefined);
+      (LikedReviewsModel.insertLikedReview as jest.Mock).mockResolvedValue(
+        undefined
+      );
+    });
+    test("should successfully return a response", async (): Promise<void> => {
+      const response: SupertestResponse = await request(app)
+        .post("/api/review/like-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          reviewId: reviewId,
+        });
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty("success", true);
+      expect(response.body).toHaveProperty(
+        "message",
+        "Review successfully liked."
+      );
+    });
+  });
 });
