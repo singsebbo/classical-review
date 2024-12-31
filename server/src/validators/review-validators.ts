@@ -2,8 +2,9 @@ import { body, ValidationChain } from "express-validator";
 import CompositionModel from "../models/composition-model";
 import profanities from "../utils/profanities";
 import { getUserIdFromBearer } from "../utils/token-utils";
-import { Review } from "../interfaces/entities";
+import { LikedReview, Review } from "../interfaces/entities";
 import ReviewModel from "../models/review-model";
+import LikedReviewsModel from "../models/liked-reviews-model";
 
 /**
  * Checks if text contains any profanity.
@@ -75,6 +76,27 @@ function validateReview(): ValidationChain {
     });
 }
 
+function validateLikeReview(): ValidationChain {
+  return body("reviewId")
+    .exists()
+    .withMessage("Review ID must exist.")
+    .bail()
+    .custom(async (reviewId: string, { req }): Promise<void> => {
+      const userId: string = getUserIdFromBearer(
+        req.headers!.authorization as string
+      );
+      const review: Review | null = await ReviewModel.getReview(reviewId);
+      if (review === null) {
+        throw new Error("Review does not exist.");
+      }
+      const likedReviews: LikedReview[] =
+        await LikedReviewsModel.getLikedReviews(userId);
+      if (likedReviews.some((item) => item.review_id === reviewId)) {
+        throw new Error("Review is already liked.");
+      }
+    });
+}
+
 /** Validates Express request for POST /api/review/make-review */
 export const makeReviewValidator: ValidationChain[] = [
   validateComposition(),
@@ -93,10 +115,4 @@ export const changeReviewValidator: ValidationChain[] = [
 ];
 
 /** Validates Express request for POST /api/review/like-review */
-export const likeReviewValidator: ValidationChain[] = [
-  /**
-   * @todo Check that reviewId exists
-   * @todo Check that the review with that ID exists
-   * @todo Check that the review is not liked by the user already
-   */
-];
+export const likeReviewValidator: ValidationChain[] = [validateLikeReview()];
