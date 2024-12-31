@@ -38,3 +38,23 @@ describe("getLikedReviews tests", (): void => {
     );
   });
 });
+
+describe("insertLikedReview tests", (): void => {
+  test("should fail if query fails", async (): Promise<void> => {
+    (database.query as jest.Mock).mockRejectedValue(new Error());
+    await expect(
+      LikedReviewsModel.insertLikedReview("userId", "reviewId")
+    ).rejects.toThrow(
+      new ModelError("Database error while inserting liked review.", 500)
+    );
+  });
+  test("should successfully query the database", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = {
+      rows: [{ review_id: "1", user_id: "1" }],
+    };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(
+      LikedReviewsModel.insertLikedReview("1", "1")
+    ).resolves.toEqual(mockResult.rows[0]);
+  });
+});

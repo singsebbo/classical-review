@@ -47,6 +47,34 @@ class LikedReviewsModel {
       throw new ModelError("Database error while getting liked reviews.", 500);
     }
   }
+
+  /**
+   * Inserts a liked review into the database.
+   * @param {string} userId - The user who liked the review.
+   * @param {string} reviewId - The review that was liked.
+   * @returns A promise that resolves to the liked review.
+   * @throws A ModelError if the database operation fails.
+   */
+  static async insertLikedReview(
+    userId: string,
+    reviewId: string
+  ): Promise<LikedReview> {
+    try {
+      const query = `
+        INSERT INTO liked_reviews (user_id, review_id)
+        VALUES ($1, $2)
+        RETURNING *;
+      `;
+      const values: [string, string] = [userId, reviewId];
+      const result: QueryResult<LikedReview> = await database.query(
+        query,
+        values
+      );
+      return result.rows[0];
+    } catch (error: unknown) {
+      throw new ModelError("Database error while inserting liked review.", 500);
+    }
+  }
 }
 
 export default LikedReviewsModel;
