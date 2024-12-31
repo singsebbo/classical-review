@@ -7,6 +7,7 @@ import {
 } from "../../../src/utils/token-utils";
 import ReviewModel from "../../../src/models/review-model";
 import LikedReviewsModel from "../../../src/models/liked-reviews-model";
+import ModelError from "../../../src/errors/model-error";
 
 jest.mock("../../../src/models/review-model");
 jest.mock("../../../src/models/liked-reviews-model");
@@ -138,6 +139,43 @@ describe("POST /api/review/like-review test", (): void => {
           },
         ]);
       });
+    });
+  });
+  describe("Controller test", (): void => {
+    beforeAll((): void => {
+      (ReviewModel.getReview as jest.Mock).mockResolvedValue({});
+      (LikedReviewsModel.getLikedReviews as jest.Mock).mockResolvedValue([]);
+    });
+    test("should fail if incrementLikes fails", async (): Promise<void> => {
+      const mockError: ModelError = new ModelError("Fail", 500);
+      (ReviewModel.incrementLikes as jest.Mock).mockRejectedValue(mockError);
+      const response: SupertestResponse = await request(app)
+        .post("/api/review/like-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          reviewId: reviewId,
+        });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty("message", mockError.message);
+    });
+    test("should fail if insertLikedReview fails", async (): Promise<void> => {
+      const mockError: ModelError = new ModelError("Fail", 500);
+      (ReviewModel.incrementLikes as jest.Mock).mockResolvedValue(undefined);
+      (LikedReviewsModel.insertLikedReview as jest.Mock).mockRejectedValue(
+        mockError
+      );
+      const response: SupertestResponse = await request(app)
+        .post("/api/review/like-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          reviewId: reviewId,
+        });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty("message", mockError.message);
     });
   });
 });
