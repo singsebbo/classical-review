@@ -91,3 +91,12 @@ export const changeReviewValidator: ValidationChain[] = [
   validateRating(),
   validateComment(),
 ];
+
+/** Validates Express request for POST /api/review/like-review */
+export const likeReviewValidator: ValidationChain[] = [
+  /**
+   * @todo Check that reviewId exists
+   * @todo Check that the review with that ID exists
+   * @todo Check that the review is not liked by the user already
+   */
+];

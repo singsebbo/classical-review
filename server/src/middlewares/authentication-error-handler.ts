@@ -61,3 +61,16 @@ export function changeReviewAuthenticationError(
     "Authentication error encountered while changing a review"
   );
 }
+
+/** Handles authentication errors for POST /api/review/like-review */
+export function likeReviewAuthenticationError(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  createAuthenticationError(
+    req,
+    next,
+    "Authentication error encountered while liking a review"
+  );
+}

@@ -199,3 +199,16 @@ export function changeReviewValidationErrors(
     "Validation error(s) encountered while changing a review"
   );
 }
+
+/** Handles validation errors for POST /api/review/like-review */
+export function likeReviewValidationErrors(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  createValidationError(
+    req,
+    next,
+    "Validation error(s) encountered while liking a review"
+  );
+}

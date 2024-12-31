@@ -129,3 +129,26 @@ export async function changeReview(
     next(error);
   }
 }
+
+/**
+ * Likes a review.
+ * @param {Request} req - The request object containing the review and user details.
+ * @param {Response} res - The response object to send back.
+ * @param {NextFunction} next - The next middleware function.
+ * @returns {Promise<void>} A promise that resolves to void.
+ */
+export async function likeReview(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    /**
+     * @todo Get the user and the review
+     * @todo Increment the number of likes on the review
+     * @todo Add the liked review to the table
+     */
+  } catch (error: unknown) {
+    next(error);
+  }
+}
