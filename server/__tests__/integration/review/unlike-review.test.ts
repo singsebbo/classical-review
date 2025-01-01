@@ -7,6 +7,7 @@ import {
 } from "../../../src/utils/token-utils";
 import ReviewModel from "../../../src/models/review-model";
 import LikedReviewsModel from "../../../src/models/liked-reviews-model";
+import ModelError from "../../../src/errors/model-error";
 
 jest.mock("../../../src/models/review-model");
 jest.mock("../../../src/models/liked-reviews-model");
@@ -24,6 +25,13 @@ afterEach((): void => {
 describe("delete /api/review/unlike-review test", (): void => {
   const bearerToken: string = createAccessToken("dn4up8nps89f");
   const reviewId = "asifh32908dasihf0apwfp9";
+  beforeEach((): void => {
+    (ReviewModel.getReview as jest.Mock).mockResolvedValue({});
+    (LikedReviewsModel.getLikedReviews as jest.Mock).mockResolvedValue([
+      { review_id: reviewId },
+    ]);
+    (ReviewModel.decrementLikes as jest.Mock).mockResolvedValue(undefined);
+  });
   describe("Validation tests", (): void => {
     describe("Bearer token tests", (): void => {
       test("should fail if authorization header does not exist", async (): Promise<void> => {
@@ -138,6 +146,38 @@ describe("delete /api/review/unlike-review test", (): void => {
           },
         ]);
       });
+    });
+  });
+  describe("controller error tests", (): void => {
+    test("should fail if decrement likes fails", async (): Promise<void> => {
+      const mockError: ModelError = new ModelError("Fail", 500);
+      (ReviewModel.decrementLikes as jest.Mock).mockRejectedValue(mockError);
+      const response: SupertestResponse = await request(app)
+        .delete("/api/review/unlike-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          reviewId: reviewId,
+        });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty("message", "Fail");
+    });
+    test("should fail if removeLikedReview fails", async (): Promise<void> => {
+      const mockError: ModelError = new ModelError("Fail", 500);
+      (LikedReviewsModel.removeLikedReview as jest.Mock).mockRejectedValue(
+        mockError
+      );
+      const response: SupertestResponse = await request(app)
+        .delete("/api/review/unlike-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          reviewId: reviewId,
+        });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty("message", "Fail");
     });
   });
 });
