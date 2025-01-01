@@ -171,12 +171,16 @@ export async function unlikeReview(
   next: NextFunction
 ): Promise<void> {
   try {
-    /**
-     * @todo Get reviewId and userId
-     * @todo Decrement likes on review
-     * @todo Remove likes from liked_reviews table
-     * @todo Send response
-     */
+    const { reviewId } = req.body;
+    const userId: string = getUserIdFromBearer(
+      req.headers.authorization as string
+    );
+    await ReviewModel.decrementLikes(reviewId);
+    await LikedReviewsModel.removeLikedReview(reviewId, userId);
+    res.status(200).json({
+      success: false,
+      message: "Successfully unliked review.",
+    });
   } catch (error: unknown) {
     next(error);
   }
