@@ -31,6 +31,9 @@ describe("delete /api/review/unlike-review test", (): void => {
       { review_id: reviewId },
     ]);
     (ReviewModel.decrementLikes as jest.Mock).mockResolvedValue(undefined);
+    (LikedReviewsModel.removeLikedReview as jest.Mock).mockResolvedValue(
+      undefined
+    );
   });
   describe("Validation tests", (): void => {
     describe("Bearer token tests", (): void => {
@@ -178,6 +181,23 @@ describe("delete /api/review/unlike-review test", (): void => {
       expect(response.statusCode).toBe(500);
       expect(response.body).toHaveProperty("success", false);
       expect(response.body).toHaveProperty("message", "Fail");
+    });
+  });
+  describe("successful tests", (): void => {
+    test("should successfully unlike the review", async (): Promise<void> => {
+      const response: SupertestResponse = await request(app)
+        .delete("/api/review/unlike-review")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          reviewId: reviewId,
+        });
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty("success", true);
+      expect(response.body).toHaveProperty(
+        "message",
+        "Successfully unliked review."
+      );
     });
   });
 });
