@@ -74,3 +74,16 @@ export function likeReviewAuthenticationError(
     "Authentication error encountered while liking a review"
   );
 }
+
+/** Handles authentication errors for DELETE /api/review/unlike-review */
+export function unlikeReviewAuthenticationError(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  createAuthenticationError(
+    req,
+    next,
+    "Authentication error encountered while unliking a review"
+  );
+}

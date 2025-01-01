@@ -116,3 +116,12 @@ export const changeReviewValidator: ValidationChain[] = [
 
 /** Validates Express request for POST /api/review/like-review */
 export const likeReviewValidator: ValidationChain[] = [validateLikeReview()];
+
+/** Validates Express request for DELETE /api/review/unlike-review */
+export const unlikeReviewValidator: ValidationChain[] = [
+  /**
+   * @todo reviewId exists
+   * @todo review exists
+   * @todo review is liked
+   */
+];

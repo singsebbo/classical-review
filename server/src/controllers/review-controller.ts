@@ -157,3 +157,27 @@ export async function likeReview(
     next(error);
   }
 }
+
+/**
+ * Unlikes a review.
+ * @param {Request} req - The request object containing the review and user details.
+ * @param {Response} res - The response object to send back.
+ * @param {NextFunction} next - The next middleware function.
+ * @returns {Promise<void>} A promise that resolves to void.
+ */
+export async function unlikeReview(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    /**
+     * @todo Get reviewId and userId
+     * @todo Decrement likes on review
+     * @todo Remove likes from liked_reviews table
+     * @todo Send response
+     */
+  } catch (error: unknown) {
+    next(error);
+  }
+}

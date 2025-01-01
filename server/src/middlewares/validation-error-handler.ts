@@ -212,3 +212,16 @@ export function likeReviewValidationErrors(
     "Validation error(s) encountered while liking a review"
   );
 }
+
+/** Handles validation errors for DELETE /api/review/unlike-review */
+export function unlikeReviewValidationErrors(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  createValidationError(
+    req,
+    next,
+    "Validation error(s) encountered while unliking a review"
+  );
+}
