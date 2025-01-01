@@ -97,6 +97,27 @@ function validateLikeReview(): ValidationChain {
     });
 }
 
+function validateUnlikeReview(): ValidationChain {
+  return body("reviewId")
+    .exists()
+    .withMessage("Review ID must exist.")
+    .bail()
+    .custom(async (reviewId: string, { req }): Promise<void> => {
+      const userId: string = getUserIdFromBearer(
+        req.headers!.authorization as string
+      );
+      const review: Review | null = await ReviewModel.getReview(reviewId);
+      if (review === null) {
+        throw new Error("Review does not exist.");
+      }
+      const likedReviews: LikedReview[] =
+        await LikedReviewsModel.getLikedReviews(userId);
+      if (!likedReviews.some((item) => item.review_id === reviewId)) {
+        throw new Error("Review is not liked.");
+      }
+    });
+}
+
 /** Validates Express request for POST /api/review/make-review */
 export const makeReviewValidator: ValidationChain[] = [
   validateComposition(),
@@ -119,9 +140,5 @@ export const likeReviewValidator: ValidationChain[] = [validateLikeReview()];
 
 /** Validates Express request for DELETE /api/review/unlike-review */
 export const unlikeReviewValidator: ValidationChain[] = [
-  /**
-   * @todo reviewId exists
-   * @todo review exists
-   * @todo review is liked
-   */
+  validateUnlikeReview(),
 ];
