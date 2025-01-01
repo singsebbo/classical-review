@@ -178,7 +178,7 @@ export async function unlikeReview(
     await ReviewModel.decrementLikes(reviewId);
     await LikedReviewsModel.removeLikedReview(reviewId, userId);
     res.status(200).json({
-      success: false,
+      success: true,
       message: "Successfully unliked review.",
     });
   } catch (error: unknown) {
