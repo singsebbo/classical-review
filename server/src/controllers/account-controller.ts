@@ -178,3 +178,28 @@ export async function refreshTokens(
     next(error);
   }
 }
+
+/**
+ * Gets the user's info.
+ * @param {Request} req - The request object containing the bearer token.
+ * @param {Response} res - The response object to send back.
+ * @param {NextFunction} next - The next middleware function.
+ * @returns A promise that resolves to void.
+ */
+export async function getInfo(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    /**
+     * @todo Get userId from bearer
+     * @todo Get all user info from users table except password_hash
+     * @todo Get all user reviews
+     * @todo Get all liked reviews
+     * @todo Send response
+     */
+  } catch (error: unknown) {
+    next(error);
+  }
+}

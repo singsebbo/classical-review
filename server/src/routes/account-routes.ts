@@ -7,6 +7,7 @@ import {
   verifyEmailValidator,
 } from "../validators/account-validators";
 import {
+  getInfo,
   loginUser,
   logoutUser,
   refreshTokens,
@@ -20,6 +21,8 @@ import {
   registerUserValidationErrors,
   verifyEmailValidationErrors,
 } from "../middlewares/validation-error-handler";
+import { bearerTokenValidator } from "../validators/authentication-validators";
+import { accountInfoAuthenticationError } from "../middlewares/authentication-error-handler";
 
 const router: Router = Router();
 
@@ -46,6 +49,13 @@ router.post(
   refreshValidator,
   refreshValidationErrors,
   refreshTokens
+);
+
+router.get(
+  "/info",
+  bearerTokenValidator,
+  accountInfoAuthenticationError,
+  getInfo
 );
 
 export default router;

@@ -87,3 +87,16 @@ export function unlikeReviewAuthenticationError(
     "Authentication error encountered while unliking a review"
   );
 }
+
+/** Handles authentication errors for GET /api/account/info */
+export function accountInfoAuthenticationError(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  createAuthenticationError(
+    req,
+    next,
+    "Authentication error encountered while getting account info"
+  );
+}
