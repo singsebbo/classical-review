@@ -58,3 +58,32 @@ describe("insertLikedReview tests", (): void => {
     ).resolves.toEqual(mockResult.rows[0]);
   });
 });
+
+describe("removeLikedReview tests", (): void => {
+  test("should fail if query fails", async (): Promise<void> => {
+    (database.query as jest.Mock).mockRejectedValue(new Error());
+    await expect(
+      LikedReviewsModel.removeLikedReview("reviewId", "userId")
+    ).rejects.toThrow(
+      new ModelError("Database error while deleting liked review.", 500)
+    );
+  });
+  test("should fail if no rows were affected", async (): Promise<void> => {
+    (database.query as jest.Mock).mockResolvedValue({ rowCount: 0 });
+    await expect(
+      LikedReviewsModel.removeLikedReview("reviewId", "userId")
+    ).rejects.toThrow(
+      new ModelError("No rows affected while deleting liked review.", 500)
+    );
+  });
+  test("should successfully remove liked review", async (): Promise<void> => {
+    const mockResult: { rowCount: number; rows: any[] } = {
+      rowCount: 1,
+      rows: [{ review_id: "reviewId" }],
+    };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(
+      LikedReviewsModel.removeLikedReview("reviewId", "userId")
+    ).resolves.toEqual(mockResult.rows[0]);
+  });
+});

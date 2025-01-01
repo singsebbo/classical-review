@@ -75,6 +75,44 @@ class LikedReviewsModel {
       throw new ModelError("Database error while inserting liked review.", 500);
     }
   }
+
+  /**
+   * Removes a liked review from the database.
+   * @param {string} userId - The user who liked the review.
+   * @param {string} reviewId - The review that was liked.
+   * @returns A promise that resolves to the liked review.
+   * @throws A ModelError if the database operation fails or if no rows were deleted.
+   */
+  static async removeLikedReview(
+    reviewId: string,
+    userId: string
+  ): Promise<LikedReview> {
+    try {
+      const query = `
+        DELETE
+        FROM liked_reviews
+        WHERE review_id = $1, user_id = $2
+        RETURNING *;
+      `;
+      const values: [string, string] = [reviewId, userId];
+      const result: QueryResult<LikedReview> = await database.query(
+        query,
+        values
+      );
+      if (result.rowCount === 0) {
+        throw new ModelError(
+          "No rows affected while deleting liked review.",
+          500
+        );
+      }
+      return result.rows[0];
+    } catch (error: unknown) {
+      if (error instanceof ModelError) {
+        throw error;
+      }
+      throw new ModelError("Database error while deleting liked review.", 500);
+    }
+  }
 }
 
 export default LikedReviewsModel;
