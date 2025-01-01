@@ -639,3 +639,33 @@ describe("updateReviewData tests", (): void => {
     );
   });
 });
+
+describe("getUserDetails tests", (): void => {
+  test("should fail if database query fails", async (): Promise<void> => {
+    (database.query as jest.Mock).mockRejectedValue(new Error());
+    await expect(UserModel.getUserDetails("userId")).rejects.toThrow(
+      new ModelError("Database error while getting user data.", 500)
+    );
+  });
+  test("should fail if query result has no rows", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = { rows: [] };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.getUserDetails("userId")).rejects.toThrow(
+      new ModelError("No users found while getting user details.", 500)
+    );
+  });
+  test("should successfully return the user without the password hash", async (): Promise<void> => {
+    const mockResult: { rows: any[] } = {
+      rows: [
+        {
+          password_hash: "akjf90q83uriajf98qufpjs9adfasfw38fwuj",
+          user_id: "1",
+        },
+      ],
+    };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(UserModel.getUserDetails("userId")).resolves.toEqual({
+      user_id: "1",
+    });
+  });
+});

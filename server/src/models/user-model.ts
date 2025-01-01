@@ -401,6 +401,34 @@ class UserModel {
       );
     }
   }
+
+  /**
+   * Gets the user details.
+   * @param {string} userId - The user.
+   * @returns A promise that resolves to the User row values without the password_hash.
+   * @throws A ModelError if the database query fails or no user is returned.
+   */
+  static async getUserDetails(userId: string): Promise<Partial<User>> {
+    try {
+      const query = `
+        SELECT *
+        FROM users
+        WHERE user_id = $1;
+      `;
+      const values: [string] = [userId];
+      const result: QueryResult<User> = await database.query(query, values);
+      if (result.rows.length === 0) {
+        throw new ModelError("No users found while getting user details.", 500);
+      }
+      const { password_hash, ...userWithoutPasswordHash } = result.rows[0];
+      return userWithoutPasswordHash;
+    } catch (error: unknown) {
+      if (error instanceof ModelError) {
+        throw error;
+      }
+      throw new ModelError("Database error while getting user data.", 500);
+    }
+  }
 }
 
 export default UserModel;
