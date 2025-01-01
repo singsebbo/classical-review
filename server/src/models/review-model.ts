@@ -273,6 +273,35 @@ class ReviewModel {
       throw new ModelError("Database error while incrementing likes.", 500);
     }
   }
+
+  /**
+   * Decrements the likes of a review.
+   * @param {string} reviewId - The reviewId to decrement.
+   * @returns A promise that resolves to the new row values.
+   * @throws A ModelError if the database operation fails or if no rows were affected.
+   */
+  static async decrementLikes(reviewId: string): Promise<Review> {
+    try {
+      const query = `
+        UPDATE reviews
+        SET
+          num_liked = num_liked - 1
+        WHERE review_id = $1
+        RETURNING *;
+      `;
+      const values: [string] = [reviewId];
+      const result: QueryResult<Review> = await database.query(query, values);
+      if (result.rowCount === 0) {
+        throw new ModelError("No rows affected while decrementing likes.", 500);
+      }
+      return result.rows[0];
+    } catch (error: unknown) {
+      if (error instanceof ModelError) {
+        throw error;
+      }
+      throw new ModelError("Database error while decrementing likes.", 500);
+    }
+  }
 }
 
 export default ReviewModel;

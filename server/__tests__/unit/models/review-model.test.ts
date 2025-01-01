@@ -225,3 +225,29 @@ describe("incrementLikes tests", (): void => {
     );
   });
 });
+
+describe("decrementLikes tests", (): void => {
+  test("should fail if query fails", async (): Promise<void> => {
+    (database.query as jest.Mock).mockRejectedValue(new Error());
+    await expect(ReviewModel.decrementLikes("123")).rejects.toThrow(
+      new ModelError("Database error while decrementing likes.", 500)
+    );
+  });
+  test("should fail if row count is 0", async (): Promise<void> => {
+    const mockResult: { rowCount: number } = { rowCount: 0 };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(ReviewModel.decrementLikes("123")).rejects.toThrow(
+      new ModelError("No rows affected while decrementing likes.", 500)
+    );
+  });
+  test("should successfully decrement likes", async (): Promise<void> => {
+    const mockResult: { rowCount: number; rows: any[] } = {
+      rowCount: 1,
+      rows: [{ review_id: "1" }],
+    };
+    (database.query as jest.Mock).mockResolvedValue(mockResult);
+    await expect(ReviewModel.decrementLikes("123")).resolves.toEqual(
+      mockResult.rows[0]
+    );
+  });
+});
