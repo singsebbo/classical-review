@@ -1,17 +1,20 @@
 import { Request, Response, NextFunction } from "express";
 import UserModel from "../models/user-model";
-import { User } from "../interfaces/entities";
+import { LikedReview, Review, User } from "../interfaces/entities";
 import { LoginData, RegistrationData } from "../interfaces/request-interfaces";
 import { hashPassword } from "../utils/password-utils";
 import {
   createAccessToken,
   createEmailVerificationToken,
   createRefreshToken,
+  getUserIdFromBearer,
   getUserIdFromToken,
 } from "../utils/token-utils";
 import { sendVerificationEmail } from "../utils/email-utils";
 import TokenModel from "../models/token-model";
 import { NODE_ENV } from "../config";
+import ReviewModel from "../models/review-model";
+import LikedReviewsModel from "../models/liked-reviews-model";
 
 /**
  * Registers a new user.
@@ -192,13 +195,21 @@ export async function getInfo(
   next: NextFunction
 ): Promise<void> {
   try {
-    /**
-     * @todo Get userId from bearer
-     * @todo Get all user info from users table except password_hash
-     * @todo Get all user reviews
-     * @todo Get all liked reviews
-     * @todo Send response
-     */
+    const userId: string = getUserIdFromBearer(
+      req.headers.authorization as string
+    );
+    const userDetails: Partial<User> = await UserModel.getUserDetails(userId);
+    const userReviews: Review[] = await ReviewModel.getUserReviews(userId);
+    const likedReviews: LikedReview[] = await LikedReviewsModel.getLikedReviews(
+      userId
+    );
+    res.status(200).json({
+      success: true,
+      message: "Successfully retrieved user information.",
+      userDetails,
+      userReviews,
+      likedReviews,
+    });
   } catch (error: unknown) {
     next(error);
   }
