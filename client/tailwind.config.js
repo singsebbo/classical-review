@@ -5,7 +5,15 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ["'EB Garamond'", 'serif'],
+      },
+      colors: {
+        "cadet-gray": '#9cafb7',
+        "sage": '#adb993'
+      }
+    }
   },
   plugins: [],
 }
