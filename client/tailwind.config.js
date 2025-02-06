@@ -11,7 +11,8 @@ export default {
       },
       colors: {
         "cadet-gray": '#9cafb7',
-        "sage": '#adb993'
+        "sage": '#adb993',
+        "sunset": '#f6ca83'
       }
     }
   },
