@@ -1,4 +1,4 @@
-import App from "./App";
+import Search from "./pages/search";
 import Layout from "./layout";
 
 const routes = [
@@ -8,7 +8,7 @@ const routes = [
     children: [
       {
         index: true,
-        element: <App />
+        element: <Search />
       },
     ]
   }
