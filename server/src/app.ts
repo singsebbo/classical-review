@@ -1,11 +1,19 @@
 import express, { Express } from "express";
+import cors from "cors";
 import cookieParser from "cookie-parser";
+import { NODE_ENV, WEBSITE_URL } from "./config";
 import accountRoutes from "./routes/account-routes";
 import searchRoutes from "./routes/search-routes";
 import reviewRoutes from "./routes/review-routes";
 import errorHandler from "./middlewares/error-handler";
 
 const app: Express = express();
+
+app.use(
+  cors({
+    origin: NODE_ENV === "test" ? "*" : WEBSITE_URL,
+  })
+);
 
 // Mounts global middleware
 app.use(express.json());

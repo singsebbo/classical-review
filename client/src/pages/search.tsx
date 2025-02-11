@@ -4,27 +4,44 @@ function Search(): JSX.Element {
   const [searchCategory, setSearchCategory] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
 
+  async function search() {
+    try {
+      if (searchCategory === "Piece") {
+        const response = await fetch(`http://localhost:3000/api/search/compositions?term=${searchTerm}`);
+        const data = await response.json();
+        console.log(data);
+      }
+      if (searchCategory === "Composer") {
+        const response = await fetch(`http://localhost:3000/api/search/composers?term=${searchTerm}`);
+        const data = await response.json();
+        console.log(data);
+      }
+    } catch (error: unknown) {
+      console.error(error);
+    }
+  }
+
   return (
     <>
       <div className="my-auto mx-2">
         <div className="flex justify-center mx-auto px-3 max-w-[960px]">
           <button
             className={`flex-1 justify-center items-center bg-white border border-black border-b-0 rounded-tl-lg transition-all
-              hover:bg-sunset hover:flex-[1.5] ${searchCategory === "Piece" ? "hover:bg-citron bg-citron flex-[2]" : ""}`}
+              hover:bg-sunset hover:flex-[1.5] ${searchCategory === "Piece" ? "bg-citron flex-[2]" : ""}`}
             onClick={() => {setSearchCategory("Piece")}}
           >
             Piece
           </button>
           <button
             className={`flex-1 justify-center items-center bg-white border border-black border-b-0 border-x-0 transition-all hover:bg-sunset
-              hover:flex-[1.5] ${searchCategory === "Composer" ? "hover:bg-citron bg-citron flex-[2]" : ""}`}
+              hover:flex-[1.5] ${searchCategory === "Composer" ? "bg-citron flex-[2]" : ""}`}
             onClick={() => {setSearchCategory("Composer")}}
           >
             Composer
           </button>
           <button
             className={`flex-1 justify-center items-center bg-white border border-black border-b-0 rounded-tr-lg transition-all
-              hover:bg-sunset hover:flex-[1.5] ${searchCategory === "User" ? "hover:bg-citron bg-citron flex-[2]" : ""}`}
+              hover:bg-sunset hover:flex-[1.5] ${searchCategory === "User" ? "bg-citron flex-[2]" : ""}`}
             onClick={() => {setSearchCategory("User")}}
           >
             User
@@ -38,10 +55,13 @@ function Search(): JSX.Element {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="grow px-3 sm:px-4 md:px-5 py-1 border border-black rounded-2xl bg-white placeholder-slate-600 outline-none pr-10"
           />
-          {searchTerm === "" ? 
+          {searchTerm === "" || searchCategory === "" ? 
             <></>
             :
-            <button className="absolute right-2 top-1/2 -translate-y-1/2">
+            <button
+              className="absolute right-2 top-1/2 -translate-y-1/2"
+              onClick={search}
+            >
               <svg
                 version="1.1"
                 id="Layer_1"
