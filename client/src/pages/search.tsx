@@ -23,18 +23,19 @@ function Search(): JSX.Element {
 
   return (
     <>
+      <div className="hidden bg-citron"></div>
       <div className="my-auto mx-2">
         <div className="flex justify-center mx-auto px-3 max-w-[960px]">
           <button
-            className={`flex-1 justify-center items-center bg-white border border-black border-b-0 rounded-tl-lg transition-all
-              hover:bg-sunset hover:flex-[1.5] ${searchCategory === "Piece" ? "bg-citron flex-[2]" : ""}`}
+            className={`flex-1 justify-center items-center border border-black border-b-0 rounded-tl-lg transition-all
+              hover:bg-sunset hover:flex-[1.5] ${searchCategory === "Piece" ? "bg-citron flex-[2]" : "bg-white"}`}
             onClick={() => {setSearchCategory("Piece")}}
           >
             Piece
           </button>
           <button
-            className={`flex-1 justify-center items-center bg-white border border-black border-b-0 border-l-0 rounded-tr-lg transition-all
-              hover:bg-sunset hover:flex-[1.5] ${searchCategory === "Composer" ? "bg-citron flex-[2]" : ""}`}
+            className={`flex-1 justify-center items-center border border-black border-b-0 border-l-0 rounded-tr-lg transition-all
+              hover:bg-sunset hover:flex-[1.5] ${searchCategory === "Composer" ? "bg-citron flex-[2]" : "bg-white"}`}
             onClick={() => {setSearchCategory("Composer")}}
           >
             Composer
