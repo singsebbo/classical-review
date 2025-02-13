@@ -3,9 +3,11 @@ import { useState } from "react";
 function Search(): JSX.Element {
   const [searchCategory, setSearchCategory] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   async function search() {
     try {
+      setLoading(true);
       if (searchCategory === "Piece") {
         const response = await fetch(`http://localhost:3000/api/search/compositions?term=${searchTerm}`);
         const data = await response.json();
@@ -18,13 +20,19 @@ function Search(): JSX.Element {
       }
     } catch (error: unknown) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <>
-      <div className="hidden bg-citron"></div>
       <div className="my-auto mx-2">
+        {loading && (
+          <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+            <div className="animate-spin w-12 h-12 border-4 border-t-transparent border-white rounded-full"></div>
+          </div>
+        )}
         <div className="flex justify-center mx-auto px-3 max-w-[960px]">
           <button
             className={`flex-1 justify-center items-center border border-black border-b-0 rounded-tl-lg transition-all
