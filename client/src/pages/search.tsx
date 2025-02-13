@@ -33,18 +33,11 @@ function Search(): JSX.Element {
             Piece
           </button>
           <button
-            className={`flex-1 justify-center items-center bg-white border border-black border-b-0 border-x-0 transition-all hover:bg-sunset
-              hover:flex-[1.5] ${searchCategory === "Composer" ? "bg-citron flex-[2]" : ""}`}
+            className={`flex-1 justify-center items-center bg-white border border-black border-b-0 border-l-0 rounded-tr-lg transition-all
+              hover:bg-sunset hover:flex-[1.5] ${searchCategory === "Composer" ? "bg-citron flex-[2]" : ""}`}
             onClick={() => {setSearchCategory("Composer")}}
           >
             Composer
-          </button>
-          <button
-            className={`flex-1 justify-center items-center bg-white border border-black border-b-0 rounded-tr-lg transition-all
-              hover:bg-sunset hover:flex-[1.5] ${searchCategory === "User" ? "bg-citron flex-[2]" : ""}`}
-            onClick={() => {setSearchCategory("User")}}
-          >
-            User
           </button>
         </div>
         <div className="relative flex justify-center mx-auto max-w-[960px]">
