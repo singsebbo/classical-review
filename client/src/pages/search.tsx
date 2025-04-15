@@ -1,9 +1,34 @@
 import { useState } from "react";
+import { Composer, DatabaseComposer } from "../utils/interfaces";
+import StarRating from "../components/star-rating";
 
 function Search(): JSX.Element {
   const [searchCategory, setSearchCategory] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [composers, setComposers] = useState<Composer[]>([
+    {
+      id: "asdfjaslasdfkdfjadfjap",
+      name: "Wolfgang Amadeus Mozart",
+      averageReview: 0,
+      totalReviews: 0,
+      imageUrl: "https://github.com/openopus-org/openopus_api/blob/master/portraits/mozart.png?raw=true"
+    },
+    {
+      id: "aldfjsapfj98djfaoisdjfp",
+      name: "Niccolo Paganini",
+      averageReview: 3.5,
+      totalReviews: 2,
+      imageUrl: ""
+    },
+    {
+      id: "asdfjqweuhasdfoio",
+      name: "Max Bruch",
+      averageReview: 2,
+      totalReviews: 2,
+      imageUrl: "https://github.com/openopus-org/openopus_api/blob/master/portraits/bruch.png?raw=true"
+    },
+  ]);
 
   async function search() {
     try {
@@ -17,6 +42,13 @@ function Search(): JSX.Element {
         const response = await fetch(`http://localhost:3000/api/search/composers?term=${searchTerm}`);
         const data = await response.json();
         console.log(data);
+        setComposers(data.composers.map((composer: DatabaseComposer) => ({
+          id: composer.composer_id,
+          name: composer.name,
+          averageReview: composer.average_review,
+          totalReviews: composer.total_reviews,
+          imageUrl: composer.image_url
+        })))
       }
     } catch (error: unknown) {
       console.error(error);
@@ -27,13 +59,14 @@ function Search(): JSX.Element {
 
   return (
     <>
-      <div className="my-auto mx-2">
+      <div className={`${composers.length === 0 ? "my-auto" : "mt-6 mb-auto"} mx-2`}>
         {loading && (
           <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
             <div className="animate-spin w-12 h-12 border-4 border-t-transparent border-white rounded-full"></div>
           </div>
         )}
-        <div className="flex justify-center mx-auto px-3 max-w-[960px]">
+        <div className="max-w-[960px] mx-auto">
+        <div className="flex justify-center mx-auto px-3">
           <button
             className={`flex-1 justify-center items-center border border-black border-b-0 rounded-tl-lg transition-all
               hover:bg-sunset hover:flex-[1.5] ${searchCategory === "Piece" ? "bg-citron flex-[2]" : "bg-white"}`}
@@ -83,6 +116,28 @@ function Search(): JSX.Element {
               </svg>
             </button>
           }
+        </div>
+        {composers.length === 0 ?
+          <></>
+          :
+          <>
+            <div className="mt-4 sm:mt-6 md:mt-8">Composers</div>
+            <div className="flex flex-wrap justify-between gap-4">
+              {composers.map(composer => {
+                return (
+                  <div
+                    key={composer.id}
+                    className="grow basis-[220px] border border-black text-sm bg-white p-2"
+                  >
+                    <div>{composer.name}</div>
+                    <StarRating rating={composer.averageReview} />
+                    <div>{composer.totalReviews} reviews</div>
+                  </div>
+                )
+              })}
+            </div>
+          </>
+        }
         </div>
       </div>
     </>
