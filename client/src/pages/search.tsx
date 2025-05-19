@@ -122,19 +122,17 @@ function Search(): JSX.Element {
           :
           <>
             <div className="mt-4 sm:mt-6 md:mt-8">Composers</div>
-            <div className="flex flex-wrap justify-between gap-4">
-              {composers.map(composer => {
-                return (
-                  <div
-                    key={composer.id}
-                    className="grow basis-[220px] border border-black text-sm bg-white p-2"
-                  >
-                    <div>{composer.name}</div>
-                    <StarRating rating={composer.averageReview} />
-                    <div>{composer.totalReviews} reviews</div>
-                  </div>
-                )
-              })}
+            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {composers.map((composer) => (
+                <div
+                  key={composer.id}
+                  className="border border-black text-sm bg-white p-2"
+                >
+                  <div>{composer.name}</div>
+                  <StarRating rating={composer.averageReview} />
+                  <div>{composer.totalReviews} reviews</div>
+                </div>
+              ))}
             </div>
           </>
         }
