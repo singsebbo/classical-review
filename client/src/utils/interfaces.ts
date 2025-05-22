@@ -1,3 +1,22 @@
+export interface Composition {
+  id: string;
+  title: string;
+  composerId: string;
+  averageReview: number;
+  totalReviews: number;
+}
+
+/** Represents a row in the compositions database */
+export interface DatabaseComposition {
+  composition_id: string;
+  composer_id: string;
+  title: string;
+  subtitle: string;
+  genre: string;
+  average_review: number;
+  total_reviews: number;
+}
+
 export interface Composer {
   id: string;
   name: string;

@@ -1,34 +1,13 @@
 import { useState } from "react";
-import { Composer, DatabaseComposer } from "../utils/interfaces";
+import { Composition, DatabaseComposition, Composer, DatabaseComposer } from "../utils/interfaces";
 import StarRating from "../components/star-rating";
 
 function Search(): JSX.Element {
   const [searchCategory, setSearchCategory] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [composers, setComposers] = useState<Composer[]>([
-    {
-      id: "asdfjaslasdfkdfjadfjap",
-      name: "Wolfgang Amadeus Mozart",
-      averageReview: 0,
-      totalReviews: 0,
-      imageUrl: "https://github.com/openopus-org/openopus_api/blob/master/portraits/mozart.png?raw=true"
-    },
-    {
-      id: "aldfjsapfj98djfaoisdjfp",
-      name: "Niccolo Paganini",
-      averageReview: 3.5,
-      totalReviews: 2,
-      imageUrl: ""
-    },
-    {
-      id: "asdfjqweuhasdfoio",
-      name: "Max Bruch",
-      averageReview: 2,
-      totalReviews: 2,
-      imageUrl: "https://github.com/openopus-org/openopus_api/blob/master/portraits/bruch.png?raw=true"
-    },
-  ]);
+  const [compositions, setCompositions] = useState<Composition[]>([]);
+  const [composers, setComposers] = useState<Composer[]>([]);
 
   async function search() {
     try {
@@ -37,11 +16,20 @@ function Search(): JSX.Element {
         const response = await fetch(`http://localhost:3000/api/search/compositions?term=${searchTerm}`);
         const data = await response.json();
         console.log(data);
+        setComposers([]);
+        setCompositions(data.compositions.map((composition: DatabaseComposition) => ({
+          id: composition.composition_id,
+          title: composition.title,
+          composerId: composition.composer_id,
+          averageReview: composition.average_review,
+          totalReviews: composition.total_reviews
+        })))
       }
       if (searchCategory === "Composer") {
         const response = await fetch(`http://localhost:3000/api/search/composers?term=${searchTerm}`);
         const data = await response.json();
         console.log(data);
+        setCompositions([]);
         setComposers(data.composers.map((composer: DatabaseComposer) => ({
           id: composer.composer_id,
           name: composer.name,
@@ -131,6 +119,25 @@ function Search(): JSX.Element {
                   <div>{composer.name}</div>
                   <StarRating rating={composer.averageReview} />
                   <div>{composer.totalReviews} reviews</div>
+                </div>
+              ))}
+            </div>
+          </>
+        }
+        {compositions.length === 0 ?
+          <></>
+          :
+          <>
+            <div className="mt-4 sm:mt-6 md:mt-8">Pieces</div>
+            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {compositions.map((composition) => (
+                <div
+                  key={composition.id}
+                  className="border border-black text-sm bg-white p-2"
+                >
+                  <div>{composition.title}</div>
+                  <StarRating rating={composition.averageReview} />
+                  <div>{composition.totalReviews} reviews</div>
                 </div>
               ))}
             </div>
