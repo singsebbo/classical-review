@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom";
 import logo from "../assets/logo.svg";
 import profile from "../assets/profile.svg";
 
@@ -10,11 +11,13 @@ function Header(): JSX.Element {
           <span className="transition ease-in-out duration-200 hover:text-sunset text-lg sm:text-2xl md:text-4xl">Classical Review</span>
         </div>
         <div>
-          <img
-            src={profile}
-            alt="profile"
-            className="transition ease-in-out duration-200 hover:scale-125 h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8"
-          />
+          <NavLink to="/user">
+            <img
+              src={profile}
+              alt="profile"
+              className="transition ease-in-out duration-200 hover:scale-125 h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8"
+            />
+          </NavLink>
         </div>
       </header>
     </>

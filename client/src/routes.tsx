@@ -1,5 +1,6 @@
 import Search from "./pages/search";
 import Layout from "./layout";
+import User from "./pages/user";
 
 const routes = [
   {
@@ -10,6 +11,10 @@ const routes = [
         index: true,
         element: <Search />
       },
+      {
+        path: "user",
+        element: <User />
+      }
     ]
   }
 ]
