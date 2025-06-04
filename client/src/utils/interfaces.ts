@@ -35,3 +35,24 @@ export interface DatabaseComposer {
   average_review: number;
   total_reviews: number;
 }
+
+/** Represents the data required to register */
+export interface RegistrationData {
+  username: string;
+  email: string;
+  password: string;
+}
+
+/** Represents the data required to sign in */
+export interface LoginData {
+  username: string;
+  password: string;
+  rememberMe: boolean;
+}
+
+/** Represents possible input errors when registering */
+export interface RegistrationErrors {
+  usernameErrors: string[];
+  emailErrors: string[];
+  passwordErrors: string[];
+}
