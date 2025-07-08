@@ -32,7 +32,7 @@ import {
 const router: Router = Router();
 
 router.post(
-  "/make-review",
+  "/reviews",
   bearerTokenValidator,
   makeReviewAuthenticationError,
   makeReviewValidator,
@@ -41,7 +41,7 @@ router.post(
 );
 
 router.delete(
-  "/delete-review",
+  "/reviews",
   bearerTokenValidator,
   deleteReviewAuthenticationError,
   deleteReviewValidator,
@@ -50,7 +50,7 @@ router.delete(
 );
 
 router.put(
-  "/change-review",
+  "/reviews",
   bearerTokenValidator,
   changeReviewAuthenticationError,
   changeReviewValidator,
@@ -59,7 +59,7 @@ router.put(
 );
 
 router.post(
-  "/like-review",
+  "/likes",
   bearerTokenValidator,
   likeReviewAuthenticationError,
   likeReviewValidator,
@@ -68,7 +68,7 @@ router.post(
 );
 
 router.delete(
-  "/unlike-review",
+  "/likes",
   bearerTokenValidator,
   unlikeReviewAuthenticationError,
   unlikeReviewValidator,

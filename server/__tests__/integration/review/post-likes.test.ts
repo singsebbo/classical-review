@@ -22,14 +22,14 @@ afterEach((): void => {
   consoleErrorSpy.mockRestore();
 });
 
-describe("POST /api/review/like-review test", (): void => {
+describe("POST /api/review/likes test", (): void => {
   const bearerToken: string = createAccessToken("dn4up8nps89f");
   const reviewId = "asifh32908dasihf0apwfp9";
   describe("Validation tests", (): void => {
     describe("Bearer token tests", (): void => {
       test("should fail if authorization header does not exist", async (): Promise<void> => {
         const response: SupertestResponse = await request(app).post(
-          "/api/review/like-review"
+          "/api/review/likes"
         );
         expect(response.statusCode).toBe(401);
         expect(response.body).toHaveProperty("success", false);
@@ -40,7 +40,7 @@ describe("POST /api/review/like-review test", (): void => {
       });
       test("should fail if authorization header is not a bearer", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/review/like-review")
+          .post("/api/review/likes")
           .set("Authorization", "Bear jsadklfjq9w.asdf3q9pfi.lasdkjfapsf");
         expect(response.statusCode).toBe(401);
         expect(response.body).toHaveProperty("success", false);
@@ -51,7 +51,7 @@ describe("POST /api/review/like-review test", (): void => {
       });
       test("should fail if authorization header does not contain a token", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/review/like-review")
+          .post("/api/review/likes")
           .set("Authorization", "Bearer ");
         expect(response.statusCode).toBe(401);
         expect(response.body).toHaveProperty("success", false);
@@ -63,7 +63,7 @@ describe("POST /api/review/like-review test", (): void => {
       test("should fail if token is signed incorrectly", async (): Promise<void> => {
         const token: string = jwt.sign("token", "key");
         const response: SupertestResponse = await request(app)
-          .post("/api/review/like-review")
+          .post("/api/review/likes")
           .set("Authorization", `Bearer ${token}`);
         expect(response.statusCode).toBe(401);
         expect(response.body).toHaveProperty("success", false);
@@ -75,7 +75,7 @@ describe("POST /api/review/like-review test", (): void => {
       test("should fail if token is not for the purpose of access", async (): Promise<void> => {
         const token: string = createEmailVerificationToken("askdjfas");
         const response: SupertestResponse = await request(app)
-          .post("/api/review/like-review")
+          .post("/api/review/likes")
           .set("Authorization", `Bearer ${token}`);
         expect(response.statusCode).toBe(401);
         expect(response.body).toHaveProperty("success", false);
@@ -88,7 +88,7 @@ describe("POST /api/review/like-review test", (): void => {
     describe("likeReviewValidator tests", (): void => {
       test("should fail if reviewId does not exist", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/review/like-review")
+          .post("/api/review/likes")
           .set("Authorization", `Bearer ${bearerToken}`);
         expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
@@ -103,7 +103,7 @@ describe("POST /api/review/like-review test", (): void => {
       test("should fail if review does not exist", async (): Promise<void> => {
         (ReviewModel.getReview as jest.Mock).mockResolvedValue(null);
         const response: SupertestResponse = await request(app)
-          .post("/api/review/like-review")
+          .post("/api/review/likes")
           .set("Authorization", `Bearer ${bearerToken}`)
           .send({
             reviewId: reviewId,
@@ -124,7 +124,7 @@ describe("POST /api/review/like-review test", (): void => {
           { review_id: reviewId },
         ]);
         const response: SupertestResponse = await request(app)
-          .post("/api/review/like-review")
+          .post("/api/review/likes")
           .set("Authorization", `Bearer ${bearerToken}`)
           .send({
             reviewId: reviewId,
@@ -150,7 +150,7 @@ describe("POST /api/review/like-review test", (): void => {
       const mockError: ModelError = new ModelError("Fail", 500);
       (ReviewModel.incrementLikes as jest.Mock).mockRejectedValue(mockError);
       const response: SupertestResponse = await request(app)
-        .post("/api/review/like-review")
+        .post("/api/review/likes")
         .set("Authorization", `Bearer ${bearerToken}`)
         .send({
           reviewId: reviewId,
@@ -167,7 +167,7 @@ describe("POST /api/review/like-review test", (): void => {
         mockError
       );
       const response: SupertestResponse = await request(app)
-        .post("/api/review/like-review")
+        .post("/api/review/likes")
         .set("Authorization", `Bearer ${bearerToken}`)
         .send({
           reviewId: reviewId,
@@ -189,7 +189,7 @@ describe("POST /api/review/like-review test", (): void => {
     });
     test("should successfully return a response", async (): Promise<void> => {
       const response: SupertestResponse = await request(app)
-        .post("/api/review/like-review")
+        .post("/api/review/likes")
         .set("Authorization", `Bearer ${bearerToken}`)
         .send({
           reviewId: reviewId,

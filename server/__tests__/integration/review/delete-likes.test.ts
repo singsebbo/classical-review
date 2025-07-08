@@ -6,9 +6,11 @@ import {
   createEmailVerificationToken,
 } from "../../../src/utils/token-utils";
 import ReviewModel from "../../../src/models/review-model";
+import LikedReviewsModel from "../../../src/models/liked-reviews-model";
 import ModelError from "../../../src/errors/model-error";
 
 jest.mock("../../../src/models/review-model");
+jest.mock("../../../src/models/liked-reviews-model");
 
 let consoleErrorSpy: jest.SpyInstance;
 
@@ -20,73 +22,83 @@ afterEach((): void => {
   consoleErrorSpy.mockRestore();
 });
 
-describe("DELETE /api/review/delete-review test", (): void => {
+describe("DELETE /api/review/likes test", (): void => {
   const bearerToken: string = createAccessToken("dn4up8nps89f");
   const reviewId = "asifh32908dasihf0apwfp9";
+  beforeEach((): void => {
+    (ReviewModel.getReview as jest.Mock).mockResolvedValue({});
+    (LikedReviewsModel.getLikedReviews as jest.Mock).mockResolvedValue([
+      { review_id: reviewId },
+    ]);
+    (ReviewModel.decrementLikes as jest.Mock).mockResolvedValue(undefined);
+    (LikedReviewsModel.removeLikedReview as jest.Mock).mockResolvedValue(
+      undefined
+    );
+  });
   describe("Validation tests", (): void => {
     describe("Bearer token tests", (): void => {
       test("should fail if authorization header does not exist", async (): Promise<void> => {
         const response: SupertestResponse = await request(app).delete(
-          "/api/review/delete-review"
+          "/api/review/likes"
         );
         expect(response.statusCode).toBe(401);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty(
           "message",
-          "Authentication error encountered while deleting a review"
+          "Authentication error encountered while unliking a review"
         );
       });
       test("should fail if authorization header is not a bearer", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .delete("/api/review/delete-review")
+          .delete("/api/review/likes")
           .set("Authorization", "Bear jsadklfjq9w.asdf3q9pfi.lasdkjfapsf");
         expect(response.statusCode).toBe(401);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty(
           "message",
-          "Authentication error encountered while deleting a review"
+          "Authentication error encountered while unliking a review"
         );
       });
       test("should fail if authorization header does not contain a token", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .delete("/api/review/delete-review")
+          .delete("/api/review/likes")
           .set("Authorization", "Bearer ");
         expect(response.statusCode).toBe(401);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty(
           "message",
-          "Authentication error encountered while deleting a review"
+          "Authentication error encountered while unliking a review"
         );
       });
       test("should fail if token is signed incorrectly", async (): Promise<void> => {
         const token: string = jwt.sign("token", "key");
         const response: SupertestResponse = await request(app)
-          .delete("/api/review/delete-review")
+          .delete("/api/review/likes")
           .set("Authorization", `Bearer ${token}`);
         expect(response.statusCode).toBe(401);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty(
           "message",
-          "Authentication error encountered while deleting a review"
+          "Authentication error encountered while unliking a review"
         );
       });
       test("should fail if token is not for the purpose of access", async (): Promise<void> => {
         const token: string = createEmailVerificationToken("askdjfas");
         const response: SupertestResponse = await request(app)
-          .delete("/api/review/delete-review")
+          .delete("/api/review/likes")
           .set("Authorization", `Bearer ${token}`);
         expect(response.statusCode).toBe(401);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty(
           "message",
-          "Authentication error encountered while deleting a review"
+          "Authentication error encountered while unliking a review"
         );
       });
     });
-    describe("review tests", (): void => {
+    describe("unlikeReview validator tests", (): void => {
       test("should fail if reviewId does not exist", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .delete("/api/review/delete-review")
+          .delete("/api/review/likes")
           .set("Authorization", `Bearer ${bearerToken}`);
         expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
@@ -101,9 +113,11 @@ describe("DELETE /api/review/delete-review test", (): void => {
       test("should fail if review does not exist", async (): Promise<void> => {
         (ReviewModel.getReview as jest.Mock).mockResolvedValue(null);
         const response: SupertestResponse = await request(app)
-          .delete("/api/review/delete-review")
+          .delete("/api/review/likes")
           .set("Authorization", `Bearer ${bearerToken}`)
-          .send({ reviewId });
+          .send({
+            reviewId: reviewId,
+          });
         expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
@@ -114,58 +128,76 @@ describe("DELETE /api/review/delete-review test", (): void => {
           },
         ]);
       });
-      test("should fail if review does not match user ID", async (): Promise<void> => {
-        (ReviewModel.getReview as jest.Mock).mockResolvedValue({
-          user_id: "asoidfjadpfas",
-        });
+      test("should fail if review is not liked", async (): Promise<void> => {
+        (ReviewModel.getReview as jest.Mock).mockResolvedValue({});
+        (LikedReviewsModel.getLikedReviews as jest.Mock).mockResolvedValue([
+          { review_id: "otherReviewId" },
+        ]);
         const response: SupertestResponse = await request(app)
-          .delete("/api/review/delete-review")
+          .delete("/api/review/likes")
           .set("Authorization", `Bearer ${bearerToken}`)
-          .send({ reviewId });
+          .send({
+            reviewId: reviewId,
+          });
         expect(consoleErrorSpy).toHaveBeenCalled();
         expect(response.statusCode).toBe(400);
         expect(response.body).toHaveProperty("success", false);
         expect(response.body).toHaveProperty("message", [
           {
             type: "field",
-            message: "Review does not match user ID.",
+            message: "Review is not liked.",
           },
         ]);
       });
     });
   });
-  describe("Controller tests", (): void => {
-    test("should fail if deleteReview fails", async (): Promise<void> => {
-      (ReviewModel.getReview as jest.Mock).mockResolvedValue({
-        user_id: "dn4up8nps89f",
-      });
-      const mockError: ModelError = new ModelError("Database failed");
-      (ReviewModel.deleteReview as jest.Mock).mockRejectedValue(mockError);
+  describe("controller error tests", (): void => {
+    test("should fail if decrement likes fails", async (): Promise<void> => {
+      const mockError: ModelError = new ModelError("Fail", 500);
+      (ReviewModel.decrementLikes as jest.Mock).mockRejectedValue(mockError);
       const response: SupertestResponse = await request(app)
-        .delete("/api/review/delete-review")
+        .delete("/api/review/likes")
         .set("Authorization", `Bearer ${bearerToken}`)
-        .send({ reviewId });
+        .send({
+          reviewId: reviewId,
+        });
       expect(consoleErrorSpy).toHaveBeenCalled();
       expect(response.statusCode).toBe(500);
       expect(response.body).toHaveProperty("success", false);
-      expect(response.body).toHaveProperty("message", mockError.message);
+      expect(response.body).toHaveProperty("message", "Fail");
+    });
+    test("should fail if removeLikedReview fails", async (): Promise<void> => {
+      const mockError: ModelError = new ModelError("Fail", 500);
+      (LikedReviewsModel.removeLikedReview as jest.Mock).mockRejectedValue(
+        mockError
+      );
+      const response: SupertestResponse = await request(app)
+        .delete("/api/review/likes")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          reviewId: reviewId,
+        });
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toHaveProperty("success", false);
+      expect(response.body).toHaveProperty("message", "Fail");
     });
   });
-  test("should successfully delete review", async (): Promise<void> => {
-    (ReviewModel.getReview as jest.Mock).mockResolvedValue({
-      user_id: "dn4up8nps89f",
+  describe("successful tests", (): void => {
+    test("should successfully unlike the review", async (): Promise<void> => {
+      const response: SupertestResponse = await request(app)
+        .delete("/api/review/likes")
+        .set("Authorization", `Bearer ${bearerToken}`)
+        .send({
+          reviewId: reviewId,
+        });
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toHaveProperty("success", true);
+      expect(response.body).toHaveProperty(
+        "message",
+        "Successfully unliked review."
+      );
     });
-    (ReviewModel.deleteReview as jest.Mock).mockResolvedValue(undefined);
-    const response: SupertestResponse = await request(app)
-      .delete("/api/review/delete-review")
-      .set("Authorization", `Bearer ${bearerToken}`)
-      .send({ reviewId });
-    expect(consoleErrorSpy).not.toHaveBeenCalled();
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toHaveProperty("success", true);
-    expect(response.body).toHaveProperty(
-      "message",
-      "Successfully deleted review."
-    );
   });
 });

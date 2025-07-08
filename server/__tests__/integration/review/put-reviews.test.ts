@@ -28,7 +28,7 @@ afterEach((): void => {
   jest.restoreAllMocks();
 });
 
-describe("PUT /api/review/change-review tests", (): void => {
+describe("PUT /api/review/reviews tests", (): void => {
   const bearerToken: string = createAccessToken("userId1");
   const reviewId = "1";
   const rating = 2;
@@ -36,7 +36,7 @@ describe("PUT /api/review/change-review tests", (): void => {
     describe("Bearer token tests", (): void => {
       test("should fail if authorization header does not exist", async (): Promise<void> => {
         const response: SupertestResponse = await request(app).put(
-          "/api/review/change-review"
+          "/api/review/reviews"
         );
         expect(response.statusCode).toBe(401);
         expect(response.body).toHaveProperty("success", false);
@@ -47,7 +47,7 @@ describe("PUT /api/review/change-review tests", (): void => {
       });
       test("should fail if authorization header is not a bearer", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .put("/api/review/change-review")
+          .put("/api/review/reviews")
           .set("Authorization", "Bear jsadklfjq9w.asdf3q9pfi.lasdkjfapsf");
         expect(response.statusCode).toBe(401);
         expect(response.body).toHaveProperty("success", false);
@@ -58,7 +58,7 @@ describe("PUT /api/review/change-review tests", (): void => {
       });
       test("should fail if authorization header does not contain a token", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .put("/api/review/change-review")
+          .put("/api/review/reviews")
           .set("Authorization", "Bearer ");
         expect(response.statusCode).toBe(401);
         expect(response.body).toHaveProperty("success", false);
@@ -70,7 +70,7 @@ describe("PUT /api/review/change-review tests", (): void => {
       test("should fail if token is signed incorrectly", async (): Promise<void> => {
         const token: string = jwt.sign("token", "key");
         const response: SupertestResponse = await request(app)
-          .put("/api/review/change-review")
+          .put("/api/review/reviews")
           .set("Authorization", `Bearer ${token}`);
         expect(response.statusCode).toBe(401);
         expect(response.body).toHaveProperty("success", false);
@@ -82,7 +82,7 @@ describe("PUT /api/review/change-review tests", (): void => {
       test("should fail if token is not for the purpose of access", async (): Promise<void> => {
         const token: string = createEmailVerificationToken("askdjfas");
         const response: SupertestResponse = await request(app)
-          .put("/api/review/change-review")
+          .put("/api/review/reviews")
           .set("Authorization", `Bearer ${token}`);
         expect(response.statusCode).toBe(401);
         expect(response.body).toHaveProperty("success", false);
@@ -96,7 +96,7 @@ describe("PUT /api/review/change-review tests", (): void => {
       describe("review tests", (): void => {
         test("should fail if reviewId does not exist", async (): Promise<void> => {
           const response: SupertestResponse = await request(app)
-            .put("/api/review/change-review")
+            .put("/api/review/reviews")
             .set("Authorization", `Bearer ${bearerToken}`)
             .send({ rating: rating });
           expect(consoleErrorSpy).toHaveBeenCalled();
@@ -112,7 +112,7 @@ describe("PUT /api/review/change-review tests", (): void => {
         test("should fail if review does not exist", async (): Promise<void> => {
           (ReviewModel.getReview as jest.Mock).mockResolvedValue(null);
           const response: SupertestResponse = await request(app)
-            .put("/api/review/change-review")
+            .put("/api/review/reviews")
             .set("Authorization", `Bearer ${bearerToken}`)
             .send({
               reviewId: reviewId,
@@ -133,7 +133,7 @@ describe("PUT /api/review/change-review tests", (): void => {
             user_id: "flimflam",
           });
           const response: SupertestResponse = await request(app)
-            .put("/api/review/change-review")
+            .put("/api/review/reviews")
             .set("Authorization", `Bearer ${bearerToken}`)
             .send({
               reviewId: reviewId,
@@ -158,7 +158,7 @@ describe("PUT /api/review/change-review tests", (): void => {
         });
         test("should fail if rating does not exist", async (): Promise<void> => {
           const response: SupertestResponse = await request(app)
-            .put("/api/review/change-review")
+            .put("/api/review/reviews")
             .set("Authorization", `Bearer ${bearerToken}`)
             .send({
               reviewId: "aslkfjaklasdf",
@@ -175,7 +175,7 @@ describe("PUT /api/review/change-review tests", (): void => {
         });
         test("should fail if rating is not an integer", async (): Promise<void> => {
           const response: SupertestResponse = await request(app)
-            .put("/api/review/change-review")
+            .put("/api/review/reviews")
             .set("Authorization", `Bearer ${bearerToken}`)
             .send({
               reviewId: "aslkfjaklasdf",
@@ -193,7 +193,7 @@ describe("PUT /api/review/change-review tests", (): void => {
         });
         test("should fail if rating is out of range", async (): Promise<void> => {
           const response: SupertestResponse = await request(app)
-            .put("/api/review/change-review")
+            .put("/api/review/reviews")
             .set("Authorization", `Bearer ${bearerToken}`)
             .send({
               reviewId: "aslkfjaklasdf",
@@ -218,7 +218,7 @@ describe("PUT /api/review/change-review tests", (): void => {
         });
         test("should fail if comment is not following en-US code", async (): Promise<void> => {
           const response: SupertestResponse = await request(app)
-            .put("/api/review/change-review")
+            .put("/api/review/reviews")
             .set("Authorization", `Bearer ${bearerToken}`)
             .send({
               reviewId: "aslkfjaklasdf",
@@ -238,7 +238,7 @@ describe("PUT /api/review/change-review tests", (): void => {
         });
         test("should fail if comment is contains special characters", async (): Promise<void> => {
           const response: SupertestResponse = await request(app)
-            .put("/api/review/change-review")
+            .put("/api/review/reviews")
             .set("Authorization", `Bearer ${bearerToken}`)
             .send({
               reviewId: "aslkfjaklasdf",
@@ -258,7 +258,7 @@ describe("PUT /api/review/change-review tests", (): void => {
         });
         test("should fail if comment is less than 10 characters", async (): Promise<void> => {
           const response: SupertestResponse = await request(app)
-            .put("/api/review/change-review")
+            .put("/api/review/reviews")
             .set("Authorization", `Bearer ${bearerToken}`)
             .send({
               reviewId: "aslkfjaklasdf",
@@ -281,7 +281,7 @@ describe("PUT /api/review/change-review tests", (): void => {
             longComment += "adlkaskfjsk";
           }
           const response: SupertestResponse = await request(app)
-            .put("/api/review/change-review")
+            .put("/api/review/reviews")
             .set("Authorization", `Bearer ${bearerToken}`)
             .send({
               reviewId: "aslkfjaklasdf",
@@ -300,7 +300,7 @@ describe("PUT /api/review/change-review tests", (): void => {
         });
         test("should fail if comment contains profanity", async (): Promise<void> => {
           const response: SupertestResponse = await request(app)
-            .put("/api/review/change-review")
+            .put("/api/review/reviews")
             .set("Authorization", `Bearer ${bearerToken}`)
             .send({
               reviewId: "aslkfjaklasdf",
@@ -345,7 +345,7 @@ describe("PUT /api/review/change-review tests", (): void => {
         new ModelError("Fail", 500)
       );
       const response: SupertestResponse = await request(app)
-        .put("/api/review/change-review")
+        .put("/api/review/reviews")
         .set("Authorization", `Bearer ${bearerToken}`)
         .send({
           reviewId: "aslkfjaklasdf",
@@ -361,7 +361,7 @@ describe("PUT /api/review/change-review tests", (): void => {
         new ModelError("Fail", 500)
       );
       const response: SupertestResponse = await request(app)
-        .put("/api/review/change-review")
+        .put("/api/review/reviews")
         .set("Authorization", `Bearer ${bearerToken}`)
         .send({
           reviewId: "aslkfjaklasdf",
@@ -375,7 +375,7 @@ describe("PUT /api/review/change-review tests", (): void => {
     test("should fail if oldReview is null", async (): Promise<void> => {
       (ReviewModel.getReview as jest.Mock).mockResolvedValueOnce(null);
       const response: SupertestResponse = await request(app)
-        .put("/api/review/change-review")
+        .put("/api/review/reviews")
         .set("Authorization", `Bearer ${bearerToken}`)
         .send({
           reviewId: "aslkfjaklasdf",
@@ -394,7 +394,7 @@ describe("PUT /api/review/change-review tests", (): void => {
         new ModelError("Fail", 500)
       );
       const response: SupertestResponse = await request(app)
-        .put("/api/review/change-review")
+        .put("/api/review/reviews")
         .set("Authorization", `Bearer ${bearerToken}`)
         .send({
           reviewId: "aslkfjaklasdf",
@@ -410,7 +410,7 @@ describe("PUT /api/review/change-review tests", (): void => {
         new ModelError("Fail", 500)
       );
       const response: SupertestResponse = await request(app)
-        .put("/api/review/change-review")
+        .put("/api/review/reviews")
         .set("Authorization", `Bearer ${bearerToken}`)
         .send({
           reviewId: "aslkfjaklasdf",
@@ -426,7 +426,7 @@ describe("PUT /api/review/change-review tests", (): void => {
         new ModelError("Fail", 500)
       );
       const response: SupertestResponse = await request(app)
-        .put("/api/review/change-review")
+        .put("/api/review/reviews")
         .set("Authorization", `Bearer ${bearerToken}`)
         .send({
           reviewId: "aslkfjaklasdf",
@@ -442,7 +442,7 @@ describe("PUT /api/review/change-review tests", (): void => {
         new ModelError("Fail", 500)
       );
       const response: SupertestResponse = await request(app)
-        .put("/api/review/change-review")
+        .put("/api/review/reviews")
         .set("Authorization", `Bearer ${bearerToken}`)
         .send({
           reviewId: "aslkfjaklasdf",
@@ -458,7 +458,7 @@ describe("PUT /api/review/change-review tests", (): void => {
         new ModelError("Fail", 500)
       );
       const response: SupertestResponse = await request(app)
-        .put("/api/review/change-review")
+        .put("/api/review/reviews")
         .set("Authorization", `Bearer ${bearerToken}`)
         .send({
           reviewId: "aslkfjaklasdf",
@@ -492,7 +492,7 @@ describe("PUT /api/review/change-review tests", (): void => {
     });
     test("should successfully return a response", async (): Promise<void> => {
       const response: SupertestResponse = await request(app)
-        .put("/api/review/change-review")
+        .put("/api/review/reviews")
         .set("Authorization", `Bearer ${bearerToken}`)
         .send({
           reviewId: "aslkfjaklasdf",
