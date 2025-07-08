@@ -21,14 +21,14 @@ afterEach((): void => {
   consoleErrorSpy.mockRestore();
 });
 
-describe("POST /api/account/login", (): void => {
+describe("POST /api/account/sessions", (): void => {
   describe("Validation errors", (): void => {
     test("should output validation errors to console and not call loginUser", async (): Promise<void> => {
       const loginUserSpy: jest.SpyInstance = jest
         .spyOn(accountController, "loginUser")
         .mockImplementation(jest.fn());
       const response: SupertestResponse = await request(app).post(
-        "/api/account/login"
+        "/api/account/sessions"
       );
       expect(consoleErrorSpy).toHaveBeenNthCalledWith(
         1,
@@ -70,7 +70,7 @@ describe("POST /api/account/login", (): void => {
     describe("Username errors", (): void => {
       test("username does not exist", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/login")
+          .post("/api/account/sessions")
           .send({
             password: "thisIsRandom123!",
           });
@@ -85,7 +85,7 @@ describe("POST /api/account/login", (): void => {
       });
       test("username is not a string", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/login")
+          .post("/api/account/sessions")
           .send({
             username: 1234,
             password: "thisIsRandom123!",
@@ -107,7 +107,7 @@ describe("POST /api/account/login", (): void => {
           new ModelError("User does not exist.", 400)
         );
         const response: SupertestResponse = await request(app)
-          .post("/api/account/login")
+          .post("/api/account/sessions")
           .send({
             username: "thisUserDoesNotExist",
             password: "thisIsRandom123!",
@@ -133,7 +133,7 @@ describe("POST /api/account/login", (): void => {
       });
       test("password does not exist", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/login")
+          .post("/api/account/sessions")
           .send({
             username: "aUsername",
           });
@@ -148,7 +148,7 @@ describe("POST /api/account/login", (): void => {
       });
       test("password must be a string", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/login")
+          .post("/api/account/sessions")
           .send({
             username: "aUsername",
             password: 1234,
@@ -170,7 +170,7 @@ describe("POST /api/account/login", (): void => {
           .mockImplementation(jest.fn());
         (isValidPassword as jest.Mock).mockResolvedValue(false);
         const response: SupertestResponse = await request(app)
-          .post("/api/account/login")
+          .post("/api/account/sessions")
           .send({
             username: "aUsername",
             password: "thisPassword",
@@ -207,7 +207,7 @@ describe("POST /api/account/login", (): void => {
       const mockError: ModelError = new ModelError("getUserId error", 500);
       (UserModel.getUserId as jest.Mock).mockRejectedValue(mockError);
       const response: SupertestResponse = await request(app)
-        .post("/api/account/login")
+        .post("/api/account/sessions")
         .send({
           username: "username",
           password: "password",
@@ -222,7 +222,7 @@ describe("POST /api/account/login", (): void => {
       const mockError: ModelError = new ModelError("insertToken error", 500);
       (TokenModel.insertToken as jest.Mock).mockRejectedValue(mockError);
       const response: SupertestResponse = await request(app)
-        .post("/api/account/login")
+        .post("/api/account/sessions")
         .send({
           username: "username",
           password: "password",
@@ -249,7 +249,7 @@ describe("POST /api/account/login", (): void => {
     jest.spyOn(TokenModel, "insertToken").mockImplementation(jest.fn());
     (TokenModel.insertToken as jest.Mock).mockResolvedValue(undefined);
     const response: SupertestResponse = await request(app)
-      .post("/api/account/login")
+      .post("/api/account/sessions")
       .send({
         username: "username1",
         password: "thisIsAPassword123!",

@@ -26,7 +26,7 @@ afterAll((): void => {
   jest.clearAllMocks();
 });
 
-describe("POST /api/account/register tests", (): void => {
+describe("POST /api/account/users tests", (): void => {
   const validDetails: RegistrationData = {
     username: "gooduser",
     email: "gooduser12@domain.com",
@@ -38,7 +38,7 @@ describe("POST /api/account/register tests", (): void => {
         .spyOn(accountController, "registerUser")
         .mockImplementation(jest.fn());
       const response: SupertestResponse = await request(app).post(
-        "/api/account/register"
+        "/api/account/users"
       );
       expect(consoleErrorSpy).toHaveBeenNthCalledWith(
         1,
@@ -86,7 +86,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a non-existent username", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             email: validDetails.email,
             password: validDetails.password,
@@ -103,7 +103,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a non-string username", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: 123,
             email: validDetails.email,
@@ -121,7 +121,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a username that is too short", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: "a",
             email: validDetails.email,
@@ -139,7 +139,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a username that is too long", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: "qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzxcvbnm",
             email: validDetails.email,
@@ -157,7 +157,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a username that is not alphanumeric", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: "a2%",
             email: validDetails.email,
@@ -176,7 +176,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a username that does not follow en-US language code", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: "ñef",
             email: validDetails.email,
@@ -195,7 +195,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a username that contains profanity", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: "fuck",
             email: validDetails.email,
@@ -216,7 +216,7 @@ describe("POST /api/account/register tests", (): void => {
           UserModel.isUsernameUnique as jest.Mock
         ).mockResolvedValue(false);
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: "usernameExists",
             email: validDetails.email,
@@ -247,7 +247,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a non-existent email", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: validDetails.username,
             password: validDetails.password,
@@ -264,7 +264,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a non-string email", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: validDetails.username,
             email: 123,
@@ -282,7 +282,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a string not in email format", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: validDetails.username,
             email: "bademail@bademail",
@@ -303,7 +303,7 @@ describe("POST /api/account/register tests", (): void => {
           UserModel.isEmailUnique as jest.Mock
         ).mockResolvedValue(false);
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: validDetails.username,
             email: "notuniqueemail@somedomain.com",
@@ -339,7 +339,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a non-existent password", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: validDetails.username,
             email: validDetails.email,
@@ -356,7 +356,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a non-string password", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: validDetails.username,
             email: validDetails.email,
@@ -374,7 +374,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a password that is too short", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: validDetails.username,
             email: validDetails.email,
@@ -392,7 +392,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a password that is too long", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: validDetails.username,
             email: validDetails.email,
@@ -411,7 +411,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a password that is not alphanumeric", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: validDetails.username,
             email: validDetails.email,
@@ -430,7 +430,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a password that is not in en-US language code", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: validDetails.username,
             email: validDetails.email,
@@ -449,7 +449,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a password does not contain lowercase", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: validDetails.username,
             email: validDetails.email,
@@ -468,7 +468,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a password does not contain uppercase", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: validDetails.username,
             email: validDetails.email,
@@ -487,7 +487,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a password with no numbers", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: validDetails.username,
             email: validDetails.email,
@@ -506,7 +506,7 @@ describe("POST /api/account/register tests", (): void => {
       });
       test("should fail with a password with no symbols", async (): Promise<void> => {
         const response: SupertestResponse = await request(app)
-          .post("/api/account/register")
+          .post("/api/account/users")
           .send({
             username: validDetails.username,
             email: validDetails.email,
@@ -537,7 +537,7 @@ describe("POST /api/account/register tests", (): void => {
         UserModel.createUser as jest.Mock
       ).mockRejectedValue(mockError);
       const response: SupertestResponse = await request(app)
-        .post("/api/account/register")
+        .post("/api/account/users")
         .send({
           username: validDetails.username,
           email: validDetails.email,
@@ -573,7 +573,7 @@ describe("POST /api/account/register tests", (): void => {
         sendVerificationEmail as jest.Mock
       ).mockRejectedValue(emailError);
       const response: SupertestResponse = await request(app)
-        .post("/api/account/register")
+        .post("/api/account/users")
         .send({
           username: validDetails.username,
           email: validDetails.email,
@@ -605,7 +605,7 @@ describe("POST /api/account/register tests", (): void => {
       sendVerificationEmail as jest.Mock
     ).mockResolvedValue(undefined);
     const response: SupertestResponse = await request(app)
-      .post("/api/account/register")
+      .post("/api/account/users")
       .send({
         username: validDetails.username,
         email: validDetails.email,

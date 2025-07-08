@@ -27,7 +27,7 @@ import { accountInfoAuthenticationError } from "../middlewares/authentication-er
 const router: Router = Router();
 
 router.post(
-  "/register",
+  "/users",
   registerUserValidator,
   registerUserValidationErrors,
   registerUser
@@ -40,12 +40,12 @@ router.put(
   verifyUser
 );
 
-router.post("/login", loginValidator, loginUserValidationErrors, loginUser);
+router.post("/sessions", loginValidator, loginUserValidationErrors, loginUser);
 
-router.post("/logout", logoutValidator, logoutValidationErrors, logoutUser);
+router.delete("/sessions", logoutValidator, logoutValidationErrors, logoutUser);
 
 router.post(
-  "/refresh",
+  "/refresh-tokens",
   refreshValidator,
   refreshValidationErrors,
   refreshTokens
