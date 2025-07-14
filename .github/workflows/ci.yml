@@ -15,10 +15,11 @@ jobs:
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
-      SENDGRID_EMAIL_SENDER: ${{ secrets.SENDGRID_EMAIL_SENDER }}
       WEBSITE_URL: ${{ secrets.WEBSITE_URL }}
       NODE_ENV: test
+      ORACLE_SMTP_USER: ${{ secrets.ORACLE_SMTP_USER }}
+      ORACLE_SMTP_PASSWORD: ${{ secrets.ORACLE_SMTP_PASSWORD }}
+      EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
 
     steps:
       - name: Checkout Code
