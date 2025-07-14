@@ -1,12 +1,16 @@
-import sgMail from "@sendgrid/mail";
+import nodemailer from "nodemailer";
 import { sendVerificationEmail } from "../../../src/utils/email-utils";
 import EmailError from "../../../src/errors/email-error";
-import { WEBSITE_URL, SENDGRID_EMAIL_SENDER } from "../../../src/config";
+import { EMAIL_SENDER } from "../../../src/config";
 
-jest.mock("@sendgrid/mail");
+jest.mock("nodemailer");
 
-beforeEach((): void => {
+const sendMailMock = jest.fn();
+beforeEach(() => {
   jest.clearAllMocks();
+  (nodemailer.createTransport as jest.Mock).mockReturnValue({
+    sendMail: sendMailMock,
+  });
 });
 
 describe("sendVerificationEmail tests", (): void => {
@@ -15,11 +19,11 @@ describe("sendVerificationEmail tests", (): void => {
   const mockVerificationToken = "1234abcd";
   test("should successfully send verification email", async (): Promise<void> => {
     await sendVerificationEmail(mockUsername, mockEmail, mockVerificationToken);
-    expect(sgMail.send).toHaveBeenCalledTimes(1);
-    expect(sgMail.send).toHaveBeenCalledWith(
+    expect(sendMailMock).toHaveBeenCalledTimes(1);
+    expect(sendMailMock).toHaveBeenCalledWith(
       expect.objectContaining({
         to: mockEmail,
-        from: SENDGRID_EMAIL_SENDER,
+        from: EMAIL_SENDER,
         subject: expect.any(String),
         text: expect.any(String),
         html: expect.any(String),
@@ -27,7 +31,7 @@ describe("sendVerificationEmail tests", (): void => {
     );
   });
   test("should fail to send a verification email", async (): Promise<void> => {
-    (sgMail.send as jest.Mock).mockRejectedValue(new Error("Send failed"));
+    sendMailMock.mockRejectedValue(new Error("Send failed"));
     await expect(
       sendVerificationEmail(mockUsername, mockEmail, mockVerificationToken)
     ).rejects.toThrow(EmailError);

@@ -1,12 +1,11 @@
-import sgMail from "@sendgrid/mail";
+import nodemailer, { Transporter } from "nodemailer";
 import {
-  SENDGRID_API_KEY,
-  SENDGRID_EMAIL_SENDER,
+  ORACLE_SMTP_USER,
+  ORACLE_SMTP_PASSWORD,
+  EMAIL_SENDER,
   WEBSITE_URL,
 } from "../config";
 import EmailError from "../errors/email-error";
-
-sgMail.setApiKey(SENDGRID_API_KEY);
 
 /**
  * Send a verification email a user.
@@ -22,10 +21,19 @@ export async function sendVerificationEmail(
   verificationToken: string
 ): Promise<void> {
   try {
-    const msg: sgMail.MailDataRequired = {
+    const transporter: Transporter = nodemailer.createTransport({
+      host: "smtp.email.us-sanjose-1.oci.oraclecloud.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: ORACLE_SMTP_USER,
+        pass: ORACLE_SMTP_PASSWORD,
+      },
+    });
+    const mailOptions = {
+      from: EMAIL_SENDER,
       to: email,
-      from: SENDGRID_EMAIL_SENDER,
-      subject: "Verify your email for classical review",
+      subject: "Verify your Classical Review Email",
       text: `Email verification: ${WEBSITE_URL}/verify-email?token=${verificationToken}`,
       html: `
         <p>Hello ${username},</p>
@@ -33,7 +41,7 @@ export async function sendVerificationEmail(
         <a href="${WEBSITE_URL}/verify-email?token=${verificationToken}">Verification</a>
       `,
     };
-    await sgMail.send(msg);
+    await transporter.sendMail(mailOptions);
   } catch (error: unknown) {
     throw new EmailError(
       "Error while sending email verification",
