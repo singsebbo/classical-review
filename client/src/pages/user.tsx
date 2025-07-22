@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { RegistrationData, RegistrationErrors, LoginData } from "../utils/interfaces";
+import { ChangeEvent, useState } from "react";
+import { RegistrationData, LoginData } from "../utils/interfaces";
 
 function User(): JSX.Element {
   const [registrationData, setRegistrationData] = useState<RegistrationData>({
@@ -8,24 +8,96 @@ function User(): JSX.Element {
     password: ""
   });
 
-  const [registrationErrors, setRegistrationErrors] = useState<RegistrationErrors>({
-    usernameErrors: [],
-    emailErrors: [],
-    passwordErrors: []
-  });
-
   const [loginData, setLoginData] = useState<LoginData>({
     username: "",
     password: "",
-    rememberMe: false
+    rememberMe: true
   });
 
-  const [isValidRegistration, setIsValidRegistration] = useState<boolean>(false);
-  const [isValidLogin, setIsValidLogin] = useState<boolean>(false);
+  function handleRegistrationChange(e: ChangeEvent<HTMLInputElement>): void {
+    const { name, value } = e.target;
+    setRegistrationData({
+      ...registrationData,
+      [name]: value,
+    });
+  }
+
+  function handleRememberMeClick() {
+    setLoginData({
+      ...loginData,
+      rememberMe: !loginData.rememberMe
+    });
+  }
 
   return (
     <>
-      <span>User Page</span>
+      <div className="my-auto">
+        <div className="flex flex-col gap-2 p-4">
+          <span className="text-2xl">Register</span>
+          <form id="register-form" className="flex flex-col gap-2">
+            <input
+              name="username"
+              type="text"
+              placeholder="username"
+              value={registrationData.username}
+              onChange={handleRegistrationChange}
+              className="bg-gray-200 rounded-lg px-2 py-1"
+            />
+            <input
+              name="email"
+              type="email"
+              placeholder="email"
+              value={registrationData.email}
+              onChange={handleRegistrationChange}
+              className="bg-gray-200 rounded-lg px-2 py-1"
+            />
+            <input
+              name="password"
+              type="password"
+              placeholder="password"
+              value={registrationData.password}
+              onChange={handleRegistrationChange}
+              className="bg-gray-200 rounded-lg px-2 py-1"
+            />
+            <input
+              type="submit"
+              value="Sign Up"
+              className="bg-citron rounded-lg px-2 py-1"
+            />
+          </form>
+        </div>
+        <div className="flex flex-col gap-2 p-4">
+          <span className="text-2xl">Log In</span>
+          <form id="login-form" className="flex flex-col gap-2">
+            <input
+              name="username"
+              type="text"
+              placeholder="username"
+              className="bg-gray-200 rounded-lg px-2 py-1"
+            />
+            <input
+              name="password"
+              type="password"
+              placeholder="password"
+              className="bg-gray-200 rounded-lg px-2 py-1"
+            />
+            <div className="flex gap-2 items-center">
+              <input
+                name="rememberMe"
+                type="checkbox"
+                checked={loginData.rememberMe}
+                onClick={handleRememberMeClick}
+              />
+              <span>Remember Me</span>
+            </div>
+            <input
+              type="submit"
+              value="Sign In"
+              className="bg-citron rounded-lg px-2 py-1"
+            />
+          </form>
+        </div>
+      </div>
     </>
   );
 }

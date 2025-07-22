@@ -49,10 +49,3 @@ export interface LoginData {
   password: string;
   rememberMe: boolean;
 }
-
-/** Represents possible input errors when registering */
-export interface RegistrationErrors {
-  usernameErrors: string[];
-  emailErrors: string[];
-  passwordErrors: string[];
-}
