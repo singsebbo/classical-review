@@ -29,12 +29,28 @@ function User(): JSX.Element {
     });
   }
 
+  async function handleRegistrationSubmit() {
+    const response = await fetch("http://localhost:3000/api/account/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username: registrationData.username,
+        email: registrationData.email,
+        password: registrationData.password
+      }),
+    });
+    const data = await response.json();
+    console.log(data);
+  }
+
   return (
     <>
       <div className="my-auto">
         <div className="flex flex-col gap-2 p-4">
           <span className="text-2xl">Register</span>
-          <form id="register-form" className="flex flex-col gap-2">
+          <form id="register-form" onSubmit={handleRegistrationSubmit} className="flex flex-col gap-2">
             <input
               name="username"
               type="text"
