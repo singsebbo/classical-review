@@ -123,7 +123,7 @@ class UserModel {
       const query = `
         UPDATE users
         SET
-          verified = true
+          verified = true,
           last_modified_at = NOW()
         WHERE user_id = $1
         RETURNING *;
@@ -142,6 +142,7 @@ class UserModel {
       if (error instanceof ModelError) {
         throw error;
       }
+      console.error(error);
       throw new ModelError("Database error while verifying user.", 500);
     }
   }
