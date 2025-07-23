@@ -1,6 +1,7 @@
 import Search from "./pages/search";
 import Layout from "./layout";
 import User from "./pages/user";
+import VerifyEmail from "./pages/verify-email";
 
 const routes = [
   {
@@ -14,6 +15,10 @@ const routes = [
       {
         path: "user",
         element: <User />
+      },
+      {
+        path: "verify-email",
+        element: <VerifyEmail />
       }
     ]
   }
