@@ -199,7 +199,7 @@ describe("setUserVerified tests", (): void => {
       expect.stringContaining(`
         UPDATE users
         SET
-          verified = true
+          verified = true,
           last_modified_at = NOW()
         WHERE user_id = $1
         RETURNING *;
@@ -217,7 +217,7 @@ describe("setUserVerified tests", (): void => {
       expect.stringContaining(`
         UPDATE users
         SET
-          verified = true
+          verified = true,
           last_modified_at = NOW()
         WHERE user_id = $1
         RETURNING *;
@@ -251,7 +251,7 @@ describe("setUserVerified tests", (): void => {
       expect.stringContaining(`
         UPDATE users
         SET
-          verified = true
+          verified = true,
           last_modified_at = NOW()
         WHERE user_id = $1
         RETURNING *;
