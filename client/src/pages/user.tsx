@@ -1,6 +1,8 @@
 import { ChangeEvent, useState } from "react";
 import { RegistrationData, LoginData } from "../utils/interfaces";
 
+const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+
 function User(): JSX.Element {
   const [registrationData, setRegistrationData] = useState<RegistrationData>({
     username: "",
@@ -31,7 +33,7 @@ function User(): JSX.Element {
 
   async function handleRegistrationSubmit(e: React.FormEvent) {
     e.preventDefault();
-    fetch("http://localhost:3000/api/account/users", {
+    fetch(`${SERVER_URL}/api/account/users`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

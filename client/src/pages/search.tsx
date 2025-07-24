@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Composition, DatabaseComposition, Composer, DatabaseComposer } from "../utils/interfaces";
 import StarRating from "../components/star-rating";
 
+const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+
 function Search(): JSX.Element {
   const [searchCategory, setSearchCategory] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -13,7 +15,7 @@ function Search(): JSX.Element {
     try {
       setLoading(true);
       if (searchCategory === "Piece") {
-        const response = await fetch(`http://localhost:3000/api/search/compositions?term=${searchTerm}`);
+        const response = await fetch(`${SERVER_URL}/api/search/compositions?term=${searchTerm}`);
         const data = await response.json();
         console.log(data);
         setComposers([]);
@@ -26,7 +28,7 @@ function Search(): JSX.Element {
         })))
       }
       if (searchCategory === "Composer") {
-        const response = await fetch(`http://localhost:3000/api/search/composers?term=${searchTerm}`);
+        const response = await fetch(`${SERVER_URL}/api/search/composers?term=${searchTerm}`);
         const data = await response.json();
         console.log(data);
         setCompositions([]);
