@@ -47,7 +47,7 @@ function User(): JSX.Element {
         if (Array.isArray(data.message)) {
           let error: string = "";
           data.message.forEach((err: {"message": string, "field": string }) => error = error.concat(err.message, "\n"));
-          alert(error);
+          throw new Error(error);
         } else {
           throw new Error(data.message);
         }
@@ -55,8 +55,9 @@ function User(): JSX.Element {
       return data;
     }).then((data) => {
       console.log(data);
+      alert("Verification Email Sent!");
     }).catch((error) => {
-      alert(error);
+      alert(error.message);
     });
   }
 
