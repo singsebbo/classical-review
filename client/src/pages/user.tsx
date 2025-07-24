@@ -29,8 +29,9 @@ function User(): JSX.Element {
     });
   }
 
-  async function handleRegistrationSubmit() {
-    const response = await fetch("http://localhost:3000/api/account/users", {
+  async function handleRegistrationSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    fetch("http://localhost:3000/api/account/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -40,9 +41,23 @@ function User(): JSX.Element {
         email: registrationData.email,
         password: registrationData.password
       }),
+    }).then(async (res) => {
+      const data = await res.json();
+      if (!res.ok) {
+        if (Array.isArray(data.message)) {
+          let error: string = "";
+          data.message.forEach((err: {"message": string, "field": string }) => error = error.concat(err.message, "\n"));
+          alert(error);
+        } else {
+          throw new Error(data.message);
+        }
+      }
+      return data;
+    }).then((data) => {
+      console.log(data);
+    }).catch((error) => {
+      alert(error);
     });
-    const data = await response.json();
-    console.log(data);
   }
 
   return (
