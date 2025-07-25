@@ -225,26 +225,26 @@ function validRefreshToken(): ValidationChain {
     });
 }
 
-/** Validates Express request for POST /api/account/register */
+/** Validates Express request for POST /api/account/users */
 export const registerUserValidator: ValidationChain[] = [
   validateUsername(),
   validateEmail(),
   validatePassword(),
 ];
 
-/** Validates Express request for POST /api/account/verify-email */
+/** Validates Express request for PUT /api/account/verify-email */
 export const verifyEmailValidator: ValidationChain[] = [
   validEmailVerificationToken(),
 ];
 
-/** Validates Express request for POST /api/account/login */
+/** Validates Express request for POST /api/account/sessions */
 export const loginValidator: ValidationChain[] = [
   validLoginUsername(),
   validLoginPassword(),
 ];
 
-/** Validates Express request for POST /api/account/logout */
+/** Validates Express request for DELETE /api/account/sessions */
 export const logoutValidator: ValidationChain[] = [validRefreshToken()];
 
-/** Validates Express request for POST /api/account/refresh */
+/** Validates Express request for POST /api/account/refresh-tokens */
 export const refreshValidator: ValidationChain[] = [validRefreshToken()];
