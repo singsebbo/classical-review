@@ -263,7 +263,9 @@ describe("POST /api/account/sessions", (): void => {
     expect(cookies).toBeDefined();
     expect(refreshTokenCookie).toBeDefined();
     expect(refreshTokenCookie).toContain("HttpOnly");
-    expect(refreshTokenCookie).toContain("SameSite=Strict");
+    if (NODE_ENV === "production") {
+      expect(refreshTokenCookie).toContain("SameSite=Strict");
+    }
     if (NODE_ENV === "production") {
       expect(refreshTokenCookie).toContain("Secure");
     }

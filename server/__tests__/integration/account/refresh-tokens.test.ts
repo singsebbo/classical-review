@@ -158,7 +158,9 @@ describe("POST /api/account/refresh-tokens", (): void => {
     expect(cookies).toBeDefined();
     expect(refreshTokenCookie).toBeDefined();
     expect(refreshTokenCookie).toContain("HttpOnly");
-    expect(refreshTokenCookie).toContain("SameSite=Strict");
+    if (NODE_ENV === "production") {
+      expect(refreshTokenCookie).toContain("SameSite=Strict");
+    }
     expect(refreshTokenCookie).not.toBe(validRefreshToken);
     if (NODE_ENV === "production") {
       expect(refreshTokenCookie).toContain("Secure");
