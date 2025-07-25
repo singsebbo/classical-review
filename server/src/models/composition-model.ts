@@ -140,7 +140,7 @@ class CompositionModel {
   static async getComposition(compositionId: string): Promise<Composition> {
     try {
       const query = `
-          SELECT 1
+          SELECT *
           FROM compositions
           WHERE composition_id = $1
           LIMIT 1;

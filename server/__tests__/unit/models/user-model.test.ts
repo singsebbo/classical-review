@@ -271,7 +271,7 @@ describe("getUserResult tests", (): void => {
     );
     expect(database.query).toHaveBeenCalledWith(
       expect.stringContaining(`
-        SELECT 1
+        SELECT *
         FROM users
         WHERE user_id = $1
         LIMIT 1;
@@ -291,7 +291,7 @@ describe("getUserResult tests", (): void => {
     );
     expect(database.query).toHaveBeenCalledWith(
       expect.stringContaining(`
-        SELECT 1
+        SELECT *
         FROM users
         WHERE user_id = $1
         LIMIT 1;
@@ -311,7 +311,7 @@ describe("getUserResult tests", (): void => {
     );
     expect(database.query).toHaveBeenCalledWith(
       expect.stringContaining(`
-        SELECT 1
+        SELECT *
         FROM users
         WHERE username = $1
         LIMIT 1;
@@ -331,7 +331,7 @@ describe("getUserResult tests", (): void => {
     );
     expect(database.query).toHaveBeenCalledWith(
       expect.stringContaining(`
-        SELECT 1
+        SELECT *
         FROM users
         WHERE email = $1
         LIMIT 1;
@@ -353,7 +353,7 @@ describe("userExistsAndIsVerified tests", (): void => {
     );
     expect(database.query).toHaveBeenCalledWith(
       expect.stringContaining(`
-        SELECT 1
+        SELECT *
         FROM users
         WHERE user_id = $1
         LIMIT 1;
@@ -375,7 +375,7 @@ describe("userExistsAndIsVerified tests", (): void => {
     );
     expect(database.query).toHaveBeenCalledWith(
       expect.stringContaining(`
-        SELECT 1
+        SELECT *
         FROM users
         WHERE email = $1
         LIMIT 1;
@@ -399,7 +399,7 @@ describe("userExistsAndIsVerified tests", (): void => {
     );
     expect(database.query).toHaveBeenCalledWith(
       expect.stringContaining(`
-        SELECT 1
+        SELECT *
         FROM users
         WHERE username = $1
         LIMIT 1;
@@ -417,7 +417,7 @@ describe("userExistsAndIsVerified tests", (): void => {
     ).resolves.toBe(true);
     expect(database.query).toHaveBeenCalledWith(
       expect.stringContaining(`
-        SELECT 1
+        SELECT *
         FROM users
         WHERE username = $1
         LIMIT 1;

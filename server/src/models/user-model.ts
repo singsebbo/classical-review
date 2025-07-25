@@ -170,7 +170,7 @@ class UserModel {
         values = [uniqueIndentifier.email!];
       }
       const query = `
-        SELECT 1
+        SELECT *
         FROM users
         WHERE ${whereCondition}
         LIMIT 1;
