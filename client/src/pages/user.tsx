@@ -24,6 +24,14 @@ function User(): JSX.Element {
     });
   }
 
+  function handleLoginChange(e: ChangeEvent<HTMLInputElement>): void {
+    const { name, value } = e.target;
+    setLoginData({
+      ...loginData,
+      [name]: value,
+    });
+  }
+
   function handleRememberMeClick() {
     setLoginData({
       ...loginData,
@@ -61,6 +69,38 @@ function User(): JSX.Element {
     }).catch((error) => {
       alert(error.message);
     });
+  }
+
+  async function handleLoginSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    fetch(`${SERVER_URL}/api/account/sessions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "include",
+      body: JSON.stringify({ username: loginData.username, password: loginData.password }),
+    }).then(async (res) => {
+      console.log(res);
+      const data = await res.json();
+      if (!res.ok) {
+        if (Array.isArray(data.message)) {
+          let error: string = "";
+          data.message.forEach((err: {"message": string, "field": string }) => error = error.concat(err.message, "\n"));
+          throw new Error(error);
+        } else {
+          throw new Error(data.message || "Login Failed");
+        }
+      }
+      return data;
+    }).then((data) => {
+      console.log(data);
+      localStorage.setItem("accessToken", data.accessToken);
+      alert("You have successfully logged in");
+    }).catch((error) => {
+      console.error(error);
+      alert(error.message);
+    })
   }
 
   return (
@@ -102,17 +142,21 @@ function User(): JSX.Element {
         </div>
         <div className="flex flex-col gap-2 p-4">
           <span className="text-2xl">Log In</span>
-          <form id="login-form" className="flex flex-col gap-2">
+          <form id="login-form" onSubmit={handleLoginSubmit} className="flex flex-col gap-2">
             <input
               name="username"
               type="text"
               placeholder="username"
+              value={loginData.username}
+              onChange={handleLoginChange}
               className="bg-gray-200 rounded-lg px-2 py-1"
             />
             <input
               name="password"
               type="password"
               placeholder="password"
+              value={loginData.password}
+              onChange={handleLoginChange}
               className="bg-gray-200 rounded-lg px-2 py-1"
             />
             <div className="flex gap-2 items-center">
