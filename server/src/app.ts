@@ -11,7 +11,8 @@ const app: Express = express();
 
 app.use(
   cors({
-    origin: NODE_ENV === "test" ? "*" : WEBSITE_URL,
+    origin: NODE_ENV === "test" ? "http://localhost:5173" : WEBSITE_URL,
+    credentials: true,
   })
 );
 
