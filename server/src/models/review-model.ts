@@ -41,7 +41,7 @@ class ReviewModel {
       const query = `
         SELECT *
         FROM reviews
-        WHERE user_id = $1;
+        WHERE user_id = $1
         ORDER BY num_liked DESC;
       `;
       const values: [string] = [userId];
