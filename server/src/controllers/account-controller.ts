@@ -101,7 +101,7 @@ export async function loginUser(
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: NODE_ENV === "production",
-        sameSite: NODE_ENV === "production" ? "strict" : "none",
+        sameSite: NODE_ENV === "production" ? "strict" : "lax",
         maxAge: 180 * 24 * 60 * 60 * 1000,
       })
       .send({
@@ -137,7 +137,7 @@ export async function logoutUser(
       .clearCookie("refreshToken", {
         httpOnly: true,
         secure: NODE_ENV === "production",
-        sameSite: NODE_ENV === "production" ? "strict" : "none",
+        sameSite: NODE_ENV === "production" ? "strict" : "lax",
       })
       .status(200)
       .json({ success: true, message: "Logged out successfully" });
@@ -169,8 +169,8 @@ export async function refreshTokens(
       .status(200)
       .cookie("refreshToken", newRefreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: NODE_ENV === "production" ? "strict" : "none",
+        secure: NODE_ENV === "production",
+        sameSite: NODE_ENV === "production" ? "strict" : "lax",
         maxAge: 180 * 24 * 60 * 60 * 1000,
       })
       .send({
