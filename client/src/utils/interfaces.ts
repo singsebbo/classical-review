@@ -49,3 +49,37 @@ export interface LoginData {
   password: string;
   rememberMe: boolean;
 }
+
+/** Represents the user details returned from GET /api/account/info */
+export interface UserDetails {
+  user_id: string;
+  username: string;
+  email: string;
+  bio: string | null;
+  created_at: Date | string;
+  last_modified_at: Date | string;
+  profile_picture_url: string | null;
+  verified: boolean;
+  last_verification_sent: Date | string;
+  average_review: number;
+  total_reviews: number;
+}
+
+/** Represents a row in the reviews database */
+export interface Review {
+  review_id: string;
+  composition_id: string;
+  user_id: string;
+  rating: number;
+  comment: string;
+  created_at: Date | string;
+  last_modified_at: Date | string;
+  num_liked: number;
+}
+
+/** Represents a row in the liked_reviews database */
+export interface LikedReview {
+  user_id: string;
+  review_id: string;
+  liked_at: Date | string;
+}

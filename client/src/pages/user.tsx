@@ -2,11 +2,12 @@ import { ChangeEvent, useState } from "react";
 import { RegistrationData, LoginData } from "../utils/interfaces";
 import { useAuth } from "../utils/auth-context";
 import { LoadingOverlay } from "../components/loading-overlay";
+import StarRating from "../components/star-rating";
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 function User(): JSX.Element {
-  const { isAuthenticated, loading, setIsAuthenticated } = useAuth();
+  const { isAuthenticated, loading, setIsAuthenticated, userDetails, userReviews } = useAuth();
 
   const [registrationData, setRegistrationData] = useState<RegistrationData>({
     username: "",
@@ -111,7 +112,36 @@ function User(): JSX.Element {
   if (isAuthenticated) {
     return (
       <>
-        <span>You are authenticated</span>
+        <div className="my-auto ">
+          <div className="flex flex-col mx-2">
+            <div id="user" className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <span className="text-2xl">{userDetails?.username}</span>
+                <span>{(userDetails?.created_at as string).substring(0,10)}</span>
+              </div>
+              <div className="flex flex-col justify-center">
+                <span className="text-lg text-center">Average Rating</span>
+                <StarRating rating={userDetails?.average_review || 0} />
+              </div>
+            </div>
+            <div id="bio" className="border border-black rounded-md min-h-40 py-1 px-2">
+              <span className={userDetails?.bio || "text-gray-600"}>{userDetails?.bio || `Bio ...`}</span>
+            </div>
+            <div id="reviews" className="flex flex-col">
+              <span className="text-xl">Reviews</span>
+              {userReviews ? 
+                userReviews.map((review) => (
+                  <div
+                    key={review.review_id}
+                    className="border border-black text-sm bg-white p-2"
+                  >
+                  </div>
+                ))
+              : <></>
+              }
+            </div>
+          </div>
+        </div>
       </>
     )
   }
