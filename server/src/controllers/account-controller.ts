@@ -161,7 +161,6 @@ export async function refreshTokens(
   try {
     const refreshToken: string = req.cookies.refreshToken;
     const userId: string = getUserIdFromToken(refreshToken);
-    await TokenModel.removeExistingTokens(userId);
     const newRefreshToken: string = createRefreshToken(userId);
     await TokenModel.insertToken(userId, newRefreshToken);
     const newAccessToken: string = createAccessToken(userId);

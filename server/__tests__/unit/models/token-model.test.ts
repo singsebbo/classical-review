@@ -45,6 +45,7 @@ describe("insertToken tests", (): void => {
       expect.stringContaining(`
         INSERT INTO refresh_tokens (user_id, token)
         VALUES ($1, $2)
+        ON CONFLICT (token) DO NOTHING
         RETURNING *;
       `),
       [args.userId, args.token]
@@ -62,6 +63,7 @@ describe("insertToken tests", (): void => {
       expect.stringContaining(`
         INSERT INTO refresh_tokens (user_id, token)
         VALUES ($1, $2)
+        ON CONFLICT (token) DO NOTHING
         RETURNING *;
       `),
       [args.userId, args.token]
@@ -77,6 +79,7 @@ describe("insertToken tests", (): void => {
       expect.stringContaining(`
         INSERT INTO refresh_tokens (user_id, token)
         VALUES ($1, $2)
+        ON CONFLICT (token) DO NOTHING
         RETURNING *;
       `),
       [args.userId, args.token]

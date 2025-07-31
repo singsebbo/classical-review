@@ -18,6 +18,7 @@ class TokenModel {
       const query = `
         INSERT INTO refresh_tokens (user_id, token)
         VALUES ($1, $2)
+        ON CONFLICT (token) DO NOTHING
         RETURNING *;
       `;
       const values: [string, string] = [userId, token];
@@ -33,6 +34,7 @@ class TokenModel {
       }
       return token;
     } catch (error: unknown) {
+      console.error(error);
       if (error instanceof ModelError) {
         throw error;
       }

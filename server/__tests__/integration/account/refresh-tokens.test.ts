@@ -104,24 +104,6 @@ describe("POST /api/account/refresh-tokens", (): void => {
       });
     });
     describe("Controller error tests", (): void => {
-      test("removeExistingTokens fails", async (): Promise<void> => {
-        const mockError: ModelError = new ModelError(
-          "Database connection failed",
-          500
-        );
-        (TokenModel.removeExistingTokens as jest.Mock).mockRejectedValue(
-          mockError
-        );
-        const response: SupertestResponse = await request(app)
-          .post("/api/account/refresh-tokens")
-          .set("Cookie", [`refreshToken=${validRefreshToken}`]);
-        expect(consoleErrorSpy).toHaveBeenCalled();
-        expect(response.statusCode).toBe(500);
-        expect(response.body).toEqual({
-          success: false,
-          message: mockError.message,
-        });
-      });
       test("insertToken fails", async (): Promise<void> => {
         (TokenModel.removeExistingTokens as jest.Mock).mockResolvedValue(
           undefined
